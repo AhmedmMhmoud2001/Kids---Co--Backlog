@@ -30,7 +30,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className=" bg-white border-t  sticky top-16 z-30 hidden lg:block">
+    <nav className=" bg-white border-t  sticky top-16 z-20 hidden lg:block">
       <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20">
         <ul className="flex items-center justify-center gap-8 py-4">
           {categories.map((category) => {

@@ -1,20 +1,38 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
+import { validateCredentials } from '../data/users';
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const { login } = useApp();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false,
   });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would handle authentication
-    console.log('Sign in with:', formData);
-    // For demo, navigate to account page
-    navigate('/account');
+    setError('');
+    setIsLoading(true);
+
+    // Validate credentials
+    const result = validateCredentials(formData.email, formData.password);
+
+    if (result.success) {
+      // Login user
+      login(result.user);
+      
+      // Navigate to account page
+      navigate('/account');
+    } else {
+      setError(result.error || 'Invalid email or password');
+    }
+
+    setIsLoading(false);
   };
 
   const handleChange = (e) => {
@@ -71,6 +89,13 @@ const SignIn = () => {
               />
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -91,9 +116,10 @@ const SignIn = () => {
             {/* Sign In Button */}
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition-colors"
+              disabled={isLoading}
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
             >
-              Sign In
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
 
             {/* Divider */}

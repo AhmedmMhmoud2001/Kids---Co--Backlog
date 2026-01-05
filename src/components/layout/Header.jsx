@@ -1,17 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import { useApp } from '../../context/AppContext';
 import logo from '../../assets/logo.png';
 import logo1 from '../../assets/logo1.png';
 import MobileMenu from './MobileMenu';
 import SearchModal from '../search/SearchModal';
 
 const Header = () => {
-  const [cartCount] = useState(2);
-  const [favoritesCount] = useState(5);
+  const navigate = useNavigate();
+  const { user, logout, cartCount, favoritesCount } = useApp();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showCenterLogo, setShowCenterLogo] = useState(true);
   const userMenuRef = useRef(null);
 
@@ -120,9 +120,15 @@ const Header = () => {
 
                 {/* User Dropdown Menu */}
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
-                    {isLoggedIn ? (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-600">
+                    {user ? (
                       <>
+                        <div className="px-4 py-2 border-b">
+                          <p className="text-sm font-semibold text-gray-900">
+                            {user.firstName} {user.lastName}
+                          </p>
+                          <p className="text-xs text-gray-500">{user.email}</p>
+                        </div>
                         <Link
                           to="/account"
                           onClick={() => setShowUserMenu(false)}
@@ -150,8 +156,9 @@ const Header = () => {
                         <hr className="my-2" />
                         <button
                           onClick={() => {
-                            setIsLoggedIn(false);
+                            logout();
                             setShowUserMenu(false);
+                            navigate('/');
                           }}
                           className="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
                         >

@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
+import { registerUser } from '../data/users';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const { login } = useApp();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -11,25 +14,34 @@ const SignUp = () => {
     confirmPassword: '',
     agreeToTerms: false,
   });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
+    setError('');
 
     if (!formData.agreeToTerms) {
-      alert('Please agree to terms and conditions');
+      setError('Please agree to terms and conditions');
       return;
     }
 
-    // Here you would handle registration
-    console.log('Sign up with:', formData);
-    // For demo, navigate to account page
-    navigate('/account');
+    setIsLoading(true);
+
+    // Register user
+    const result = registerUser(formData);
+
+    if (result.success) {
+      // Auto login after registration
+      login(result.user);
+      
+      // Navigate to account page
+      navigate('/account');
+    } else {
+      setError(result.error || 'Registration failed. Please try again.');
+    }
+
+    setIsLoading(false);
   };
 
   const handleChange = (e) => {
@@ -141,6 +153,13 @@ const SignUp = () => {
               />
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Terms & Conditions */}
             <div>
               <label className="flex items-start gap-2 cursor-pointer">
@@ -167,9 +186,10 @@ const SignUp = () => {
             {/* Sign Up Button */}
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition-colors"
+              disabled={isLoading}
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
             >
-              Create Account
+              {isLoading ? 'Creating account...' : 'Create Account'}
             </button>
 
             {/* Divider */}

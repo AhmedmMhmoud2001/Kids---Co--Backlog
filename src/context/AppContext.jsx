@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { initialCartItems } from '../data/products';
 
 const AppContext = createContext();
@@ -12,9 +12,24 @@ export const useApp = () => {
 };
 
 export const AppProvider = ({ children }) => {
+  // Load user from localStorage on mount
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
   const [cartItems, setCartItems] = useState(initialCartItems);
   const [favorites, setFavorites] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Save user to localStorage whenever it changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   const addToCart = (product, quantity = 1) => {
     setCartItems((prev) => {
@@ -66,7 +81,23 @@ export const AppProvider = ({ children }) => {
     return total + price * item.quantity;
   }, 0);
 
+  // Authentication functions
+  const login = (userData) => {
+    setUser(userData);
+  };
+
+  const logout = () => {
+    setUser(null);
+    setFavorites([]);
+    setCartItems([]);
+  };
+
+  const isAuthenticated = () => {
+    return user !== null;
+  };
+
   const value = {
+    // Cart
     cartItems,
     addToCart,
     removeFromCart,
@@ -74,12 +105,19 @@ export const AppProvider = ({ children }) => {
     clearCart,
     cartCount,
     cartTotal,
+    // Favorites
     favorites,
     toggleFavorite,
     isFavorite,
     favoritesCount,
+    // Cart UI
     isCartOpen,
     setIsCartOpen,
+    // Authentication
+    user,
+    login,
+    logout,
+    isAuthenticated,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
