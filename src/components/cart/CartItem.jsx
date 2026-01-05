@@ -1,11 +1,8 @@
-import { useState } from 'react';
-
 const CartItem = ({ item, onRemove, onQuantityChange }) => {
-  const [quantity, setQuantity] = useState(item.quantity || 1);
+  const quantity = item.quantity || 1;
 
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity < 1) return;
-    setQuantity(newQuantity);
     onQuantityChange?.(item.id, newQuantity);
   };
 

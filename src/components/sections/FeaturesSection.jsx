@@ -1,0 +1,65 @@
+import Section from '../common/Section';
+
+/**
+ * Features section component
+ */
+const FeaturesSection = ({ features = [], className = '' }) => {
+  const defaultFeatures = [
+    {
+      icon: '/src/assets/truck-delivery.png',
+      title: 'Fast Shipping',
+      description: 'Lightning-fast delivery, always on time',
+    },
+    {
+      icon: '/src/assets/card-tick.svg',
+      title: 'Instant Payment',
+      description: 'Secure, seamless, and instant transactions',
+    },
+    {
+      icon: '/src/assets/delivery-return-01.svg',
+      title: 'Exchange & Return',
+      description: 'Hassle-free returns, easy exchanges',
+    },
+    {
+      icon: '/src/assets/customer-support.svg',
+      title: 'Customer Service',
+      description: "We're always here to help with anything",
+    },
+  ];
+
+  const featuresToShow = features.length > 0 ? features : defaultFeatures;
+
+  return (
+    <Section padding="py-5 lg:py-12" className={className}>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+        {featuresToShow.map((feature, idx) => {
+          const featureData = typeof feature === 'object' ? feature : defaultFeatures[idx];
+          const iconSrc = featureData.icon || defaultFeatures[idx]?.icon;
+
+          return (
+            <div key={idx} className="text-center group">
+              <div className="flex justify-center mb-3 sm:mb-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                  <img 
+                    src={iconSrc} 
+                    alt={featureData.title} 
+                    className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain" 
+                  />
+                </div>
+              </div>
+              <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 mb-1 sm:mb-2">
+                {featureData.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                {featureData.description}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </Section>
+  );
+};
+
+export default FeaturesSection;
+

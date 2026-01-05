@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { initialCartItems } from '../data/products';
 
 const AppContext = createContext();
 
@@ -11,6 +10,11 @@ export const useApp = () => {
   return context;
 };
 
+// Helper function to get storage key for user-specific data
+const getStorageKey = (key, userId) => {
+  return userId ? `${key}_${userId}` : `${key}_guest`;
+};
+
 export const AppProvider = ({ children }) => {
   // Load user from localStorage on mount
   const [user, setUser] = useState(() => {
@@ -18,9 +22,57 @@ export const AppProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const [cartItems, setCartItems] = useState(initialCartItems);
-  const [favorites, setFavorites] = useState([]);
+  // Initialize cart and favorites - load from localStorage on mount
+  const [cartItems, setCartItems] = useState(() => {
+    // On initial mount, user might not be loaded yet, so check localStorage directly
+    const savedUser = localStorage.getItem('user');
+    const currentUser = savedUser ? JSON.parse(savedUser) : null;
+    const userId = currentUser?.id || 'guest';
+    const savedCart = localStorage.getItem(getStorageKey('cart', userId));
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
+  const [favorites, setFavorites] = useState(() => {
+    // On initial mount, user might not be loaded yet, so check localStorage directly
+    const savedUser = localStorage.getItem('user');
+    const currentUser = savedUser ? JSON.parse(savedUser) : null;
+    const userId = currentUser?.id || 'guest';
+    const savedFavorites = localStorage.getItem(getStorageKey('favorites', userId));
+    return savedFavorites ? JSON.parse(savedFavorites) : [];
+  });
+
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Load cart and favorites from localStorage when user changes (login/logout)
+  useEffect(() => {
+    const userId = user?.id || 'guest';
+    
+    // Load cart
+    const savedCart = localStorage.getItem(getStorageKey('cart', userId));
+    if (savedCart) {
+      try {
+        setCartItems(JSON.parse(savedCart));
+      } catch (error) {
+        console.error('Error loading cart:', error);
+        setCartItems([]);
+      }
+    } else {
+      setCartItems([]);
+    }
+    
+    // Load favorites
+    const savedFavorites = localStorage.getItem(getStorageKey('favorites', userId));
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (error) {
+        console.error('Error loading favorites:', error);
+        setFavorites([]);
+      }
+    } else {
+      setFavorites([]);
+    }
+  }, [user]);
 
   // Save user to localStorage whenever it changes
   useEffect(() => {
@@ -30,6 +82,18 @@ export const AppProvider = ({ children }) => {
       localStorage.removeItem('user');
     }
   }, [user]);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    const userId = user?.id || 'guest';
+    localStorage.setItem(getStorageKey('cart', userId), JSON.stringify(cartItems));
+  }, [cartItems, user]);
+
+  // Save favorites to localStorage whenever it changes
+  useEffect(() => {
+    const userId = user?.id || 'guest';
+    localStorage.setItem(getStorageKey('favorites', userId), JSON.stringify(favorites));
+  }, [favorites, user]);
 
   const addToCart = (product, quantity = 1) => {
     setCartItems((prev) => {
@@ -88,8 +152,7 @@ export const AppProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    setFavorites([]);
-    setCartItems([]);
+    // Cart and favorites will be reset by the useEffect when user becomes null
   };
 
   const isAuthenticated = () => {

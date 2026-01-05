@@ -1,16 +1,22 @@
 import { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 
 const ProductQuickView = ({ product, onClose }) => {
+  const { addToCart } = useApp();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
-  // Create array of 5 images for thumbnails
-  const images = Array(5).fill(product.image);
+  // Use product.images array if available, otherwise fallback to single image repeated
+  const images = (product.images && product.images.length >= 6) 
+    ? product.images.slice(0, 6) 
+    : Array(6).fill(product.image);
 
   const handleAddToCart = () => {
-    console.log('Added to cart:', { product, selectedColor, selectedSize, quantity });
+    addToCart(product, quantity);
+    // Optional: Show success message
+    alert('Product added to cart!');
     onClose();
   };
 

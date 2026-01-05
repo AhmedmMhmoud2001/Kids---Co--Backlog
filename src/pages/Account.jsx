@@ -1,18 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
+import { updateUserProfile } from '../data/users';
 
 const Account = () => {
   const navigate = useNavigate();
+  const { user: currentUser, logout, login } = useApp();
   const [activeTab, setActiveTab] = useState('profile');
   const [user, setUser] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '+20 123 456 7890',
-    address: '123 Main Street',
-    city: 'Cairo',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
     country: 'Egypt',
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Load user data when component mounts
+  useEffect(() => {
+    if (!currentUser) {
+      // Redirect to sign in if not logged in
+      navigate('/signin');
+      return;
+    }
+
+    // Set user data from current user
+    setUser({
+      firstName: currentUser.firstName || '',
+      lastName: currentUser.lastName || '',
+      email: currentUser.email || '',
+      phone: currentUser.phone || '',
+      address: currentUser.address || '',
+      city: currentUser.city || '',
+      country: currentUser.country || 'Egypt',
+    });
+  }, [currentUser, navigate]);
 
   const [orders] = useState([
     {
@@ -32,14 +57,44 @@ const Account = () => {
   ]);
 
   const handleLogout = () => {
-    // Handle logout
+    logout();
     navigate('/');
   };
 
-  const handleUpdateProfile = (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    alert('Profile updated successfully!');
+    setIsLoading(true);
+    setSuccessMessage('');
+
+    // Update user profile
+    const result = updateUserProfile(currentUser.id, {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      city: user.city,
+      country: user.country,
+    });
+
+    if (result.success) {
+      // Update user in context
+      login(result.user);
+      setSuccessMessage('Profile updated successfully!');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+    }
+
+    setIsLoading(false);
   };
+
+  // Show loading or redirect if no user
+  if (!currentUser) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
@@ -103,6 +158,24 @@ const Account = () => {
             <div className="bg-white rounded-lg shadow-md p-8">
               <h2 className="text-2xl font-bold mb-6">Profile Information</h2>
               
+              {/* Success Message */}
+              {successMessage && (
+                <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+                  {successMessage}
+                </div>
+              )}
+
+              {/* Account Created Date */}
+              {currentUser.createdAt && (
+                <div className="mb-6 text-sm text-gray-600">
+                  Member since: {new Date(currentUser.createdAt).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </div>
+              )}
+
               <form onSubmit={handleUpdateProfile} className="space-y-6">
                 {/* Name Row */}
                 <div className="grid md:grid-cols-2 gap-6">
@@ -198,9 +271,10 @@ const Account = () => {
                 {/* Save Button */}
                 <button
                   type="submit"
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+                  disabled={isLoading}
+                  className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-lg transition-colors"
                 >
-                  Save Changes
+                  {isLoading ? 'Saving...' : 'Save Changes'}
                 </button>
               </form>
             </div>

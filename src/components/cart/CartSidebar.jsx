@@ -1,25 +1,27 @@
 import { Link } from 'react-router-dom';
 import CartItem from './CartItem';
 
-const CartSidebar = ({ isOpen, onClose, items }) => {
+const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => {
   const subtotal = items.reduce((total, item) => {
     // Extract numeric value from price string (e.g., "3,650.00 EE" -> 3650)
     const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
     return total + (price * (item.quantity || 1));
   }, 0);
 
-  if (!isOpen) return null;
-
   return (
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
+        className={`fixed inset-0 bg-black z-40 transition-opacity duration-300 ${
+          isOpen ? 'opacity-50' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={onClose}
       />
 
       {/* Sidebar */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 flex flex-col">
+      <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
         {/* Header */}
         <div className="p-6 border-b">
           <div className="flex items-center justify-between">
@@ -44,7 +46,12 @@ const CartSidebar = ({ isOpen, onClose, items }) => {
           ) : (
             <div className="space-y-4">
               {items.map((item) => (
-                <CartItem key={item.id} item={item} />
+                <CartItem 
+                  key={item.id} 
+                  item={item} 
+                  onRemove={onRemove}
+                  onQuantityChange={onQuantityChange}
+                />
               ))}
             </div>
           )}

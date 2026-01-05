@@ -1,0 +1,800 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Baker by Ted Baker Knitted Glitter Mesh Mockable Dress",
+      "category": "girl",
+      "categoryDisplay": "Girls",
+      "price": "3,650.00 EE",
+      "image": "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "She'll look pretty as a picture in this knitted glittery pink mockable dress from Baker by Ted Baker. This dress comes in a soft knit fabric mix with a beautiful soft mesh mockable skirt.",
+      "colors": ["#FFC0CB", "#FFE4B5"],
+      "sizes": ["0-3 Years", "3-6 Years", "6-9 Years"],
+      "brand": "TED Baker",
+      "sku": "IMS002644",
+      "isFavorite": false
+    },
+    {
+      "id": 2,
+      "name": "TED Baker Girls Party Dress",
+      "category": "girl",
+      "categoryDisplay": "Girls",
+      "price": "3,850.00 EE",
+      "image": "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Elegant party dress perfect for special occasions.",
+      "colors": ["#FFC0CB", "#f5c6d5"],
+      "sizes": ["3-6 Years", "6-9 Years"],
+      "brand": "TED Baker",
+      "sku": "TED-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 3,
+      "name": "KENZO KIDS Girls Floral Dress",
+      "category": "girl",
+      "categoryDisplay": "Girls",
+      "price": "4,100.00 EE",
+      "image": "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Beautiful floral dress from KENZO KIDS with vibrant patterns.",
+      "colors": ["#f5c6d5", "#FFC0CB"],
+      "sizes": ["3-6 Years", "6-9 Years"],
+      "brand": "KENZO KIDS",
+      "sku": "KENZO-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 4,
+      "name": "THE MARC JACOBS Logo Print Dress",
+      "category": "girl",
+      "categoryDisplay": "Girls",
+      "price": "4,800.00 EE",
+      "image": "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Designer dress with all-over logo print from THE MARC JACOBS.",
+      "colors": ["#f5c6d5", "#FFFFFF"],
+      "sizes": ["3-6 Years", "6-9 Years"],
+      "brand": "THE MARC JACOBS",
+      "sku": "MARC-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 5,
+      "name": "River Island Girls Denim Jacket",
+      "category": "girl",
+      "categoryDisplay": "Girls",
+      "price": "2,100.00 EE",
+      "image": "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Trendy denim jacket perfect for layering.",
+      "colors": ["#1a1a1a", "#e3dac9"],
+      "sizes": ["3-6 Years", "6-9 Years", "9-12 Years"],
+      "brand": "River Island",
+      "sku": "RI-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 6,
+      "name": "Boss Girls Casual Dress",
+      "category": "girl",
+      "categoryDisplay": "Girls",
+      "price": "3,200.00 EE",
+      "image": "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Comfortable casual dress from Boss.",
+      "colors": ["#000000", "#e3dac9"],
+      "sizes": ["3-6 Years", "6-9 Years"],
+      "brand": "Boss",
+      "sku": "BOSS-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 7,
+      "name": "Moschino Girls Logo T-Shirt",
+      "category": "girl",
+      "categoryDisplay": "Girls",
+      "price": "1,650.00 EE",
+      "image": "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Cute logo t-shirt from Moschino.",
+      "colors": ["#FFFFFF", "#FFC0CB"],
+      "sizes": ["3-6 Years", "6-9 Years", "9-12 Years"],
+      "brand": "moschino",
+      "sku": "MOS-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 8,
+      "name": "River Island Girls Skirt",
+      "category": "girl",
+      "categoryDisplay": "Girls",
+      "price": "1,450.00 EE",
+      "image": "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598503/pexels-photo-1598503.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Stylish skirt perfect for everyday wear.",
+      "colors": ["#000000", "#f5c6d5"],
+      "sizes": ["3-6 Years", "6-9 Years"],
+      "brand": "River Island",
+      "sku": "RI-GIRL-002",
+      "isFavorite": false
+    },
+    {
+      "id": 9,
+      "name": "TED Baker Classic Cotton Polo Shirt",
+      "category": "boy",
+      "categoryDisplay": "Boys",
+      "price": "2,450.00 EE",
+      "image": "https://images.pexels.com/photos/1598509/pexels-photo-1598509.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598509/pexels-photo-1598509.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598510/pexels-photo-1598510.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598511/pexels-photo-1598511.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598512/pexels-photo-1598512.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598513/pexels-photo-1598513.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598514/pexels-photo-1598514.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Classic polo shirt made with premium cotton.",
+      "colors": ["#000000", "#FFFFFF", "#1a1a1a"],
+      "sizes": ["3-6 Years", "6-9 Years", "9-12 Years"],
+      "brand": "TED Baker",
+      "sku": "TED-BOY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 10,
+      "name": "Boss Kids Polo Shirt",
+      "category": "boy",
+      "categoryDisplay": "Boys",
+      "price": "2,850.00 EE",
+      "image": "https://images.pexels.com/photos/1598510/pexels-photo-1598510.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598510/pexels-photo-1598510.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598509/pexels-photo-1598509.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598511/pexels-photo-1598511.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598512/pexels-photo-1598512.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598513/pexels-photo-1598513.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598514/pexels-photo-1598514.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Premium polo shirt from Boss Kids collection.",
+      "colors": ["#000000", "#FFFFFF"],
+      "sizes": ["3-6 Years", "6-9 Years", "9-12 Years"],
+      "brand": "Boss",
+      "sku": "BOSS-BOY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 11,
+      "name": "KENZO KIDS Boys T-Shirt",
+      "category": "boy",
+      "categoryDisplay": "Boys",
+      "price": "1,950.00 EE",
+      "image": "https://images.pexels.com/photos/1598511/pexels-photo-1598511.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598511/pexels-photo-1598511.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598509/pexels-photo-1598509.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598510/pexels-photo-1598510.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598512/pexels-photo-1598512.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598513/pexels-photo-1598513.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598514/pexels-photo-1598514.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Comfortable t-shirt with KENZO KIDS branding.",
+      "colors": ["#000000", "#FFFFFF", "#1a1a1a"],
+      "sizes": ["3-6 Years", "6-9 Years"],
+      "brand": "KENZO KIDS",
+      "sku": "KENZO-BOY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 12,
+      "name": "River Island Boys Jeans",
+      "category": "boy",
+      "categoryDisplay": "Boys",
+      "price": "2,200.00 EE",
+      "image": "https://images.pexels.com/photos/1598512/pexels-photo-1598512.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598512/pexels-photo-1598512.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598509/pexels-photo-1598509.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598510/pexels-photo-1598510.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598511/pexels-photo-1598511.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598513/pexels-photo-1598513.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598514/pexels-photo-1598514.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Classic denim jeans perfect for everyday wear.",
+      "colors": ["#1a1a1a", "#000000"],
+      "sizes": ["3-6 Years", "6-9 Years", "9-12 Years"],
+      "brand": "River Island",
+      "sku": "RI-BOY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 13,
+      "name": "Moschino Boys Hoodie",
+      "category": "boy",
+      "categoryDisplay": "Boys",
+      "price": "3,100.00 EE",
+      "image": "https://images.pexels.com/photos/1598513/pexels-photo-1598513.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598513/pexels-photo-1598513.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598509/pexels-photo-1598509.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598510/pexels-photo-1598510.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598511/pexels-photo-1598511.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598512/pexels-photo-1598512.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598514/pexels-photo-1598514.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Warm and stylish hoodie from Moschino.",
+      "colors": ["#000000", "#FFFFFF"],
+      "sizes": ["3-6 Years", "6-9 Years", "9-12 Years"],
+      "brand": "moschino",
+      "sku": "MOS-BOY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 14,
+      "name": "THE MARC JACOBS Boys Shirt",
+      "category": "boy",
+      "categoryDisplay": "Boys",
+      "price": "2,600.00 EE",
+      "image": "https://images.pexels.com/photos/1598514/pexels-photo-1598514.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598514/pexels-photo-1598514.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598509/pexels-photo-1598509.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598510/pexels-photo-1598510.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598511/pexels-photo-1598511.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598512/pexels-photo-1598512.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598513/pexels-photo-1598513.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Designer shirt with logo print.",
+      "colors": ["#FFFFFF", "#000000"],
+      "sizes": ["3-6 Years", "6-9 Years"],
+      "brand": "THE MARC JACOBS",
+      "sku": "MARC-BOY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 15,
+      "name": "Boss Baby Tracksuit Set",
+      "category": "baby-boy",
+      "categoryDisplay": "Baby Boys",
+      "price": "4,200.00 EE",
+      "image": "https://images.pexels.com/photos/1598515/pexels-photo-1598515.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598515/pexels-photo-1598515.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598516/pexels-photo-1598516.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598517/pexels-photo-1598517.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598518/pexels-photo-1598518.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598519/pexels-photo-1598519.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Premium tracksuit set for baby boys.",
+      "colors": ["#000000", "#e3dac9"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "Boss",
+      "sku": "BOSS-BABY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 16,
+      "name": "Boss Baby Boy Outfit",
+      "category": "baby-boy",
+      "categoryDisplay": "Baby Boys",
+      "price": "3,550.00 EE",
+      "image": "https://images.pexels.com/photos/1598516/pexels-photo-1598516.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598516/pexels-photo-1598516.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598515/pexels-photo-1598515.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598517/pexels-photo-1598517.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598518/pexels-photo-1598518.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598519/pexels-photo-1598519.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Complete outfit from Boss for your little one.",
+      "colors": ["#000000", "#FFFFFF", "#e3dac9"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "Boss",
+      "sku": "BOSS-BABY-002",
+      "isFavorite": false
+    },
+    {
+      "id": 17,
+      "name": "TED Baker Baby Boy Romper",
+      "category": "baby-boy",
+      "categoryDisplay": "Baby Boys",
+      "price": "2,350.00 EE",
+      "image": "https://images.pexels.com/photos/1598517/pexels-photo-1598517.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598517/pexels-photo-1598517.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598515/pexels-photo-1598515.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598516/pexels-photo-1598516.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598518/pexels-photo-1598518.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598519/pexels-photo-1598519.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Cute romper from TED Baker.",
+      "colors": ["#1a1a1a", "#e3dac9"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "TED Baker",
+      "sku": "TED-BABY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 18,
+      "name": "KENZO KIDS Baby Boy Set",
+      "category": "baby-boy",
+      "categoryDisplay": "Baby Boys",
+      "price": "3,100.00 EE",
+      "image": "https://images.pexels.com/photos/1598518/pexels-photo-1598518.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598518/pexels-photo-1598518.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598515/pexels-photo-1598515.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598516/pexels-photo-1598516.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598517/pexels-photo-1598517.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598519/pexels-photo-1598519.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Stylish baby boy set from KENZO KIDS.",
+      "colors": ["#000000", "#FFFFFF"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "KENZO KIDS",
+      "sku": "KENZO-BABY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 19,
+      "name": "Moschino Baby Boy Bodysuit",
+      "category": "baby-boy",
+      "categoryDisplay": "Baby Boys",
+      "price": "1,850.00 EE",
+      "image": "https://images.pexels.com/photos/1598519/pexels-photo-1598519.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598519/pexels-photo-1598519.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598515/pexels-photo-1598515.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598516/pexels-photo-1598516.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598517/pexels-photo-1598517.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598518/pexels-photo-1598518.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Comfortable bodysuit with Moschino branding.",
+      "colors": ["#FFFFFF", "#000000"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "moschino",
+      "sku": "MOS-BABY-001",
+      "isFavorite": false
+    },
+    {
+      "id": 20,
+      "name": "TED Baker Baby Girl Dress",
+      "category": "baby-girl",
+      "categoryDisplay": "Baby Girls",
+      "price": "2,800.00 EE",
+      "image": "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Adorable dress for baby girls from TED Baker.",
+      "colors": ["#FFC0CB", "#f5c6d5"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "TED Baker",
+      "sku": "TED-BABY-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 21,
+      "name": "KENZO KIDS Baby Girl Outfit",
+      "category": "baby-girl",
+      "categoryDisplay": "Baby Girls",
+      "price": "3,400.00 EE",
+      "image": "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Beautiful outfit set for baby girls.",
+      "colors": ["#f5c6d5", "#FFC0CB"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "KENZO KIDS",
+      "sku": "KENZO-BABY-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 22,
+      "name": "Boss Baby Girl Romper",
+      "category": "baby-girl",
+      "categoryDisplay": "Baby Girls",
+      "price": "2,500.00 EE",
+      "image": "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Elegant romper for baby girls.",
+      "colors": ["#FFC0CB", "#FFFFFF"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "Boss",
+      "sku": "BOSS-BABY-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 23,
+      "name": "Moschino Baby Girl Bodysuit",
+      "category": "baby-girl",
+      "categoryDisplay": "Baby Girls",
+      "price": "1,900.00 EE",
+      "image": "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Cute bodysuit with Moschino design.",
+      "colors": ["#FFC0CB", "#f5c6d5"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "moschino",
+      "sku": "MOS-BABY-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 24,
+      "name": "THE MARC JACOBS Baby Girl Set",
+      "category": "baby-girl",
+      "categoryDisplay": "Baby Girls",
+      "price": "3,600.00 EE",
+      "image": "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598506/pexels-photo-1598506.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598504/pexels-photo-1598504.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Designer set for baby girls.",
+      "colors": ["#f5c6d5", "#FFFFFF"],
+      "sizes": ["0-3 Months", "3-6 Months", "6-12 Months"],
+      "brand": "THE MARC JACOBS",
+      "sku": "MARC-BABY-GIRL-001",
+      "isFavorite": false
+    },
+    {
+      "id": 25,
+      "name": "TED Baker Kids Backpack",
+      "category": "accessories",
+      "categoryDisplay": "Accessories",
+      "price": "1,800.00 EE",
+      "image": "https://images.pexels.com/photos/1598521/pexels-photo-1598521.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598521/pexels-photo-1598521.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598522/pexels-photo-1598522.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598523/pexels-photo-1598523.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598524/pexels-photo-1598524.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598525/pexels-photo-1598525.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598526/pexels-photo-1598526.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Stylish backpack perfect for school.",
+      "colors": ["#000000", "#1a1a1a", "#FFFFFF"],
+      "sizes": ["One Size"],
+      "brand": "TED Baker",
+      "sku": "TED-ACC-001",
+      "isFavorite": false
+    },
+    {
+      "id": 26,
+      "name": "KENZO KIDS Cap",
+      "category": "accessories",
+      "categoryDisplay": "Accessories",
+      "price": "950.00 EE",
+      "image": "https://images.pexels.com/photos/1598522/pexels-photo-1598522.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598522/pexels-photo-1598522.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598521/pexels-photo-1598521.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598523/pexels-photo-1598523.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598524/pexels-photo-1598524.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598525/pexels-photo-1598525.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598526/pexels-photo-1598526.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Trendy cap with KENZO KIDS logo.",
+      "colors": ["#000000", "#FFFFFF", "#1a1a1a"],
+      "sizes": ["One Size"],
+      "brand": "KENZO KIDS",
+      "sku": "KENZO-ACC-001",
+      "isFavorite": false
+    },
+    {
+      "id": 27,
+      "name": "Boss Kids Watch",
+      "category": "accessories",
+      "categoryDisplay": "Accessories",
+      "price": "2,200.00 EE",
+      "image": "https://images.pexels.com/photos/1598523/pexels-photo-1598523.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598523/pexels-photo-1598523.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598521/pexels-photo-1598521.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598522/pexels-photo-1598522.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598524/pexels-photo-1598524.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598525/pexels-photo-1598525.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598526/pexels-photo-1598526.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Elegant watch for kids from Boss.",
+      "colors": ["#000000", "#FFFFFF"],
+      "sizes": ["One Size"],
+      "brand": "Boss",
+      "sku": "BOSS-ACC-001",
+      "isFavorite": false
+    },
+    {
+      "id": 28,
+      "name": "River Island Kids Sunglasses",
+      "category": "accessories",
+      "categoryDisplay": "Accessories",
+      "price": "650.00 EE",
+      "image": "https://images.pexels.com/photos/1598524/pexels-photo-1598524.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598524/pexels-photo-1598524.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598521/pexels-photo-1598521.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598522/pexels-photo-1598522.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598523/pexels-photo-1598523.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598525/pexels-photo-1598525.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598526/pexels-photo-1598526.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Stylish sunglasses for kids.",
+      "colors": ["#000000", "#1a1a1a"],
+      "sizes": ["One Size"],
+      "brand": "River Island",
+      "sku": "RI-ACC-001",
+      "isFavorite": false
+    },
+    {
+      "id": 29,
+      "name": "Moschino Kids Bag",
+      "category": "accessories",
+      "categoryDisplay": "Accessories",
+      "price": "1,500.00 EE",
+      "image": "https://images.pexels.com/photos/1598525/pexels-photo-1598525.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598525/pexels-photo-1598525.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598521/pexels-photo-1598521.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598522/pexels-photo-1598522.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598523/pexels-photo-1598523.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598524/pexels-photo-1598524.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598526/pexels-photo-1598526.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Cute bag with Moschino branding.",
+      "colors": ["#FFFFFF", "#000000", "#FFC0CB"],
+      "sizes": ["One Size"],
+      "brand": "moschino",
+      "sku": "MOS-ACC-001",
+      "isFavorite": false
+    },
+    {
+      "id": 30,
+      "name": "THE MARC JACOBS Kids Belt",
+      "category": "accessories",
+      "categoryDisplay": "Accessories",
+      "price": "1,200.00 EE",
+      "image": "https://images.pexels.com/photos/1598526/pexels-photo-1598526.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598526/pexels-photo-1598526.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598521/pexels-photo-1598521.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598522/pexels-photo-1598522.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598523/pexels-photo-1598523.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598524/pexels-photo-1598524.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598525/pexels-photo-1598525.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Designer belt for kids.",
+      "colors": ["#000000", "#1a1a1a"],
+      "sizes": ["Small", "Medium", "Large"],
+      "brand": "THE MARC JACOBS",
+      "sku": "MARC-ACC-001",
+      "isFavorite": false
+    },
+    {
+      "id": 31,
+      "name": "TED Baker Kids Sneakers",
+      "category": "footwear",
+      "categoryDisplay": "Footwear",
+      "price": "2,800.00 EE",
+      "image": "https://images.pexels.com/photos/1598527/pexels-photo-1598527.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598527/pexels-photo-1598527.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598528/pexels-photo-1598528.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598529/pexels-photo-1598529.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598530/pexels-photo-1598530.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598531/pexels-photo-1598531.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598532/pexels-photo-1598532.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Comfortable sneakers perfect for everyday wear.",
+      "colors": ["#000000", "#FFFFFF", "#1a1a1a"],
+      "sizes": ["EU 25", "EU 26", "EU 27", "EU 28"],
+      "brand": "TED Baker",
+      "sku": "TED-FOOT-001",
+      "isFavorite": false
+    },
+    {
+      "id": 32,
+      "name": "KENZO KIDS Sandals",
+      "category": "footwear",
+      "categoryDisplay": "Footwear",
+      "price": "1,950.00 EE",
+      "image": "https://images.pexels.com/photos/1598528/pexels-photo-1598528.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598528/pexels-photo-1598528.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598527/pexels-photo-1598527.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598529/pexels-photo-1598529.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598530/pexels-photo-1598530.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598531/pexels-photo-1598531.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598532/pexels-photo-1598532.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Stylish sandals for summer.",
+      "colors": ["#000000", "#FFFFFF"],
+      "sizes": ["EU 25", "EU 26", "EU 27"],
+      "brand": "KENZO KIDS",
+      "sku": "KENZO-FOOT-001",
+      "isFavorite": false
+    },
+    {
+      "id": 33,
+      "name": "Boss Kids Boots",
+      "category": "footwear",
+      "categoryDisplay": "Footwear",
+      "price": "3,200.00 EE",
+      "image": "https://images.pexels.com/photos/1598529/pexels-photo-1598529.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598529/pexels-photo-1598529.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598527/pexels-photo-1598527.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598528/pexels-photo-1598528.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598530/pexels-photo-1598530.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598531/pexels-photo-1598531.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598532/pexels-photo-1598532.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Premium boots for kids.",
+      "colors": ["#000000", "#1a1a1a"],
+      "sizes": ["EU 26", "EU 27", "EU 28", "EU 29"],
+      "brand": "Boss",
+      "sku": "BOSS-FOOT-001",
+      "isFavorite": false
+    },
+    {
+      "id": 34,
+      "name": "River Island Kids Trainers",
+      "category": "footwear",
+      "categoryDisplay": "Footwear",
+      "price": "2,100.00 EE",
+      "image": "https://images.pexels.com/photos/1598530/pexels-photo-1598530.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598530/pexels-photo-1598530.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598527/pexels-photo-1598527.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598528/pexels-photo-1598528.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598529/pexels-photo-1598529.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598531/pexels-photo-1598531.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598532/pexels-photo-1598532.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Comfortable trainers for active kids.",
+      "colors": ["#000000", "#FFFFFF", "#1a1a1a"],
+      "sizes": ["EU 25", "EU 26", "EU 27", "EU 28"],
+      "brand": "River Island",
+      "sku": "RI-FOOT-001",
+      "isFavorite": false
+    },
+    {
+      "id": 35,
+      "name": "Moschino Kids Slip-ons",
+      "category": "footwear",
+      "categoryDisplay": "Footwear",
+      "price": "1,750.00 EE",
+      "image": "https://images.pexels.com/photos/1598531/pexels-photo-1598531.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+      "images": [
+        "https://images.pexels.com/photos/1598531/pexels-photo-1598531.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598527/pexels-photo-1598527.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598528/pexels-photo-1598528.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598529/pexels-photo-1598529.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598530/pexels-photo-1598530.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop",
+        "https://images.pexels.com/photos/1598532/pexels-photo-1598532.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&fit=crop"
+      ],
+      "description": "Easy slip-on shoes with Moschino design.",
+      "colors": ["#FFFFFF", "#000000", "#FFC0CB"],
+      "sizes": ["EU 25", "EU 26", "EU 27"],
+      "brand": "moschino",
+      "sku": "MOS-FOOT-001",
+      "isFavorite": false
+    }
+  ],
+  "categories": [
+    {
+      "name": "Boy",
+      "image": "https://images.pexels.com/photos/1598510/pexels-photo-1598510.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop"
+    },
+    {
+      "name": "Girl",
+      "image": "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop"
+    },
+    {
+      "name": "Baby Boy",
+      "image": "https://images.pexels.com/photos/1598516/pexels-photo-1598516.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop"
+    },
+    {
+      "name": "Baby Girl",
+      "image": "https://images.pexels.com/photos/1598520/pexels-photo-1598520.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop"
+    },
+    {
+      "name": "Accessories",
+      "image": "https://images.pexels.com/photos/1598522/pexels-photo-1598522.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop"
+    },
+    {
+      "name": "Footwear",
+      "image": "https://images.pexels.com/photos/1598528/pexels-photo-1598528.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop"
+    }
+  ]
+}

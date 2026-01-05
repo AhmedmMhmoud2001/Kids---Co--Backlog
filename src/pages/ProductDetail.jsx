@@ -1,32 +1,53 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { products } from '../data/products';
+import { useApp } from '../context/AppContext';
+import Container from '../components/common/Container';
+import Breadcrumb from '../components/common/Breadcrumb';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === parseInt(id)) || products[0];
+  const { addToCart } = useApp();
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
-  const images = [product.image, product.image, product.image, product.image, product.image];
+  // Use product.images array if available, otherwise fallback to single image repeated
+  const images = (product.images && product.images.length >= 6) 
+    ? product.images.slice(0, 6) 
+    : Array(6).fill(product.image);
+
+  // Get category path for breadcrumb
+  const getCategoryPath = () => {
+    return product.category || 'shop';
+  };
+
+  // Get category display name
+  const getCategoryDisplayName = () => {
+    return product.categoryDisplay || 
+           product.category
+             .split('-')
+             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+             .join(' ') || 'Shop';
+  };
 
   const handleAddToCart = () => {
-    console.log('Added to cart:', { product, selectedColor, selectedSize, quantity });
+    addToCart(product, quantity);
+    // Optional: Show success message or redirect
+    alert('Product added to cart!');
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
+    <Container className="py-8">
       {/* Breadcrumb */}
-      <nav className="mb-6 text-sm text-gray-500">
-        <Link to="/" className="hover:text-gray-900">Home</Link>
-        <span className="mx-2">›</span>
-        <Link to="/category/girl" className="hover:text-gray-900">Girl</Link>
-        <span className="mx-2">›</span>
-        <span className="text-gray-900">{product.name}</span>
-      </nav>
+      <Breadcrumb items={[
+        { label: 'Home', to: '/' },
+        { label: getCategoryDisplayName(), to: `/category/${getCategoryPath()}` },
+        { label: product.name },
+      ]} />
 
       <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
         {/* Product Images */}
@@ -199,9 +220,8 @@ const ProductDetail = () => {
           </details>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 
 export default ProductDetail;
-

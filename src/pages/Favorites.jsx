@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
 import { products } from '../data/products';
+import { useApp } from '../context/AppContext';
 import ProductGrid from '../components/product/ProductGrid';
 
 const Favorites = () => {
-  // For demo purposes, showing all products as favorites
-  const favoriteProducts = products.slice(0, 10);
+  const { favorites } = useApp();
+  
+  // Get favorite products based on favorite IDs
+  const favoriteProducts = useMemo(() => {
+    return products.filter(product => favorites.includes(product.id));
+  }, [favorites]);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">

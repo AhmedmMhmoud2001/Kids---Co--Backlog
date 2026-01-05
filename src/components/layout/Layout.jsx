@@ -3,8 +3,12 @@ import Header from './Header';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import BottomNav from './BottomNav';
+import CartSidebar from '../cart/CartSidebar';
+import { useApp } from '../../context/AppContext';
 
 const Layout = () => {
+  const { isCartOpen, setIsCartOpen, cartItems, removeFromCart, updateCartQuantity } = useApp();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -14,6 +18,13 @@ const Layout = () => {
       </main>
       <Footer />
       <BottomNav />
+      <CartSidebar 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)} 
+        items={cartItems}
+        onRemove={removeFromCart}
+        onQuantityChange={updateCartQuantity}
+      />
     </div>
   );
 };
