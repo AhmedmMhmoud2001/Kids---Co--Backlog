@@ -42,7 +42,7 @@ const Account = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-sm text-gray-500">
         <Link to="/" className="hover:text-gray-900">Home</Link>

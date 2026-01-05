@@ -24,7 +24,9 @@ const Home = () => {
   // Hero slides
   const heroSlides = [
     { id: 1, leftImage: heroImage1, rightImage: heroImage2, title: 'Shop Smart', link: '/shop' },
-    { id: 2, leftImage: heroImage2, rightImage: heroImage1, title: 'New Collection', link: '/shop' },
+    { id: 2, leftImage: heroImage1, rightImage: heroImage2, title: 'Shop Smart', link: '/shop' },
+    { id: 3, leftImage: heroImage1, rightImage: heroImage2, title: 'Shop Smart', link: '/shop' },
+    
   ];
 
   return (
@@ -53,7 +55,7 @@ const Home = () => {
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center px-6">
-                      <h2 className="text-3xl font-bold mb-4">
+                      <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
                         <span className="block text-gray-900 mb-2">{slide.title}</span>
                         <span className="block">
                           <span className="text-gray-900">Shop </span>
@@ -76,7 +78,7 @@ const Home = () => {
                 {/* Desktop - Side by Side */}
                 <div className="hidden md:grid md:grid-cols-3 gap-0 relative">
                   {/* Left Image */}
-                  <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gradient-to-b from-pink-50 to-pink-100">
+                  <div className="relative w-[130%] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gradient-to-b from-pink-50 to-pink-100">
                     <img
                       src={slide.leftImage}
                       alt="Kids Fashion"
@@ -86,7 +88,7 @@ const Home = () => {
                   </div>
 
                   {/* Right Image */}
-                  <div className="relative right-16 top-1/2 -translate-y-1/2 bg-gradient-to-b h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] from-blue-50 to-blue-100">
+                  <div className="relative  w-[130%] right-0 top-1/2 -translate-y-1/2 bg-gradient-to-b h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] from-blue-50 to-blue-100">
                     <div className='h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px]'>
                       <img
                         src={slide.rightImage}
@@ -98,7 +100,7 @@ const Home = () => {
                   </div>
 
                   {/* Content */}
-                  <div className="relative right-40 top-1/2 -translate-y-1/2 flex items-center justify-center">
+                  <div className="relative right-0 top-1/2 -translate-y-1/2 flex items-center justify-center">
                     <div>
                       <h2 className="text-1xl sm:text-1xl md:text-2xl lg:text-3xl xl:text-4xl font-bold mb-2 leading-tight">
                         <span className="block text-gray-800">{slide.title}</span>
@@ -128,26 +130,26 @@ const Home = () => {
       </section>
 
       {/* Brands Section */}
-      <section className="py-5 border-b px-4 sm:px-6 md:px-10 lg:px-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
+      <section className="py-4 sm:py-5 border-b px-4 sm:px-6 md:px-10 lg:px-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 items-center justify-items-center">
           {/* River Island */}
           <div className="opacity-30 hover:opacity-60 transition-opacity">
-            <span className="text-2xl font-light tracking-wider text-gray-400">River Island</span>
+            <span className="text-lg sm:text-xl md:text-2xl font-light tracking-wider text-gray-400">River Island</span>
           </div>
           
           {/* GUCCI */}
           <div className="opacity-30 hover:opacity-60 transition-opacity">
-            <span className="text-3xl font-serif tracking-widest text-gray-400">GUCCI</span>
+            <span className="text-xl sm:text-2xl md:text-3xl font-serif tracking-widest text-gray-400">GUCCI</span>
           </div>
           
           {/* TED BAKER */}
           <div className="opacity-30 hover:opacity-60 transition-opacity">
-            <span className="text-xl font-light tracking-wider text-gray-400">TED BAKER</span>
+            <span className="text-base sm:text-lg md:text-xl font-light tracking-wider text-gray-400">TED BAKER</span>
           </div>
           
           {/* GOLDEN GOOSE */}
           <div className="opacity-30 hover:opacity-60 transition-opacity">
-            <span className="text-xl font-light tracking-wider text-gray-400">GOLDEN GOOSE</span>
+            <span className="text-base sm:text-lg md:text-xl font-light tracking-wider text-gray-400">GOLDEN GOOSE</span>
           </div>
         </div>
       </section>
@@ -155,10 +157,22 @@ const Home = () => {
       {/* Categories Section */}
       <section className="py-4 lg:py-5 px-4 sm:px-6 md:px-10 lg:px-20">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 lg:gap-6">
-          {categories.map((category, idx) => (
+          {categories.map((category, idx) => {
+            // Map category names to correct paths
+            const categoryPathMap = {
+              'Boy': 'boy',
+              'Girl': 'girl',
+              'Baby Boy': 'baby-boy',
+              'Baby Girl': 'baby-girl',
+              'Accessories': 'accessories',
+              'Footwear': 'footwear',
+            };
+            const categoryPath = categoryPathMap[category.name] || category.name.toLowerCase().replace(/\s+/g, '-');
+            
+            return (
             <Link
               key={idx}
-              to={`/category/${category.name.toLowerCase().replace(' ', '-')}`}
+              to={`/category/${categoryPath}`}
               className="group text-center"
             >
               <div className="aspect-square bg-gray-100 rounded-full overflow-hidden mb-3 group-hover:scale-105 transition-transform shadow-md">
@@ -173,17 +187,18 @@ const Home = () => {
                   }}
                 />
               </div>
-              <h3 className="font-medium text-gray-800 group-hover:text-blue-500 transition-colors">{category.name}</h3>
+              <h3 className="font-medium text-xs sm:text-sm md:text-base text-gray-800 group-hover:text-blue-500 transition-colors">{category.name}</h3>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* Best Sellers Section */}
-      <section className="py-5 px-4 sm:px-6 md:px-10 lg:px-20">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold">Best Sellers</h2>
-          <Link to="/shop" className="text-blue-500 hover:text-blue-600 font-medium">
+      <section className="py-4 sm:py-5 px-4 sm:px-6 md:px-10 lg:px-20">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">Best Sellers</h2>
+          <Link to="/shop" className="text-blue-500 hover:text-blue-600 font-medium text-sm sm:text-base">
             More
           </Link>
         </div>

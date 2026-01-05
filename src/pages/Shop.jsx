@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { products } from '../data/products';
 import ProductGrid from '../components/product/ProductGrid';
 import FilterSidebar from '../components/filter/FilterSidebar';
@@ -100,10 +101,10 @@ const Shop = () => {
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filters change
-  };
+  }, []);
 
   const clearFilters = () => {
     setFilters({
@@ -119,10 +120,10 @@ const Shop = () => {
     filters.selectedBrands.length > 0;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-sm text-gray-500">
-        <span>Home</span>
+        <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
         <span className="mx-2">›</span>
         <span className="text-gray-900">Shop</span>
       </nav>
@@ -261,19 +262,18 @@ const Shop = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className={`grid ${showFilters ? 'lg:grid-cols-4' : 'lg:grid-cols-1'} gap-8`}>
-        {/* Sidebar */}
-        {showFilters && (
-          <div className="lg:col-span-1">
-            <div className="sticky top-4">
-              <FilterSidebar onFilterChange={handleFilterChange} />
-            </div>
-          </div>
-        )}
+      {/* Overlay */}
+      {showFilters && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
+          onClick={() => setShowFilters(false)}
+        />
+      )}
 
+      {/* Main Content */}
+      <div className="relative">
         {/* Products Grid */}
-        <div className={showFilters ? 'lg:col-span-3' : 'lg:col-span-1'}>
+        <div className={showFilters ? 'lg:mr-80' : ''}>
           {paginatedProducts.length > 0 ? (
             <>
               <ProductGrid 
@@ -332,6 +332,30 @@ const Shop = () => {
               </button>
             </div>
           )}
+        </div>
+
+        {/* Filter Sidebar - Fixed Right Side */}
+        <div
+          className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 lg:z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+            showFilters ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="p-6">
+            {/* Close Button */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Filter</h2>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Close filter"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <FilterSidebar onFilterChange={handleFilterChange} />
+          </div>
         </div>
       </div>
 

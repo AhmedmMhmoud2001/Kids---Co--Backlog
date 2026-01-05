@@ -16,7 +16,8 @@ const FilterSidebar = ({ onFilterChange }) => {
         selectedBrands,
       });
     }
-  }, [sortBy, priceRange, selectedColors, selectedBrands, onFilterChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, priceRange, selectedColors, selectedBrands]);
 
   const sortOptions = [
     { value: 'popularity', label: 'Popularity' },
@@ -70,7 +71,6 @@ const FilterSidebar = ({ onFilterChange }) => {
 
   return (
     <div className="w-full space-y-8">
-      <h2 className="text-2xl font-bold">Filter</h2>
 
       {/* Sort By */}
       <div>

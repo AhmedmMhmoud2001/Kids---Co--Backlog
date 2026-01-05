@@ -107,7 +107,7 @@ const Payment = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-6 sm:py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-sm text-gray-500">
         <Link to="/" className="hover:text-gray-900">Home</Link>
@@ -119,7 +119,7 @@ const Payment = () => {
         <span className="text-gray-900">Payment</span>
       </nav>
 
-      <h1 className="text-3xl font-bold mb-8">Payment</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Payment</h1>
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Payment Form */}

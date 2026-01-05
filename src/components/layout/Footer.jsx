@@ -23,10 +23,22 @@ const Footer = () => {
             </p>
             {/* Social Media Icons */}
             <div className="flex gap-4 justify-center md:justify-start">
-              <a href="#" className="hover:opacity-70 transition-opacity">
+              <a 
+                href="https://www.facebook.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:opacity-70 transition-opacity"
+                aria-label="Facebook"
+              >
                 <img src={facebookIcon} alt="Facebook" className="w-8 h-8" />
               </a>
-              <a href="#" className="hover:opacity-70 transition-opacity">
+              <a 
+                href="https://www.instagram.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:opacity-70 transition-opacity"
+                aria-label="Instagram"
+              >
                 <img src={instagramIcon} alt="Instagram" className="w-8 h-8" />
               </a>
             </div>

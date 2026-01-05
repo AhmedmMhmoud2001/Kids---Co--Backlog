@@ -7,7 +7,7 @@ const Favorites = () => {
   const favoriteProducts = products.slice(0, 10);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-sm text-gray-500">
         <Link to="/" className="hover:text-gray-900">Home</Link>
@@ -31,7 +31,7 @@ const Favorites = () => {
         </div>
       ) : (
         <>
-          <h1 className="text-2xl font-bold mb-8">Favorites</h1>
+          <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">Favorites</h1>
           <ProductGrid products={favoriteProducts} />
 
           {/* Pagination */}

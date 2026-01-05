@@ -41,11 +41,11 @@ const SignUp = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-16">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Create Account</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Create Account</h1>
           <p className="text-gray-600">Join us and start shopping premium kids fashion</p>
         </div>
 

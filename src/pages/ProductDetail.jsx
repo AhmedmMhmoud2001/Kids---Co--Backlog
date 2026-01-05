@@ -18,7 +18,7 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-sm text-gray-500">
         <Link to="/" className="hover:text-gray-900">Home</Link>
@@ -28,7 +28,7 @@ const ProductDetail = () => {
         <span className="text-gray-900">{product.name}</span>
       </nav>
 
-      <div className="grid md:grid-cols-2 gap-12">
+      <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
         {/* Product Images */}
         <div className="space-y-4">
           {/* Main Image */}
@@ -61,10 +61,10 @@ const ProductDetail = () => {
         </div>
 
         {/* Product Details */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div>
-            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-            <p className="text-4xl text-blue-500 font-semibold">{product.price}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">{product.name}</h1>
+            <p className="text-3xl sm:text-4xl text-blue-500 font-semibold">{product.price}</p>
           </div>
 
           {/* Description */}

@@ -25,7 +25,7 @@ const Cart = () => {
   }, 0);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
       {/* Breadcrumb */}
       <nav className="mb-6 text-sm text-gray-500">
         <Link to="/" className="hover:text-gray-900">Home</Link>
@@ -33,7 +33,7 @@ const Cart = () => {
         <span className="text-gray-900">Cart</span>
       </nav>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg">
@@ -68,14 +68,14 @@ const Cart = () => {
                     </div>
 
                     {/* Product Info */}
-                    <div className="col-span-11 md:col-span-5 flex gap-4">
+                    <div className="col-span-11 md:col-span-5 flex gap-3 sm:gap-4">
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-20 h-20 object-cover rounded-lg"
+                        className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
                       />
-                      <div>
-                        <h3 className="font-medium text-sm">{item.name}</h3>
+                      <div className="min-w-0">
+                        <h3 className="font-medium text-xs sm:text-sm line-clamp-2">{item.name}</h3>
                       </div>
                     </div>
 
