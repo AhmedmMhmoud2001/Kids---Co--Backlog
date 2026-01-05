@@ -1,15 +1,19 @@
 import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import logo1 from '../../assets/logo1.png';
 import logo from '../../assets/logo.png';
+import logo1 from '../../assets/logo1.png';
+import MobileMenu from './MobileMenu';
 
 const Header = () => {
   const [cartCount] = useState(2);
   const [favoritesCount] = useState(5);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showCenterLogo, setShowCenterLogo] = useState(true);
   const userMenuRef = useRef(null);
 
+  // Handle click outside for user menu
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
@@ -20,6 +24,24 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Handle scroll to hide center logo
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > 50) {
+        // Scrolled down - hide logo
+        setShowCenterLogo(false);
+      } else {
+        // At top - show logo
+        setShowCenterLogo(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <>
       {/* Top Banner */}
@@ -28,20 +50,33 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm sticky top-0 z-30">
         <div className="container mx-auto px-4">
           {/* Top Row */}
           <div className="flex items-center justify-between py-4 border-b">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setShowMobileMenu(true)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
             {/* Logo */}
-            <div className="flex items-center gap-4">
-              <Link to="/" className="text-xl font-bold">
-                <img src={logo1} alt="logo" />
+            <div className="flex items-center gap-2 lg:gap-4">
+              <Link to="/" className="text-xl font-bold  lg:hidden">
+                <img src={logo} alt="logo" className="h-8 lg:h-auto" />
               </Link>
-              <span className="text-gray-400 text-sm">NEXT</span>
+              <Link to="/" className="text-xl font-bold hidden lg:inline-block">
+                <img src={logo1} alt="logo1" className="h-8 lg:h-auto" />
+              </Link>
+              <span className="hidden lg:inline-block text-gray-400 text-sm">NEXT</span>
             </div>
 
             {/* Right Icons */}
-            <div className="flex items-center gap-4">
+            <div className=" hidden lg:inline-flex items-center gap-2 lg:gap-4">
               {/* Search Icon */}
               <button className="p-2 hover:bg-gray-100 rounded-full">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,14 +198,21 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Logo Center Row */}
-          <div className="py-6 text-center">
+          {/* Logo Center Row - Hidden on mobile, animated on desktop */}
+          <div 
+            className={`hidden lg:block text-center transition-all duration-300 overflow-hidden ${
+              showCenterLogo ? 'py-6 max-h-40 opacity-100' : 'py-0 max-h-0 opacity-0'
+            }`}
+          >
             <Link to="/" className="inline-block">
-              <img src={logo} alt="logo" />
+              <img src={logo} alt="logo" className="transition-transform duration-300" />
             </Link>
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu */}
+      <MobileMenu isOpen={showMobileMenu} onClose={() => setShowMobileMenu(false)} />
     </>
   );
 };

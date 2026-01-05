@@ -19,11 +19,11 @@ const Home = () => {
   return (
     <div className="container mx-auto px-4">
       {/* Hero Section */}
-      <section className="py-8">
+      <section className="py-4 lg:py-8">
         <div className="rounded-xl overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             {/* Hero Left Image - Girl in Pink */}
-            <div className="relative h-[500px] md:h-[600px] bg-gradient-to-b from-pink-50 to-pink-100">
+            <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gradient-to-b from-pink-50 to-pink-100">
               <img
                 src={heroImage1}
                 alt="Kids Fashion - Girl in Pink"
@@ -33,7 +33,7 @@ const Home = () => {
             </div>
 
             {/* Hero Right - Boy in Green + Content */}
-            <div className="relative h-[500px] md:h-[600px] bg-gradient-to-b from-blue-50 to-blue-100">
+            <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gradient-to-b from-blue-50 to-blue-100">
               <img
                 src={heroImage2}
                 alt="Kids Fashion - Boy in Green"
@@ -43,8 +43,8 @@ const Home = () => {
               
               {/* Content Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center px-8">
-                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2 leading-tight">
+                <div className="text-center px-4 sm:px-8">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 leading-tight">
                     <span className="block text-gray-800">Shop Smart</span>
                     <span className="block">
                       <span className="text-gray-800">Shop </span>
@@ -54,10 +54,10 @@ const Home = () => {
                       <span className="text-black">.</span>
                     </span>
                   </h2>
-                  <div className="mt-8">
+                  <div className="mt-4 sm:mt-6 lg:mt-8">
                     <Link
                       to="/shop"
-                      className="inline-block bg-transparent text-black font-bold text-lg py-2 px-0 border-b-4 border-black hover:border-blue-500 transition-all uppercase tracking-wider"
+                      className="inline-block bg-transparent text-black font-bold text-sm sm:text-base lg:text-lg py-2 px-0 border-b-2 sm:border-b-4 border-black hover:border-blue-500 transition-all uppercase tracking-wider"
                     >
                       SHOP NOW
                     </Link>
@@ -95,8 +95,8 @@ const Home = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-12">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+      <section className="py-8 lg:py-12">
+        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 lg:gap-6">
           {categories.map((category, idx) => (
             <Link
               key={idx}
@@ -149,8 +149,8 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 border-t bg-gray-50">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <section className="py-8 lg:py-12 border-t bg-gray-50">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-8">
           {/* Fast Shipping */}
           <div className="text-center group">
             <div className="flex justify-center mb-4">

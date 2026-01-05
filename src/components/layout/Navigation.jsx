@@ -30,7 +30,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white border-t border-b">
+    <nav className="bg-white border-t border-b sticky top-0 z-30 hidden lg:block">
       <div className="container mx-auto px-4">
         <ul className="flex items-center justify-center gap-8 py-4">
           {categories.map((category) => {
@@ -40,7 +40,7 @@ const Navigation = () => {
               <li key={category.path}>
                 <Link
                   to={category.path}
-                  className={`font-medium transition-all duration-200 pb-1 ${getColorClasses(category, isActive)}`}
+                  className={`font-medium transition-all duration-200 pb-1 whitespace-nowrap ${getColorClasses(category, isActive)}`}
                 >
                   {category.name}
                 </Link>
