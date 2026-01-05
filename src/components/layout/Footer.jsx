@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-50 mt-16">
       <div className="container mx-auto px-4 py-8 lg:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12">
           {/* Logo and Description */}
           <div className="space-y-4">
             <div className="text-2xl font-bold">
@@ -17,7 +17,7 @@ const Footer = () => {
               <span className="text-pink-500">Co</span>
               <span className="text-black">.</span>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 leading-relaxed">
               A premium baby and children's clothing store offering a curated selection from top international brands.
             </p>
             {/* Social Media Icons */}
@@ -34,24 +34,12 @@ const Footer = () => {
           {/* Links */}
           <div>
             <h3 className="font-semibold text-gray-900 mb-4">Links</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><Link to="/about" className="hover:text-gray-900">About us</Link></li>
-              <li><Link to="/faqs" className="hover:text-gray-900">FAQs</Link></li>
-              <li><Link to="/contact" className="hover:text-gray-900">Contact Us</Link></li>
-              <li><Link to="/delivery" className="hover:text-gray-900">Delivery & Return</Link></li>
-            </ul>
-          </div>
-
-          {/* Categories */}
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><Link to="/category/boy" className="hover:text-gray-900">Boy</Link></li>
-              <li><Link to="/category/girl" className="hover:text-gray-900">Girl</Link></li>
-              <li><Link to="/category/baby-boy" className="hover:text-gray-900">Baby Boy</Link></li>
-              <li><Link to="/category/baby-girl" className="hover:text-gray-900">Baby Girl</Link></li>
-              <li><Link to="/category/accessories" className="hover:text-gray-900">Accessories</Link></li>
-              <li><Link to="/category/footwear" className="hover:text-gray-900">Footwear</Link></li>
+            <ul className="space-y-3 text-sm text-gray-600">
+              <li><Link to="/about" className="hover:text-gray-900 transition-colors">About us</Link></li>
+              <li><Link to="/faqs" className="hover:text-gray-900 transition-colors">FAQs</Link></li>
+              <li><Link to="/contact" className="hover:text-gray-900 transition-colors">Contact Us</Link></li>
+              <li><Link to="/delivery" className="hover:text-gray-900 transition-colors">Delivery & Return</Link></li>
+              <li><Link to="/brands" className="hover:text-gray-900 transition-colors">Our Brands</Link></li>
             </ul>
           </div>
 
@@ -71,18 +59,12 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="border-t mt-12 pt-8 text-center text-sm text-gray-600">
-          <p>
-            All Rights Reserved © Designed by{' '}
-            <a 
-              href="https://www.qeematech.net/" 
-              rel="dofollow"
-              target="_blank"
-              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
-            >
-              Qeematech
-            </a>
-          </p>
+        <div className="border-t mt-8 pt-6 text-center text-sm text-gray-600">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+            <span>Copyright © 2025</span>
+            <span className="hidden sm:inline">|</span>
+            <span>All Rights Reserved</span>
+          </div>
         </div>
       </div>
     </footer>
@@ -90,4 +72,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

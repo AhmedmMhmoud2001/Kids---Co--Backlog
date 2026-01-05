@@ -3,6 +3,12 @@ import { useState } from 'react';
 import { products, categories } from '../data/products';
 import ProductGrid from '../components/product/ProductGrid';
 import ProductQuickView from '../components/product/ProductQuickView';
+import ProductCard from '../components/product/ProductCard';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 // Import images
 import heroImage1 from '../assets/Rectangle 1.png';
@@ -13,7 +19,6 @@ import deliveryIcon from '../assets/delivery-return-01.svg';
 import supportIcon from '../assets/customer-support.svg';
 
 const Home = () => {
-  const bestSellers = products.slice(0, 5);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   return (
@@ -21,7 +26,7 @@ const Home = () => {
       {/* Hero Section */}
       <section className="py-4 lg:py-8">
         <div className="rounded-xl overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 relative">
             {/* Hero Left Image - Girl in Pink */}
             <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gradient-to-b from-pink-50 to-pink-100">
               <img
@@ -33,7 +38,8 @@ const Home = () => {
             </div>
 
             {/* Hero Right - Boy in Green + Content */}
-            <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gradient-to-b from-blue-50 to-blue-100">
+            <div className="relative right-28 top-14 h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] bg-gradient-to-b from-blue-50 to-blue-100">
+              
               <img
                 src={heroImage2}
                 alt="Kids Fashion - Boy in Green"
@@ -42,7 +48,7 @@ const Home = () => {
               />
               
               {/* Content Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute left-14 top-14 flex items-center justify-center">
                 <div className="text-center px-4 sm:px-8">
                   <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 leading-tight">
                     <span className="block text-gray-800">Shop Smart</span>
@@ -96,7 +102,7 @@ const Home = () => {
 
       {/* Categories Section */}
       <section className="py-8 lg:py-12">
-        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 lg:gap-6">
           {categories.map((category, idx) => (
             <Link
               key={idx}
@@ -130,21 +136,49 @@ const Home = () => {
           </Link>
         </div>
 
-        {/* Product Carousel */}
-        <div className="relative">
-          <ProductGrid products={bestSellers} onQuickView={setSelectedProduct} />
-          
-          {/* Carousel Dots */}
-          <div className="flex justify-center gap-2 mt-8">
-            {[0, 1, 2, 3, 4].map((dot) => (
-              <button
-                key={dot}
-                className={`w-2 h-2 rounded-full ${
-                  dot === 0 ? 'bg-blue-500' : 'bg-gray-300'
-                }`}
-              />
+        {/* Product Carousel with Swiper */}
+        <div className="relative best-sellers-swiper">
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={20}
+            slidesPerView={1}
+           
+            pagination={{ 
+              clickable: true,
+              dynamicBullets: true,
+            }}
+            autoplay={{
+              delay: 3500,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            loop={true}
+            breakpoints={{
+              640: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+              },
+              1024: {
+                slidesPerView: 4,
+                spaceBetween: 24,
+              },
+              1280: {
+                slidesPerView: 5,
+                spaceBetween: 24,
+              },
+            }}
+            className="!pb-14"
+          >
+            {products.slice(0, 10).map((product) => (
+              <SwiperSlide key={product.id}>
+                <ProductCard product={product} onQuickView={setSelectedProduct} />
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       </section>
 

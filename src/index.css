@@ -82,3 +82,39 @@
     animation: fadeIn 0.2s ease-out;
   }
 }
+
+/* Swiper Customization */
+.best-sellers-swiper .swiper-button-next,
+.best-sellers-swiper .swiper-button-prev {
+  color: #63adfc !important;
+  background: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.best-sellers-swiper .swiper-button-next:after,
+.best-sellers-swiper .swiper-button-prev:after {
+  font-size: 18px !important;
+  font-weight: bold;
+}
+
+.best-sellers-swiper .swiper-button-next:hover,
+.best-sellers-swiper .swiper-button-prev:hover {
+  background: #63adfc;
+  color: white !important;
+}
+
+.best-sellers-swiper .swiper-pagination-bullet {
+  background: #d1d5db !important;
+  opacity: 1 !important;
+  width: 8px;
+  height: 8px;
+}
+
+.best-sellers-swiper .swiper-pagination-bullet-active {
+  background: #63adfc !important;
+  width: 24px;
+  border-radius: 4px;
+}
