@@ -45,15 +45,15 @@ const Header = () => {
   return (
     <>
       {/* Top Banner */}
-      <div className="bg-blue-300 text-white text-center py-2 text-sm">
+      <div className="bg-blue-300 text-white text-center py-2 text-sm px-4 sm:px-6 md:px-10 lg:px-20">
         Summer 25% discount on all last year's products home fashion minimalism
       </div>
 
       {/* Main Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-30">
+      <header className="bg-white shadow-sm sticky top-0 z-30 px-4 sm:px-6 md:px-10 lg:px-20">
         <div className="container mx-auto px-4">
           {/* Top Row */}
-          <div className="flex items-center justify-between py-4 border-b">
+          <div className="flex items-center justify-between py-4 ">
             {/* Mobile Menu Button */}
             <button
               onClick={() => setShowMobileMenu(true)}
