@@ -1,23 +1,17 @@
 import { Link } from 'react-router-dom';
 import facebookIcon from '../../assets/logos_facebook.png';
 import instagramIcon from '../../assets/skill-icons_instagram.png';
+import logo from '../../assets/logo.png';
 
 const Footer = () => {
   return (
     <footer className="bg-gray-50 mt-8 lg:mt-16">
-      <div className="container mx-auto py-2 text-sm px-4 sm:px-6 md:px-10 lg:px-20">
+      <div className="container mx-auto py-16 text-sm px-4 sm:px-6 md:px-10 lg:px-20">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Logo and Description */}
           <div className="space-y-4 text-center md:text-left">
-            <div className="text-2xl lg:text-3xl font-bold">
-              <span className="text-black">k</span>
-              <span className="text-blue-500">id</span>
-              <span className="text-black">s</span>
-              <span className="text-blue-500">&</span>
-              <span className="text-pink-500">Co</span>
-              <span className="text-black">.</span>
-            </div>
+            <img src={logo} alt="Logo" className="" />
             <p className="text-sm text-gray-600 leading-relaxed max-w-sm mx-auto md:mx-0">
               A premium baby and children's clothing store offering a curated selection from top international brands.
             </p>
