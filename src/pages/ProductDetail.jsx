@@ -50,36 +50,38 @@ const ProductDetail = () => {
       ]} />
 
       <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
+        
         {/* Product Images */}
-        <div className="space-y-4">
-          {/* Main Image */}
-          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-            <img
-              src={images[selectedImage]}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
+        
+        <div className="flex gap-5 shrink-0 ">
+            {/* Thumbnails */}
+            <div className="flex flex-col gap-5 w-[67px] shrink-0">
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(idx)}
+                  className={`aspect-[67/80] border rounded overflow-hidden transition-colors ${
+                    selectedImage === idx ? 'border-[#999]' : 'border-[#f2f2f2]'
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`Thumbnail ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
 
-          {/* Thumbnail Images */}
-          <div className="grid grid-cols-5 gap-2">
-            {images.map((image, idx) => (
-              <button
-                key={idx}
-                onClick={() => setSelectedImage(idx)}
-                className={`aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 ${
-                  selectedImage === idx ? 'border-blue-500' : 'border-transparent'
-                }`}
-              >
-                <img
-                  src={image}
-                  alt={`${product.name} ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </button>
-            ))}
+            {/* Main Image */}
+            <div className="flex-1 h-[600px] rounded overflow-hidden">
+              <img
+                src={images[selectedImage]}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
-        </div>
 
         {/* Product Details */}
         <div className="space-y-4 sm:space-y-6">
@@ -220,6 +222,7 @@ const ProductDetail = () => {
           </details>
         </div>
       </div>
+      
     </Container>
   );
 };
