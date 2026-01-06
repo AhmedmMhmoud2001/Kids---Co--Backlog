@@ -1,27 +1,30 @@
 import Section from '../common/Section';
-
+import icon1 from '../../assets/truck-delivery.png';
+import icon2 from '../../assets/card-tick.svg';
+import icon3 from '../../assets/delivery-return-01.svg';
+import icon4 from '../../assets/customer-support.svg';
 /**
  * Features section component
  */
 const FeaturesSection = ({ features = [], className = '' }) => {
   const defaultFeatures = [
     {
-      icon: '/src/assets/truck-delivery.png',
+      icon: icon1,
       title: 'Fast Shipping',
       description: 'Lightning-fast delivery, always on time',
     },
     {
-      icon: '/src/assets/card-tick.svg',
+      icon: icon2,
       title: 'Instant Payment',
       description: 'Secure, seamless, and instant transactions',
     },
     {
-      icon: '/src/assets/delivery-return-01.svg',
+      icon: icon3,
       title: 'Exchange & Return',
       description: 'Hassle-free returns, easy exchanges',
     },
     {
-      icon: '/src/assets/customer-support.svg',
+      icon: icon4,
       title: 'Customer Service',
       description: "We're always here to help with anything",
     },

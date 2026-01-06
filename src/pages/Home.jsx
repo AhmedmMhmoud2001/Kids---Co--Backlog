@@ -65,8 +65,6 @@ const Home = () => {
   // Hero slides
   const heroSlides = [
     { id: 1, leftImage: heroImage1, rightImage: heroImage2, title: 'Shop Smart', link: '/shop' },
-    { id: 2, leftImage: heroImage1, rightImage: heroImage2, title: 'Shop Smart', link: '/shop' },
-    { id: 3, leftImage: heroImage1, rightImage: heroImage2, title: 'Shop Smart', link: '/shop' },
   ];
 
   return (
@@ -74,15 +72,6 @@ const Home = () => {
       {/* Hero Section - Swiper Slider */}
       <Section padding="py-4 lg:py-8" container={false}>
         <div className="rounded-xl overflow-hidden container mx-auto px-0 lg:px-20">
-          <Swiper
-            modules={[Pagination, Autoplay]}
-            spaceBetween={0}
-            slidesPerView={1}
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 4000, disableOnInteraction: false }}
-            loop={true}
-            className="hero-swiper"
-          >
             {heroSlides.map((slide) => (
               <SwiperSlide key={slide.id}>
                 {/* Mobile - Single Image with Text */}
@@ -165,7 +154,7 @@ const Home = () => {
                 </div>
               </SwiperSlide>
             ))}
-          </Swiper>
+
         </div>
       </Section>
 
