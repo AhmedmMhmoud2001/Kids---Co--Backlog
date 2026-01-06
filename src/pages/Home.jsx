@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { products, categories } from '../data/products';
+import { products} from '../data/products';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import Section from '../components/common/Section';
@@ -9,6 +9,13 @@ import CategoriesSection from '../components/sections/CategoriesSection';
 import BestSellersSection from '../components/sections/BestSellersSection';
 import FeaturesSection from '../components/sections/FeaturesSection';
 import ProductQuickView from '../components/product/ProductQuickView';
+import boy from '../assets/Ellipse1994.png';
+import Girl from '../assets/Ellipse19941.png';
+import BabyBoy from '../assets/Ellipse19942.png';
+import BabyGirl from '../assets/Ellipse19943.png';
+import Accessories from '../assets/Ellipse19944.png';
+import Footwear from '../assets/Ellipse1995.png';
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -19,6 +26,42 @@ import heroImage2 from '../assets/heroImage2.png';
 const Home = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const categories = [
+{
+        name: 'Boy',
+        image:boy,
+        bgcolor: 'blue',
+      },
+      {
+        name: 'Girl',
+        image: Girl,
+        bgcolor: 'pink',
+      },
+      {
+        name: 'Baby Boy',
+        image: BabyBoy,
+        bgcolor: 'blue'
+      },
+      {
+        name: 'Baby Girl',
+        image: BabyGirl,
+        bgcolor: 'pink'
+      },
+      {
+        name: 'Accessories',
+        image: Accessories,
+       
+      },
+      {
+        name: 'Footwear',
+        image: Footwear,
+       
+      },
+  ];
+    
+ 
+
+  
   // Hero slides
   const heroSlides = [
     { id: 1, leftImage: heroImage1, rightImage: heroImage2, title: 'Shop Smart', link: '/shop' },
@@ -150,6 +193,6 @@ const Home = () => {
       )}
     </div>
   );
-};
 
+};
 export default Home;

@@ -12,7 +12,7 @@ const Header = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const [showCenterLogo, setShowCenterLogo] = useState(true);
+
   const userMenuRef = useRef(null);
 
   // Handle click outside for user menu
@@ -26,23 +26,7 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle scroll to hide center logo
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY > 50) {
-        // Scrolled down - hide logo
-        setShowCenterLogo(false);
-      } else {
-        // At top - show logo
-        setShowCenterLogo(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+ 
 
   return (
     <>
@@ -52,7 +36,8 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-30 px-4 sm:px-6 md:px-10 lg:px-20">
+      <header className="bg-white shadow-sm  px-4 sm:px-6 md:px-10 lg:px-20 sticky top-0 z-50
+                   lg:static lg:top-auto lg:z-auto ">
         <div className="container mx-auto">
           {/* Top Row */}
           <div className="flex items-center justify-between py-4 ">
@@ -216,18 +201,18 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Logo Center Row - Hidden on mobile, animated on desktop */}
-          <div 
-            className={`hidden lg:block text-center transition-all duration-300 overflow-hidden ${
-              showCenterLogo ? 'py-6 max-h-40 opacity-100' : 'py-0 max-h-0 opacity-0'
-            }`}
+         
+         
+        </div>
+      </header>
+       {/* Logo Center Row - Hidden on mobile, animated on desktop */}
+       <div 
+            className={`hidden lg:block text-center  transition-all duration-300 overflow-hidden sticky top-0 z-50 bg-white shadow-sm  px-4 sm:px-6 md:px-10 lg:px-20 py-5`}
           >
             <Link to="/" className="inline-block">
               <img src={logo} alt="logo" className="transition-transform duration-300" />
             </Link>
-          </div>
         </div>
-      </header>
 
       {/* Mobile Menu */}
       <MobileMenu isOpen={showMobileMenu} onClose={() => setShowMobileMenu(false)} />

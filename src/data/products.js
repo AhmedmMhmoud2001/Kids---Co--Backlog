@@ -1,5 +1,6 @@
 // Import products from JSON file
 import productsData from './products.json';
+import boy from '../assets/Ellipse1994.png';
 
 // Product images - using dynamic URL helper for local assets (fallback only)
 const getImageUrl = (name) => {
@@ -64,7 +65,7 @@ export const categories = productsData.categories
   : [
       {
         name: 'Boy',
-        image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&h=400&fit=crop&auto=format',
+        image:{boy},
       },
       {
         name: 'Girl',
