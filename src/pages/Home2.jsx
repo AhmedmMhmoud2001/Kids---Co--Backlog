@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { products, categories } from '../data/products';
+import { products} from '../data/products';
 import Section from '../components/common/Section';
 import BrandsSection from '../components/sections/BrandsSection';
 import CategoriesSection from '../components/sections/CategoriesSection';
@@ -49,11 +49,11 @@ const Home2 = () => {
       <BrandsSection />
 
       {/* Categories Section - Limited to 5 items */}
-      <CategoriesSection 
+      {/* <CategoriesSection 
         categories={categories} 
         limit={5}
         gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-5"
-      />
+      /> */}
 
       {/* Best Sellers Section */}
       <BestSellersSection products={products} />
