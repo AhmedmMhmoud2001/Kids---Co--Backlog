@@ -31,14 +31,13 @@ const Header = () => {
   return (
     <>
       {/* Top Banner */}
-      <div className="bg-blue-300 text-white text-center py-2 text-sm px-4 sm:px-6 md:px-10 lg:px-20">
+      <div className="bg-blue-300 text-white text-center py-2 text-sm px-4 sm:px-6 md:px-10 lg:px-16">
         Summer 25% discount on all last year's products home fashion minimalism
       </div>
 
       {/* Main Header */}
-      <header className="bg-white shadow-sm  px-4 sm:px-6 md:px-10 lg:px-20 sticky top-0 z-50
-                   lg:static lg:top-auto lg:z-auto ">
-        <div className="container mx-auto">
+      <header className="bg-white shadow-sm  container mx-auto  px-4 sm:px-6 md:px-10 lg:px-16 sticky top-0 z-50 lg:static lg:top-auto lg:z-auto ">
+        <div className="">
           {/* Top Row */}
           <div className="flex items-center justify-between py-4 ">
             {/* Mobile Menu Button */}

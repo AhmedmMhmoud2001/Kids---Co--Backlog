@@ -15,7 +15,6 @@ import BabyBoy from '../assets/Ellipse19942.png';
 import BabyGirl from '../assets/Ellipse19943.png';
 import Accessories from '../assets/Ellipse19944.png';
 import Footwear from '../assets/Ellipse1995.png';
-
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -24,7 +23,7 @@ import heroImage1 from '../assets/heroImage1.png';
 import heroImage2 from '../assets/heroImage2.png';
 
 const Home = () => {
-  const [selectedProduct, setSelectedProduct] = useState(null);
+const [selectedProduct, setSelectedProduct] = useState(null);
 
   const categories = [
 {
@@ -68,14 +67,14 @@ const Home = () => {
   ];
 
   return (
-    <div>
-      {/* Hero Section - Swiper Slider */}
-      <Section padding="py-4 lg:py-8" container={false}>
-        <div className="rounded-xl overflow-hidden container mx-auto px-0 lg:px-20">
+    <div className="  container mx-auto ">
+      {/* Hero Section */}
+      <Section padding="py-4 lg:py-8">
+        <div className="rounded-xl overflow-hidden   ">
             {heroSlides.map((slide) => (
-              <SwiperSlide key={slide.id}>
+              <div key={slide.id}>
                 {/* Mobile - Single Image with Text */}
-                <div className="block md:hidden relative h-[400px]">
+                <div className="block md:hidden relative h-[300px]">
                   <img
                     src={slide.rightImage}
                     alt="Kids Fashion"
@@ -107,7 +106,7 @@ const Home = () => {
                 {/* Desktop - Side by Side */}
                 <div className="hidden md:grid md:grid-cols-3 gap-0 relative">
                   {/* Left Image */}
-                  <div className="relative w-[130%] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gradient-to-b from-pink-50 to-pink-100">
+                  <div className="relative w-[125%] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-gradient-to-b from-pink-50 to-pink-100">
                     <img
                       src={slide.leftImage}
                       alt="Kids Fashion"
@@ -117,7 +116,7 @@ const Home = () => {
                   </div>
 
                   {/* Right Image */}
-                  <div className="relative w-[130%] right-0 top-1/2 -translate-y-1/2 bg-gradient-to-b h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] from-blue-50 to-blue-100">
+                  <div className="relative w-[125%] right-0 top-1/2 -translate-y-1/2 bg-gradient-to-b h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] from-blue-50 to-blue-100">
                     <div className='h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px]'>
                       <img
                         src={slide.rightImage}
@@ -152,7 +151,7 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-              </SwiperSlide>
+              </div>
             ))}
 
         </div>

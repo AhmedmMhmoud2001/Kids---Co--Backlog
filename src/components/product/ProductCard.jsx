@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { useApp } from '../../context/AppContext';
+import { Link } from "react-router-dom";
+import { useApp } from "../../context/AppContext";
 
 const ProductCard = ({ product }) => {
   const { toggleFavorite, isFavorite } = useApp();
@@ -11,7 +11,10 @@ const ProductCard = ({ product }) => {
     toggleFavorite(product.id);
   };
 
- 
+  const quickShow =(e) => {
+     e.preventDefault();
+  }
+
   return (
     <div className="group relative">
       <Link to={`/product/${product.id}`} className="block">
@@ -23,18 +26,19 @@ const ProductCard = ({ product }) => {
             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
             onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.parentElement.classList.add('bg-gray-200');
+              e.target.style.display = "none";
+              e.target.parentElement.classList.add("bg-gray-200");
             }}
           />
-          
+
           {/* Quick View Button - Shows on hover */}
           <Link to={`/product/${product.id}`} className="block">
-          <button
-            className="absolute inset-x-0 bottom-0 mx-4 mb-1 bg-white/95 backdrop-blur-sm text-gray-500 hover:text-gray-900 font-medium py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-blue-100"
-          >
-            shop now
-          </button>
+            <button className="absolute inset-x-0 bottom-0 mx-4 mb-1 bg-white/95 backdrop-blur-sm text-gray-500 hover:text-gray-900 font-medium py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-blue-200">
+            <span className="w-full h-full hover:scale-110 hover:text-black  transition-all z-10">
+                  shop now
+            </span>
+              
+            </button>
           </Link>
           {/* Favorite Button */}
           <button
@@ -42,7 +46,11 @@ const ProductCard = ({ product }) => {
             className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:bg-white transition-all z-10"
           >
             <svg
-              className={`w-5 h-5 ${productIsFavorite ? 'fill-red-500 text-red-500' : 'fill-none text-gray-400'}`}
+              className={`w-5 h-5 hover:fill-slate-950 hover:text-slate-950 ${
+                productIsFavorite
+                  ? "fill-slate-950 text-slate-950"
+                  : "fill-none text-gray-400"
+              }`}
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
@@ -56,33 +64,33 @@ const ProductCard = ({ product }) => {
           </button>
 
           <button
+          onClick={quickShow}
             className="absolute top-16 right-3 w-8 h-8
       bg-white/90 backdrop-blur-sm rounded-full
       flex items-center justify-center
       shadow-md
       opacity-0 scale-90
-      group-hover:opacity-100 group-hover:scale-110
+      group-hover:opacity-100 hover:scale-110
       transition-all duration-300
       z-10"
           >
-           <svg
-  className={`w-5 h-5 fill-none text-gray-400`}
-  viewBox="0 0 24 24"
-  stroke="currentColor"
-  strokeWidth={1.5}
->
-  <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    d="M2.036 12.322a1 1 0 010-.644C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.577 3.01 9.964 7.178a1 1 0 010 .644C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.577-3.01-9.964-7.178z"
-  />
-  <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-  />
-</svg>
-
+            <svg
+              className={`w-5 h-5 fill-none text-gray-400 hover:fill-slate-950 `}
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.036 12.322a1 1 0 010-.644C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.577 3.01 9.964 7.178a1 1 0 010 .644C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.577-3.01-9.964-7.178z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
           </button>
         </div>
 
@@ -91,7 +99,9 @@ const ProductCard = ({ product }) => {
           <h3 className="text-sm font-normal text-gray-900 line-clamp-2 leading-tight">
             {product.name}
           </h3>
-          <p className="text-xs text-gray-500">{product.categoryDisplay || product.category}</p>
+          <p className="text-xs text-gray-500">
+            {product.categoryDisplay || product.category}
+          </p>
           <p className="text-blue-500 font-semibold text-sm">{product.price}</p>
         </div>
       </Link>
@@ -100,4 +110,3 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
-
