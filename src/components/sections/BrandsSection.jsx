@@ -1,109 +1,57 @@
 import Section from "../common/Section";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 
-const formatWordmark = (name) => {
-  // شيل الرموز والمسافات وخلي كل كلمة تبدأ Capital
-  return name
-    .replace(/&/g, "and")
-    .replace(/[^a-zA-Z0-9\s]/g, " ") // يشيل - و ' و أي رموز
-    .split(" ")
-    .filter(Boolean)
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join("");
-};
+import brandsImg1 from "../../assets/Frame2.png";
+import brandsImg3 from "../../assets/Maskgroup.png";
+import brandsImg4 from "../../assets/path2.png";
 
 const BrandsSection = () => {
   const brands = [
-    "Golden goose",
-    "Gucci",
-    "On cloud",
-    "Ugg",
-    "All saints",
-    "Nike",
-    "Adidas",
-    "Karl lagerfeld",
-    "Spray ground",
-    "Smiggle",
-    "Disney",
-    "Gant",
-    "Ralph lauren",
-    "Fendi",
-    "Dolce&Gabbana",
-    "Crocs",
-    "Puma",
-    "DKNY",
-    "Kenzo",
-    "Marc Jacobs",
-    "Stella Mccarteny",
-    "Boss",
-    "OFF WHITE",
-    "CHLOE",
-    "DSQUARED2",
-    "GIVENCHY",
-    "Moschino",
-    "River island",
-    "Ted baker",
-    "Palm angels",
-    "VERSACE",
-    "Tommy Hilfiger",
-    "DIOR",
-    "BALMAIN",
-    "BURBERRY",
-    "Ea7 Emporio Armani",
-    "MC2 Saint Barth",
-    "New Balance",
-    "NESSI Byrd",
-    "Stella Cove",
-    "Shade critters",
-    "PHILIPP PLIEN",
-    "PINKO",
-    "vilebrequin",
-    "Moncler",
-    "roberto cavalli",
-    "Hugo",
+    { id: 1, brandsImg: brandsImg1, name: "brandname" },
+    { id: 3, brandsImg: brandsImg3, name: "brandname" },
+    { id: 4, brandsImg: brandsImg4, name: "brandname" },
+    { id: 5, brandsImg: brandsImg1, name: "brandname" },
+    { id: 7, brandsImg: brandsImg3, name: "brandname" },
+    { id: 8, brandsImg: brandsImg4, name: "brandname" },
   ];
 
   return (
     <Section padding="py-4 sm:py-5 lg:py-6" className="border-b">
       <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={20}
-        slidesPerView={4}
+        modules={[Autoplay]}
+        loop
+        centeredSlides={false}
+        
         autoplay={{
           delay: 2200,
           disableOnInteraction: false,
           pauseOnMouseEnter: true,
         }}
-        loop
         breakpoints={{
-          640: { slidesPerView: 2, spaceBetween: 20 },
-          768: { slidesPerView: 3, spaceBetween: 24 },
-          1024: { slidesPerView: 4, spaceBetween: 24 },
-          1280: { slidesPerView: 4, spaceBetween: 24 },
+          0: { slidesPerView: 1, spaceBetween: 16 },      // موبايل صغير
+          480: { slidesPerView: 1, spaceBetween: 18 },   // موبايل كبير
+          640: { slidesPerView: 2, spaceBetween: 20 },   // sm
+          768: { slidesPerView: 3, spaceBetween: 22 },   // md
+          1024: { slidesPerView: 4, spaceBetween: 24 },  // lg
+          1280: { slidesPerView: 4, spaceBetween: 24 },  // xl
         }}
         className="!pb-2"
       >
-        {brands.map((name) => (
-          <SwiperSlide key={name} className=" w-fit">
-            <div className="flex items-center justify-center">
-              <span
-                className="
-                  brand-wordmark
-                  text-black
-                  opacity-50
-                  text-2xl sm:text-3xl md:text-4xl
-                  leading-none
-                  whitespace-nowrap
-                  select-none
-                "
-                title={name}
-              >
-                {formatWordmark(name)}
-              </span>
+        {brands.map((item) => (
+          <SwiperSlide
+            key={item.id}
+            className="!h-auto flex items-center justify-center"
+          >
+            {/* حاوية ثابتة عشان كل الصور تبقى قصاد بعض */}
+            <div className="h-12 w-full flex items-center justify-center">
+              <img
+                src={item.brandsImg}
+                alt={item.name}
+                className="h-full w-[80%] object-contain"
+                loading="lazy"
+              />
             </div>
           </SwiperSlide>
         ))}

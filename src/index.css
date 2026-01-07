@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
 
 .brand-wordmark {
   font-family: "Playfair Display", serif; /* نفس ستايل الصورة تقريبًا */
