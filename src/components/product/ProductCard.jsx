@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onQuickView }) => {
   const { toggleFavorite, isFavorite } = useApp();
   const productIsFavorite = isFavorite(product.id);
 
@@ -11,9 +11,11 @@ const ProductCard = ({ product }) => {
     toggleFavorite(product.id);
   };
 
-  const quickShow =(e) => {
-     e.preventDefault();
-  }
+  const handleQuickView = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onQuickView?.(product); // ✅ افتح المودال
+  };
 
   return (
     <div className="group relative">
@@ -31,15 +33,19 @@ const ProductCard = ({ product }) => {
             }}
           />
 
-          {/* Quick View Button - Shows on hover */}
-          <Link to={`/product/${product.id}`} className="block">
-            <button className="absolute inset-x-0 bottom-0 mx-4 mb-1 bg-white/95 backdrop-blur-sm text-gray-500 hover:text-gray-900 font-medium py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-blue-200">
-            <span className="w-full h-full hover:scale-110 hover:text-black  transition-all z-10">
-                  shop now
+          {/* Shop Now Button */}
+          <button
+            className="absolute inset-x-0 bottom-0 mx-4 mb-1 bg-white/95 backdrop-blur-sm text-gray-500 hover:text-gray-900 font-medium py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-blue-200"
+            onClick={() => {
+              // لو عايزه يروح للمنتج سيبه من غير preventDefault
+              // هنا سيبه يفتح صفحة المنتج طبيعي (لأنه جوه Link)
+            }}
+          >
+            <span className="w-full h-full hover:scale-110 hover:text-black transition-all z-10">
+              shop now
             </span>
-              
-            </button>
-          </Link>
+          </button>
+
           {/* Favorite Button */}
           <button
             onClick={handleToggleFavorite}
@@ -63,19 +69,13 @@ const ProductCard = ({ product }) => {
             </svg>
           </button>
 
+          {/* ✅ Quick View Button (Eye) */}
           <button
-          onClick={quickShow}
-            className="absolute top-16 right-3 w-8 h-8
-      bg-white/90 backdrop-blur-sm rounded-full
-      flex items-center justify-center
-      shadow-md
-      opacity-0 scale-90
-      group-hover:opacity-100 hover:scale-110
-      transition-all duration-300
-      z-10"
+            onClick={handleQuickView}
+            className="absolute top-16 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md opacity-0 scale-90 group-hover:opacity-100 hover:scale-110 transition-all duration-300 z-10"
           >
             <svg
-              className={`w-5 h-5 fill-none text-gray-400 hover:fill-slate-950 `}
+              className="w-5 h-5 fill-none text-gray-400 hover:text-slate-950"
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={1.5}

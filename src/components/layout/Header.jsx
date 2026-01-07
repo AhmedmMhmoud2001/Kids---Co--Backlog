@@ -1,10 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useState, useRef, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
-import logo from '../../assets/logo.png';
-import logo1 from '../../assets/logo1.png';
-import MobileMenu from './MobileMenu';
-import SearchModal from '../search/SearchModal';
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useApp } from "../../context/AppContext";
+import logo from "../../assets/logo.png";
+import logo1 from "../../assets/logo1.png";
+import MobileMenu from "./MobileMenu";
+import SearchModal from "../search/SearchModal";
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -22,11 +23,9 @@ const Header = () => {
         setShowUserMenu(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
- 
 
   return (
     <>
@@ -45,44 +44,90 @@ const Header = () => {
               onClick={() => setShowMobileMenu(true)}
               className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
 
             {/* Logo */}
             <div className="flex items-center gap-2 lg:gap-4">
-              <Link to="/" className="text-xl font-bold  lg:hidden">
+              <NavLink to="/" className="text-xl font-bold  lg:hidden">
                 <img src={logo} alt="logo" className="h-8 lg:h-auto" />
-              </Link>
-              <Link to="/" className="text-xl font-bold hidden lg:inline-block">
+              </NavLink>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `hidden lg:inline-block text-sm transition-colors ${
+                    isActive ? "text-gray-900 font-semibold" : "opacity-50"
+                  }`
+                }
+              >
                 <img src={logo1} alt="logo1" className="h-8 lg:h-auto" />
-              </Link>
-              <Link 
-                to="/home2" 
-                className="hidden lg:inline-block text-gray-400 text-sm hover:text-gray-600 transition-colors"
+              </NavLink>
+              <NavLink
+                to="/home2"
+                className={({ isActive }) =>
+                  `hidden lg:inline-block text-sm transition-colors ${
+                    isActive
+                      ? "text-gray-900 font-semibold"
+                      : "text-gray-400 hover:text-gray-600"
+                  }`
+                }
               >
                 NEXT
-              </Link>
+              </NavLink>
             </div>
 
             {/* Right Icons */}
             <div className=" hidden lg:inline-flex items-center gap-2 lg:gap-4">
               {/* Search Icon */}
-              <button 
+              <button
                 onClick={() => setShowSearchModal(true)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 aria-label="Search"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </button>
 
               {/* Favorites Icon */}
-              <Link to="/favorites" className="p-2 hover:bg-gray-100 rounded-full relative">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <Link
+                to="/favorites"
+                className="p-2 hover:bg-gray-100 rounded-full relative"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
                 </svg>
                 {favoritesCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -93,12 +138,22 @@ const Header = () => {
 
               {/* User Icon with Dropdown */}
               <div className="relative" ref={userMenuRef}>
-                <button 
+                <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 </button>
 
@@ -119,8 +174,18 @@ const Header = () => {
                           className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
                             </svg>
                             My Account
                           </div>
@@ -131,8 +196,18 @@ const Header = () => {
                           className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                              />
                             </svg>
                             My Favorites
                           </div>
@@ -142,13 +217,23 @@ const Header = () => {
                           onClick={() => {
                             logout();
                             setShowUserMenu(false);
-                            navigate('/');
+                            navigate("/");
                           }}
                           className="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                              />
                             </svg>
                             Logout
                           </div>
@@ -162,8 +247,18 @@ const Header = () => {
                           className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                              />
                             </svg>
                             Sign In
                           </div>
@@ -174,8 +269,18 @@ const Header = () => {
                           className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                              />
                             </svg>
                             Sign Up
                           </div>
@@ -187,9 +292,22 @@ const Header = () => {
               </div>
 
               {/* Cart Icon */}
-              <Link to="/cart" className="p-2 hover:bg-gray-100 rounded-full relative transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <Link
+                to="/cart"
+                className="p-2 hover:bg-gray-100 rounded-full relative transition-colors"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
                 </svg>
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -199,28 +317,34 @@ const Header = () => {
               </Link>
             </div>
           </div>
-
-         
-         
         </div>
       </header>
-       {/* Logo Center Row - Hidden on mobile, animated on desktop */}
-       <div 
-            className={`hidden lg:block text-center  transition-all duration-300 overflow-hidden sticky top-0 z-50 bg-white shadow-sm  px-4 sm:px-6 md:px-10 lg:px-20 py-5`}
-          >
-            <Link to="/" className="inline-block">
-              <img src={logo} alt="logo" className="transition-transform duration-300" />
-            </Link>
-        </div>
+      {/* Logo Center Row - Hidden on mobile, animated on desktop */}
+      <div
+        className={`hidden lg:block text-center  transition-all duration-300 overflow-hidden sticky top-0 z-50 bg-white shadow-sm  px-4 sm:px-6 md:px-10 lg:px-20 py-5`}
+      >
+        <Link to="/" className="inline-block">
+          <img
+            src={logo}
+            alt="logo"
+            className="transition-transform duration-300"
+          />
+        </Link>
+      </div>
 
       {/* Mobile Menu */}
-      <MobileMenu isOpen={showMobileMenu} onClose={() => setShowMobileMenu(false)} />
+      <MobileMenu
+        isOpen={showMobileMenu}
+        onClose={() => setShowMobileMenu(false)}
+      />
 
       {/* Search Modal */}
-      <SearchModal isOpen={showSearchModal} onClose={() => setShowSearchModal(false)} />
+      <SearchModal
+        isOpen={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
+      />
     </>
   );
 };
 
 export default Header;
-
