@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { products } from '../data/products';
 import Container from '../components/common/Container';
@@ -13,6 +13,7 @@ import { applyFilters } from '../utils/productFilters';
 
 const Category = () => {
   const { category } = useParams();
+
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('grid-4');
   const [itemsPerPage, setItemsPerPage] = useState(15);
@@ -25,11 +26,29 @@ const Category = () => {
     selectedBrands: [],
   });
 
+  // ✅ Reset when category changes
+  useEffect(() => {
+    // setCurrentPage(1);
+    // setSelectedProduct(null);
+    // setShowFilters(false);
+
+    // لو عايز كل كاتيجوري تبدأ بدون فلاتر، فك التعليق:
+    // setFilters({
+    //   sortBy: 'popularity',
+    //   priceRange: 'all',
+    //   selectedColors: [],
+    //   selectedBrands: [],
+    // });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [category]);
+
   // Format category name for display
-  const categoryName = category
-    ?.split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ') || 'Category';
+  const categoryName =
+    category
+      ?.split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ') || 'Category';
 
   // Filter products by category and apply filters
   const filteredProducts = useMemo(() => {
@@ -60,8 +79,9 @@ const Category = () => {
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = filters.priceRange !== 'all' || 
-    filters.selectedColors.length > 0 || 
+  const hasActiveFilters =
+    filters.priceRange !== 'all' ||
+    filters.selectedColors.length > 0 ||
     filters.selectedBrands.length > 0;
 
   const handleItemsPerPageChange = (newItemsPerPage) => {
@@ -71,15 +91,18 @@ const Category = () => {
 
   const handleRemovePriceFilter = () => {
     setFilters({ ...filters, priceRange: 'all' });
+    setCurrentPage(1);
   };
 
   return (
     <Container className="py-8">
       {/* Breadcrumb */}
-      <Breadcrumb items={[
-        { label: 'Home', to: '/' },
-        { label: categoryName },
-      ]} />
+      <Breadcrumb
+        items={[
+          { label: 'Home', to: '/' },
+          { label: categoryName },
+        ]}
+      />
 
       {/* Toolbar */}
       <ProductToolbar
@@ -104,8 +127,9 @@ const Category = () => {
         <div className={showFilters ? 'lg:mr-80' : ''}>
           {paginatedProducts.length > 0 ? (
             <>
-              <ProductGrid 
-                products={paginatedProducts} 
+              <ProductGrid
+                key={category} // ✅ important: force re-render on category change
+                products={paginatedProducts}
                 viewMode={viewMode}
                 onQuickView={setSelectedProduct}
               />
@@ -136,9 +160,9 @@ const Category = () => {
 
       {/* Quick View Modal */}
       {selectedProduct && (
-        <ProductQuickView 
-          product={selectedProduct} 
-          onClose={() => setSelectedProduct(null)} 
+        <ProductQuickView
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
         />
       )}
     </Container>
