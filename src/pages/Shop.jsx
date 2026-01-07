@@ -1,28 +1,43 @@
-import { useState, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { products } from '../data/products';
-import Container from '../components/common/Container';
-import Breadcrumb from '../components/common/Breadcrumb';
-import ProductGrid from '../components/product/ProductGrid';
-import ProductToolbar from '../components/product/ProductToolbar';
-import FilterSidebarWrapper from '../components/filter/FilterSidebarWrapper';
-import ProductQuickView from '../components/product/ProductQuickView';
-import Pagination from '../components/common/Pagination';
-import EmptyState from '../components/common/EmptyState';
-import { applyFilters } from '../utils/productFilters';
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { products } from "../data/products";
+import Container from "../components/common/Container";
+import Breadcrumb from "../components/common/Breadcrumb";
+import ProductGrid from "../components/product/ProductGrid";
+import ProductToolbar from "../components/product/ProductToolbar";
+import FilterSidebarWrapper from "../components/filter/FilterSidebarWrapper";
+import ProductQuickView from "../components/product/ProductQuickView";
+import Pagination from "../components/common/Pagination";
+import EmptyState from "../components/common/EmptyState";
+import { applyFilters } from "../utils/productFilters";
 
 const Shop = () => {
   const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState('grid-4');
+
+  // ✅ خلي default مناسب للموبايل (لو ProductGrid بيترجمها)
+  const [viewMode, setViewMode] = useState("grid-4");
+
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
   const [filters, setFilters] = useState({
-    sortBy: 'popularity',
-    priceRange: 'all',
+    sortBy: "popularity",
+    priceRange: "all",
     selectedColors: [],
     selectedBrands: [],
   });
+
+  // ✅ اقفل سكرول الصفحة لما الفلاتر مفتوحة على الموبايل (Overlay)
+  useEffect(() => {
+    if (showFilters) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showFilters]);
 
   // Apply filters to products
   const filteredProducts = useMemo(() => {
@@ -45,16 +60,17 @@ const Shop = () => {
 
   const clearFilters = () => {
     setFilters({
-      sortBy: 'popularity',
-      priceRange: 'all',
+      sortBy: "popularity",
+      priceRange: "all",
       selectedColors: [],
       selectedBrands: [],
     });
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = filters.priceRange !== 'all' || 
-    filters.selectedColors.length > 0 || 
+  const hasActiveFilters =
+    filters.priceRange !== "all" ||
+    filters.selectedColors.length > 0 ||
     filters.selectedBrands.length > 0;
 
   const handleItemsPerPageChange = (newItemsPerPage) => {
@@ -63,23 +79,22 @@ const Shop = () => {
   };
 
   const handleRemovePriceFilter = () => {
-    setFilters({ ...filters, priceRange: 'all' });
+    setFilters({ ...filters, priceRange: "all" });
   };
 
   return (
-    <Container className="py-8">
+    <Container className="py-5 sm:py-8 px-3 sm:px-6">
       {/* Breadcrumb */}
-      <Breadcrumb items={[
-        { label: 'Home', to: '/' },
-        { label: 'Shop' },
-      ]} />
+      <Breadcrumb
+        items={[{ label: "Home", to: "/" }, { label: "Shop" }]}
+      />
 
       {/* Toolbar */}
       <ProductToolbar
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         showFilters={showFilters}
-        onToggleFilters={() => setShowFilters(!showFilters)}
+        onToggleFilters={() => setShowFilters((prev) => !prev)}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={handleItemsPerPageChange}
         filteredCount={filteredProducts.length}
@@ -92,45 +107,61 @@ const Shop = () => {
 
       {/* Main Content */}
       <div className="relative">
+        {/* ✅ Overlay على الموبايل لما الفلاتر مفتوحة */}
+        {showFilters && (
+          <button
+            aria-label="Close filters overlay"
+            className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+            onClick={() => setShowFilters(false)}
+          />
+        )}
+
         {/* Products Grid */}
-        <div className={showFilters ? 'lg:mr-80' : ''}>
+        <div className={showFilters ? "lg:mr-80" : ""}>
           {paginatedProducts.length > 0 ? (
             <>
-              <ProductGrid 
-                products={paginatedProducts} 
+              <ProductGrid
+                products={paginatedProducts}
                 viewMode={viewMode}
                 onQuickView={setSelectedProduct}
               />
 
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
+              <div className="mt-6">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
             </>
           ) : (
-            <EmptyState
-              title="No products found"
-              description="Try adjusting your filters"
-              actionLabel="Clear all filters"
-              onAction={clearFilters}
-            />
+            <div className="mt-8">
+              <EmptyState
+                title="No products found"
+                description="Try adjusting your filters"
+                actionLabel="Clear all filters"
+                onAction={clearFilters}
+              />
+            </div>
           )}
         </div>
 
-        {/* Filter Sidebar */}
-        <FilterSidebarWrapper
-          isOpen={showFilters}
-          onClose={() => setShowFilters(false)}
-          onFilterChange={handleFilterChange}
-        />
+        {/* ✅ Sidebar: على الموبايل يبقى fixed overlay (ده غالبًا جوه FilterSidebarWrapper)
+            بس احنا كمان بنخليه ياخد z-index أعلى من overlay */}
+        <div className="relative z-50">
+          <FilterSidebarWrapper
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            onFilterChange={handleFilterChange}
+          />
+        </div>
       </div>
 
       {/* Quick View Modal */}
       {selectedProduct && (
-        <ProductQuickView 
-          product={selectedProduct} 
-          onClose={() => setSelectedProduct(null)} 
+        <ProductQuickView
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
         />
       )}
     </Container>
