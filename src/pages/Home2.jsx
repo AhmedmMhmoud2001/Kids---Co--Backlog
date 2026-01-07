@@ -43,7 +43,7 @@ const categories = [
 
 const Home2 = () => {
   return (
-    <div>
+    <div className="container mx-auto">
       {/* Hero Section - Full Width with Overlay Text */}
       <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
         {/* Hero Image */}
