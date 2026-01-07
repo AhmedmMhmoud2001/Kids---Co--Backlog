@@ -17,15 +17,15 @@ const Payment = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     let formattedValue = value;
-    
+
     // Format card number (add spaces every 4 digits)
     if (name === 'cardNumber') {
       formattedValue = value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
       formattedValue = formattedValue.slice(0, 19); // Limit to 16 digits + 3 spaces
     }
-    
+
     // Format expiry date (MM/YY)
     if (name === 'expiryDate') {
       formattedValue = value.replace(/\D/g, '');
@@ -34,17 +34,17 @@ const Payment = () => {
       }
       formattedValue = formattedValue.slice(0, 5);
     }
-    
+
     // Format CVV (3 digits)
     if (name === 'cvv') {
       formattedValue = value.replace(/\D/g, '').slice(0, 3);
     }
-    
+
     setPaymentData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : formattedValue
     }));
-    
+
     // Clear error for this field
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -53,28 +53,28 @@ const Payment = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     // Card number validation (16 digits)
     const cardNum = paymentData.cardNumber.replace(/\s/g, '');
     if (cardNum.length !== 16) {
       newErrors.cardNumber = 'Card number must be 16 digits';
     }
-    
+
     // Card name validation
     if (!paymentData.cardName.trim()) {
       newErrors.cardName = 'Card holder name is required';
     }
-    
+
     // Expiry date validation
     if (!/^\d{2}\/\d{2}$/.test(paymentData.expiryDate)) {
       newErrors.expiryDate = 'Invalid expiry date (MM/YY)';
     }
-    
+
     // CVV validation
     if (paymentData.cvv.length !== 3) {
       newErrors.cvv = 'CVV must be 3 digits';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -89,7 +89,7 @@ const Payment = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       // Here you would process the payment
       console.log('Processing payment:', paymentData);
@@ -124,7 +124,7 @@ const Payment = () => {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Payment Form */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-md p-8">
+          <div className="bg-white shadow-md p-8">
             <div className="flex items-center gap-3 mb-6">
               <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -145,9 +145,8 @@ const Payment = () => {
                     value={paymentData.cardNumber}
                     onChange={handleChange}
                     required
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.cardNumber ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="1234 5678 9012 3456"
                   />
                   {getCardType(paymentData.cardNumber) && (
@@ -172,9 +171,8 @@ const Payment = () => {
                   value={paymentData.cardName}
                   onChange={handleChange}
                   required
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.cardName ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardName ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="JOHN DOE"
                   style={{ textTransform: 'uppercase' }}
                 />
@@ -195,9 +193,8 @@ const Payment = () => {
                     value={paymentData.expiryDate}
                     onChange={handleChange}
                     required
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.expiryDate ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.expiryDate ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="MM/YY"
                   />
                   {errors.expiryDate && (
@@ -215,9 +212,8 @@ const Payment = () => {
                     value={paymentData.cvv}
                     onChange={handleChange}
                     required
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.cvv ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cvv ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="123"
                     maxLength={3}
                   />
@@ -235,7 +231,7 @@ const Payment = () => {
                     name="saveCard"
                     checked={paymentData.saveCard}
                     onChange={handleChange}
-                    className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-blue-500 border-gray-300 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">
                     Save card for future purchases
@@ -244,7 +240,7 @@ const Payment = () => {
               </div>
 
               {/* Security Notice */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 border border-blue-200 p-4">
                 <div className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -262,16 +258,16 @@ const Payment = () => {
               <div>
                 <p className="text-sm text-gray-600 mb-3">We accept:</p>
                 <div className="flex gap-4">
-                  <div className="border-2 border-gray-200 rounded px-3 py-2 text-xs font-semibold text-gray-600">
+                  <div className="border-2 border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600">
                     VISA
                   </div>
-                  <div className="border-2 border-gray-200 rounded px-3 py-2 text-xs font-semibold text-gray-600">
+                  <div className="border-2 border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600">
                     MASTERCARD
                   </div>
-                  <div className="border-2 border-gray-200 rounded px-3 py-2 text-xs font-semibold text-gray-600">
+                  <div className="border-2 border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600">
                     AMEX
                   </div>
-                  <div className="border-2 border-gray-200 rounded px-3 py-2 text-xs font-semibold text-gray-600">
+                  <div className="border-2 border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600">
                     DISCOVER
                   </div>
                 </div>
@@ -281,13 +277,13 @@ const Payment = () => {
               <div className="flex gap-4 pt-4">
                 <Link
                   to="/checkout"
-                  className="flex-1 border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-lg text-center hover:bg-gray-50 transition-colors"
+                  className="flex-1 border-2 border-gray-300 text-gray-700 font-semibold py-3 text-center hover:bg-gray-50 transition-colors"
                 >
                   Back to Checkout
                 </Link>
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 transition-colors"
                 >
                   Pay Now
                 </button>
@@ -298,7 +294,7 @@ const Payment = () => {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+          <div className="bg-white shadow-md p-6 sticky top-4">
             <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
 
             {/* Cart Items */}
@@ -308,7 +304,7 @@ const Payment = () => {
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-16 h-16 object-cover rounded"
+                    className="w-16 h-16 object-cover"
                   />
                   <div className="flex-1">
                     <h3 className="text-sm font-medium line-clamp-2">{item.name}</h3>
@@ -352,13 +348,13 @@ const Payment = () => {
             <div className="mt-6 pt-6 border-t">
               <p className="text-xs text-gray-500 text-center mb-3">Secure payment by:</p>
               <div className="flex justify-center gap-3 flex-wrap">
-                <div className="bg-gray-100 px-3 py-1 rounded text-xs font-semibold text-gray-600">
+                <div className="bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
                   SSL
                 </div>
-                <div className="bg-gray-100 px-3 py-1 rounded text-xs font-semibold text-gray-600">
+                <div className="bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
                   PCI DSS
                 </div>
-                <div className="bg-gray-100 px-3 py-1 rounded text-xs font-semibold text-gray-600">
+                <div className="bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
                   3D Secure
                 </div>
               </div>

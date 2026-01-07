@@ -11,17 +11,17 @@ const Checkout = () => {
     lastName: '',
     email: '',
     phone: '',
-    
+
     // Shipping Address
     address: '',
     city: '',
     state: '',
     zipCode: '',
     country: 'Egypt',
-    
+
     // Payment
     paymentMethod: 'card',
-    
+
     // Additional
     orderNotes: '',
   });
@@ -70,7 +70,7 @@ const Checkout = () => {
             {/* Billing Information */}
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
               <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Billing Information</h2>
-              
+
               <div className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
@@ -138,7 +138,7 @@ const Checkout = () => {
             {/* Shipping Address */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold mb-6">Shipping Address</h2>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -223,7 +223,7 @@ const Checkout = () => {
             {/* Payment Method */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold mb-6">Payment Method</h2>
-              
+
               <div className="space-y-3">
                 <label className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
                   <input
@@ -240,8 +240,8 @@ const Checkout = () => {
                   </div>
                   <div className="flex gap-2">
                     <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
-                      <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M2 8h20" stroke="currentColor" strokeWidth="1.5"/>
+                      <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M2 8h20" stroke="currentColor" strokeWidth="1.5" />
                     </svg>
                   </div>
                 </label>
@@ -293,7 +293,7 @@ const Checkout = () => {
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-16 h-16 object-cover rounded"
+                    className="w-16 h-16 object-cover"
                   />
                   <div className="flex-1">
                     <h3 className="text-sm font-medium line-clamp-2">{item.name}</h3>
@@ -326,7 +326,7 @@ const Checkout = () => {
             {/* Place Order Button */}
             <Link
               to="/payment"
-              className="block w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 rounded-lg transition-colors text-center"
+              className="block w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 transition-colors text-center"
             >
               Proceed to Payment
             </Link>

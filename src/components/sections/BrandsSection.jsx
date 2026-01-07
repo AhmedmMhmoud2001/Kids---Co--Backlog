@@ -80,15 +80,15 @@ const BrandsSection = () => {
         }}
         loop
         breakpoints={{
-          640: { slidesPerView: 3, spaceBetween: 20 },
-          768: { slidesPerView: 4, spaceBetween: 24 },
-          1024: { slidesPerView: 6, spaceBetween: 24 },
-          1280: { slidesPerView: 8, spaceBetween: 24 },
+          640: { slidesPerView: 2, spaceBetween: 20 },
+          768: { slidesPerView: 3, spaceBetween: 24 },
+          1024: { slidesPerView: 4, spaceBetween: 24 },
+          1280: { slidesPerView: 4, spaceBetween: 24 },
         }}
         className="!pb-2"
       >
         {brands.map((name) => (
-          <SwiperSlide key={name}>
+          <SwiperSlide key={name} className=" w-fit">
             <div className="flex items-center justify-center">
               <span
                 className="

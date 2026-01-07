@@ -4,11 +4,11 @@ import Section from '../common/Section';
 /**
  * Categories section component
  */
-const CategoriesSection = ({ 
-  categories = [], 
+const CategoriesSection = ({
+  categories = [],
   limit = null,
   gridCols = 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6',
-  className = '' 
+  className = ''
 }) => {
   // Map category names to URL paths
   const getCategoryPath = (categoryName) => {
@@ -22,14 +22,14 @@ const CategoriesSection = ({
     };
     return categoryPathMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, '-');
   };
-   const getCategoryClasses = (category) => {
-  if (category.bgcolor === "blue") {
-    return "text-gray-700 hover:text-[#63adfc] bg-gray-100 hover:bg-blue-200 transition-colors duration-700 ease-in-out ";
-  } else if (category.bgcolor === "pink") {
-    return "text-gray-700 hover:text-[#ff92a5] bg-gray-100 hover:bg-[#f1a6b3] transition-colors duration-700 ease-in-out border-b-2 border-transparent hover:border-[#ff92a5]";
-  }
-  return "relative overflow-hidden text-gray-700 hover:text-[#ff92a5] bg-gray-100  border-b-2 border-transparent hover:border-[#ff92a5] before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-200 before:to-[#f1a6b3] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700 before:ease-in-out before:z-0 ";
-};
+  const getCategoryClasses = (category) => {
+    if (category.bgcolor === "blue") {
+      return "text-gray-700 hover:text-[#63adfc] bg-gray-100 hover:bg-blue-200 transition-colors duration-700 ease-in-out ";
+    } else if (category.bgcolor === "pink") {
+      return "text-gray-700 hover:text-[#ff92a5] bg-gray-100 hover:bg-[#f1a6b3] transition-colors duration-700 ease-in-out border-b-2 border-transparent hover:border-[#ff92a5]";
+    }
+    return "relative overflow-hidden text-gray-700 hover:text-[#ff92a5] bg-gray-100  border-b-2 border-transparent hover:border-[#ff92a5] before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-200 before:to-[#f1a6b3] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700 before:ease-in-out before:z-0 ";
+  };
 
 
   const categoriesToShow = limit ? categories.slice(0, limit) : categories;
@@ -39,7 +39,7 @@ const CategoriesSection = ({
       <div className={`grid ${gridCols} gap-4 lg:gap-6`}>
         {categoriesToShow.map((category, idx) => {
           const categoryPath = getCategoryPath(category.name);
-          
+
           return (
             <Link
               key={idx}

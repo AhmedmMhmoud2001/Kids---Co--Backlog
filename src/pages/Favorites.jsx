@@ -6,7 +6,7 @@ import ProductGrid from '../components/product/ProductGrid';
 
 const Favorites = () => {
   const { favorites } = useApp();
-  
+
   // Get favorite products based on favorite IDs
   const favoriteProducts = useMemo(() => {
     return products.filter(product => favorites.includes(product.id));
@@ -30,7 +30,7 @@ const Favorites = () => {
           <p className="text-gray-600 mb-6">Start adding products to your favorites!</p>
           <Link
             to="/shop"
-            className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-8 rounded transition-colors"
+            className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-8 transition-colors"
           >
             Browse Products
           </Link>
@@ -42,25 +42,25 @@ const Favorites = () => {
 
           {/* Pagination */}
           <div className="flex items-center justify-center gap-2 mt-12">
-            <button className="px-3 py-1 border rounded hover:bg-gray-50">
+            <button className="px-3 py-1 border hover:bg-gray-50">
               ‹
             </button>
-            <button className="px-3 py-1 border rounded hover:bg-gray-50">
+            <button className="px-3 py-1 border hover:bg-gray-50">
               1
             </button>
-            <button className="px-3 py-1 bg-blue-500 text-white rounded">
+            <button className="px-3 py-1 bg-blue-500 text-white">
               2
             </button>
-            <button className="px-3 py-1 border rounded hover:bg-gray-50">
+            <button className="px-3 py-1 border hover:bg-gray-50">
               3
             </button>
-            <button className="px-3 py-1 border rounded hover:bg-gray-50">
+            <button className="px-3 py-1 border hover:bg-gray-50">
               4
             </button>
-            <button className="px-3 py-1 border rounded hover:bg-gray-50">
+            <button className="px-3 py-1 border hover:bg-gray-50">
               5
             </button>
-            <button className="px-3 py-1 border rounded hover:bg-gray-50">
+            <button className="px-3 py-1 border hover:bg-gray-50">
               ›
             </button>
           </div>

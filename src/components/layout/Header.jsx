@@ -9,7 +9,7 @@ import { NavLink } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, logout, cartCount, favoritesCount } = useApp();
+  const { user, logout, cartCount, favoritesCount, setIsCartOpen } = useApp();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -66,26 +66,39 @@ const Header = () => {
               </NavLink>
               <NavLink
                 to="/"
+                end
                 className={({ isActive }) =>
-                  `hidden lg:inline-block text-sm transition-colors ${
-                    isActive ? "text-gray-900 font-semibold" : "opacity-50"
+                  `hidden lg:flex items-end justify-center
+     h-12 w-24 relative
+     transition-colors 
+     after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px]
+     after:transition-all after:duration-300 after:ease-out
+     ${isActive
+                    ? "text-gray-900 font-semibold after:w-full after:opacity-100  after:bg-gray-900"
+                    : "text-gray-400 hover:text-gray-600 after:w-0 after:opacity-0 opacity-50 hover:after:w-full hover:after:opacity-100 hover:after:bg-gray-600"
                   }`
                 }
               >
-                <img src={logo1} alt="logo1" className="h-8 lg:h-auto" />
+                <img src={logo1} alt="logo1" className="h-8 w-24 object-contain" />
               </NavLink>
+
               <NavLink
                 to="/home2"
                 className={({ isActive }) =>
-                  `hidden lg:inline-block text-sm transition-colors ${
-                    isActive
-                      ? "text-gray-900 font-semibold"
-                      : "text-gray-400 hover:text-gray-600"
+                  `hidden lg:flex items-end justify-center
+     h-12 w-24 relative
+     transition-colors text-2xl
+     after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px]
+     after:transition-all after:duration-300 after:ease-out border-l-2 border-gray-200
+     ${isActive
+                    ? "text-gray-900 font-semibold after:w-full after:opacity-100 after:bg-gray-900"
+                    : "text-gray-400 hover:text-gray-600 after:w-0 after:opacity-0 hover:after:w-full hover:after:opacity-100 hover:after:bg-gray-600"
                   }`
                 }
               >
                 NEXT
               </NavLink>
+
             </div>
 
             {/* Right Icons */}
@@ -159,7 +172,7 @@ const Header = () => {
 
                 {/* User Dropdown Menu */}
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-600">
+                  <div className="absolute z-[999] right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 ">
                     {user ? (
                       <>
                         <div className="px-4 py-2 border-b">
@@ -292,8 +305,8 @@ const Header = () => {
               </div>
 
               {/* Cart Icon */}
-              <Link
-                to="/cart"
+              <button
+                onClick={() => setIsCartOpen(true)}
                 className="p-2 hover:bg-gray-100 rounded-full relative transition-colors"
               >
                 <svg
@@ -314,7 +327,7 @@ const Header = () => {
                     {cartCount}
                   </span>
                 )}
-              </Link>
+              </button>
             </div>
           </div>
         </div>

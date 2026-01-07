@@ -26,7 +26,7 @@ const SearchModal = ({ isOpen, onClose }) => {
       const categoryMatch = (product.categoryDisplay || product.category).toLowerCase().includes(query);
       const brandMatch = product.brand?.toLowerCase().includes(query);
       const descriptionMatch = product.description?.toLowerCase().includes(query);
-      
+
       return nameMatch || categoryMatch || brandMatch || descriptionMatch;
     }).slice(0, 8); // Limit to 8 results
   }, [searchQuery]);
@@ -59,11 +59,21 @@ const SearchModal = ({ isOpen, onClose }) => {
       {/* Search Modal */}
       <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
         <div
-          className="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+          className="bg-white shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative"
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 p-2 hover:bg-gray-100 transition-colors z-10"
+          >
+            <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
           {/* Search Input */}
-          <div className="p-6 border-b">
+          <div className="p-6 border-b pt-10">
             <form onSubmit={handleSearch} className="flex gap-2">
               <div className="flex-1 relative">
                 <input
@@ -73,7 +83,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Search for products"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +93,7 @@ const SearchModal = ({ isOpen, onClose }) => {
               </div>
               <button
                 type="submit"
-                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors"
               >
                 Search
               </button>
@@ -102,9 +112,9 @@ const SearchModal = ({ isOpen, onClose }) => {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {searchResults.map((product) => (
-                      <div key={product.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <ProductCard 
-                          product={product} 
+                      <div key={product.id} className="border p-4 hover:shadow-md transition-shadow">
+                        <ProductCard
+                          product={product}
                           onQuickView={setSelectedProduct}
                         />
                       </div>
@@ -146,9 +156,9 @@ const SearchModal = ({ isOpen, onClose }) => {
 
       {/* Quick View Modal */}
       {selectedProduct && (
-        <ProductQuickView 
-          product={selectedProduct} 
-          onClose={() => setSelectedProduct(null)} 
+        <ProductQuickView
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
         />
       )}
     </>

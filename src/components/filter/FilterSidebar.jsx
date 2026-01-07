@@ -80,11 +80,10 @@ const FilterSidebar = ({ onFilterChange }) => {
             <button
               key={option.value}
               onClick={() => setSortBy(option.value)}
-              className={`px-4 py-2 border rounded transition-colors ${
-                sortBy === option.value
+              className={`px-4 py-2 border rounded transition-colors ${sortBy === option.value
                   ? 'border-blue-500 bg-blue-50 text-blue-600'
                   : 'border-gray-300 text-gray-600 hover:border-gray-400'
-              }`}
+                }`}
             >
               {option.label}
             </button>
@@ -102,11 +101,10 @@ const FilterSidebar = ({ onFilterChange }) => {
             <button
               key={range.value}
               onClick={() => setPriceRange(range.value)}
-              className={`px-4 py-2 border rounded transition-colors ${
-                priceRange === range.value
+              className={`px-4 py-2 border rounded transition-colors ${priceRange === range.value
                   ? 'border-blue-500 bg-blue-50 text-blue-600'
                   : 'border-gray-300 text-gray-600 hover:border-gray-400'
-              }`}
+                }`}
             >
               {range.label}
             </button>
@@ -124,11 +122,10 @@ const FilterSidebar = ({ onFilterChange }) => {
             <button
               key={color.name}
               onClick={() => toggleColor(color.name)}
-              className={`px-3 py-2 border rounded flex items-center gap-2 transition-colors ${
-                selectedColors.includes(color.name)
+              className={`px-3 py-2 border rounded flex items-center gap-2 transition-colors ${selectedColors.includes(color.name)
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-300 hover:border-gray-400'
-              }`}
+                }`}
             >
               <div
                 className="w-4 h-4 rounded-full border"
