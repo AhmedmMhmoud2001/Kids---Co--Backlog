@@ -45,11 +45,11 @@ const BrandsSection = () => {
             className="!h-auto flex items-center justify-center"
           >
             {/* حاوية ثابتة عشان كل الصور تبقى قصاد بعض */}
-            <div className="h-12 w-full flex items-center justify-center">
+            <div className="h-12 w-full flex items-center justify-center cursor-pointer group">
               <img
                 src={item.brandsImg}
                 alt={item.name}
-                className="h-full w-[80%] object-contain"
+                className="h-full w-[80%] object-contain transition-transform duration-300 ease-in-out group-hover:scale-90"
                 loading="lazy"
               />
             </div>
