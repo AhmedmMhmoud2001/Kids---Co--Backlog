@@ -40,7 +40,7 @@ const ProductDetail = () => {
   };
 
   return (
-    <Container className="py-3 sm:py-4 md:py-6 lg:py-8">
+    <div className="py-3 sm:py-4 md:py-6 lg:py-8 container mx-auto px-4 sm:px-6 md:px-10 lg:px-16">
       {/* Breadcrumb */}
       <div className="mb-3 sm:mb-4">
         <Breadcrumb items={[
@@ -70,11 +70,10 @@ const ProductDetail = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
-                  className={`flex-shrink-0 w-[45px] h-[50px] sm:w-[50px] sm:h-[55px] md:w-[60px] md:h-[65px] border overflow-hidden transition-all rounded ${
-                    selectedImage === idx 
-                      ? 'border-blue-500 border-2 ring-1 ring-blue-300' 
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
+                  className={`flex-shrink-0 w-[45px] h-[50px] sm:w-[50px] sm:h-[55px] md:w-[60px] md:h-[65px] border overflow-hidden transition-all rounded ${selectedImage === idx
+                    ? 'border-blue-500 border-2 ring-1 ring-blue-300'
+                    : 'border-gray-300 hover:border-gray-400'
+                    }`}
                 >
                   <img
                     src={img}
@@ -110,11 +109,10 @@ const ProductDetail = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedColor(idx)}
-                  className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full border-2 transition-all ${
-                    selectedColor === idx 
-                      ? 'border-blue-500 ring-2 ring-blue-200' 
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
+                  className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full border-2 transition-all ${selectedColor === idx
+                    ? 'border-blue-500 ring-2 ring-blue-200'
+                    : 'border-gray-300 hover:border-gray-400'
+                    }`}
                   style={{ backgroundColor: color }}
                 />
               ))}
@@ -129,11 +127,10 @@ const ProductDetail = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedSize(idx)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border rounded transition-all ${
-                    selectedSize === idx
-                      ? 'border-blue-500 bg-blue-50 text-blue-600 font-semibold'
-                      : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                  }`}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border rounded transition-all ${selectedSize === idx
+                    ? 'border-blue-500 bg-blue-50 text-blue-600 font-semibold'
+                    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                    }`}
                 >
                   {size}
                 </button>
@@ -229,7 +226,7 @@ const ProductDetail = () => {
         </div>
       </div>
 
-    </Container>
+    </div>
   );
 };
 

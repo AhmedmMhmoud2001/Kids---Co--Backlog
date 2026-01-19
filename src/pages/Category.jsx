@@ -95,77 +95,80 @@ const Category = () => {
   };
 
   return (
-    <Container className="py-8">
-      {/* Breadcrumb */}
-      <Breadcrumb
-        items={[
-          { label: 'Home', to: '/' },
-          { label: categoryName },
-        ]}
-      />
+    <div className=" container mx-auto px-4 sm:px-6 md:px-10 lg:px-16">
+      <div className="py-8 ">
+        {/* Breadcrumb */}
+        <Breadcrumb
+          items={[
+            { label: 'Home', to: '/' },
+            { label: categoryName },
+          ]}
+        />
 
-      {/* Toolbar */}
-      <ProductToolbar
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        showFilters={showFilters}
-        onToggleFilters={() => setShowFilters(!showFilters)}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={handleItemsPerPageChange}
-        filteredCount={filteredProducts.length}
-        totalCount={products.length}
-        hasActiveFilters={hasActiveFilters}
-        onClearFilters={clearFilters}
-        filters={filters}
-        onRemovePriceFilter={handleRemovePriceFilter}
-        categoryName={categoryName}
-      />
+        {/* Toolbar */}
+        <ProductToolbar
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          showFilters={showFilters}
+          onToggleFilters={() => setShowFilters(!showFilters)}
+          itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={handleItemsPerPageChange}
+          filteredCount={filteredProducts.length}
+          totalCount={products.length}
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={clearFilters}
+          filters={filters}
+          onRemovePriceFilter={handleRemovePriceFilter}
+          categoryName={categoryName}
+        />
 
-      {/* Main Content */}
-      <div className="relative">
-        {/* Products Grid */}
-        <div className={showFilters ? 'lg:mr-80' : ''}>
-          {paginatedProducts.length > 0 ? (
-            <>
-              <ProductGrid
-                key={category} // ✅ important: force re-render on category change
-                products={paginatedProducts}
-                viewMode={viewMode}
-                onQuickView={setSelectedProduct}
+        {/* Main Content */}
+        <div className="relative">
+          {/* Products Grid */}
+          <div className={showFilters ? 'lg:mr-80' : ''}>
+            {paginatedProducts.length > 0 ? (
+              <>
+                <ProductGrid
+                  key={category} // ✅ important: force re-render on category change
+                  products={paginatedProducts}
+                  viewMode={viewMode}
+                  onQuickView={setSelectedProduct}
+                />
+
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </>
+            ) : (
+              <EmptyState
+                title="No products found"
+                description="Try adjusting your filters"
+                actionLabel="Clear filters"
+                onAction={clearFilters}
               />
+            )}
+          </div>
 
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            </>
-          ) : (
-            <EmptyState
-              title="No products found"
-              description="Try adjusting your filters"
-              actionLabel="Clear filters"
-              onAction={clearFilters}
-            />
-          )}
+          {/* Filter Sidebar */}
+          <FilterSidebarWrapper
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            onFilterChange={handleFilterChange}
+          />
         </div>
 
-        {/* Filter Sidebar */}
-        <FilterSidebarWrapper
-          isOpen={showFilters}
-          onClose={() => setShowFilters(false)}
-          onFilterChange={handleFilterChange}
-        />
+        {/* Quick View Modal */}
+        {selectedProduct && (
+          <ProductQuickView
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        )}
       </div>
+    </div>
 
-      {/* Quick View Modal */}
-      {selectedProduct && (
-        <ProductQuickView
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
-      )}
-    </Container>
   );
 };
 
