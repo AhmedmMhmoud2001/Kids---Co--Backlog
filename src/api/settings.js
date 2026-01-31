@@ -13,3 +13,16 @@ export const fetchShippingFee = async () => {
         return 150; // Fallback
     }
 };
+export const fetchHomeHeroVideo = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/settings/home2_hero_video`);
+        const result = await response.json();
+        if (result.success && result.data) {
+            return result.data.value;
+        }
+        return "https://www.pexels.com/download/video/3917742/"; // Original video as fallback
+    } catch (error) {
+        console.error('Error fetching home hero video:', error);
+        return "https://www.pexels.com/download/video/3917742/"; // Fallback
+    }
+};

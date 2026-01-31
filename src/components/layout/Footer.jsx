@@ -17,18 +17,18 @@ const Footer = () => {
             </p>
             {/* Social Media Icons */}
             <div className="flex gap-4 justify-center md:justify-start">
-              <a 
-                href="https://www.facebook.com" 
-                target="_blank" 
+              <a
+                href="https://www.facebook.com"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:opacity-70 transition-opacity"
                 aria-label="Facebook"
               >
                 <img src={facebookIcon} alt="Facebook" className="w-8 h-8" />
               </a>
-              <a 
-                href="https://www.instagram.com" 
-                target="_blank" 
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:opacity-70 transition-opacity"
                 aria-label="Instagram"
@@ -47,6 +47,8 @@ const Footer = () => {
               <li><Link to="/contact" className="hover:text-gray-900 transition-colors">Contact Us</Link></li>
               <li><Link to="/delivery" className="hover:text-gray-900 transition-colors">Delivery & Return</Link></li>
               <li><Link to="/brands" className="hover:text-gray-900 transition-colors">Our Brands</Link></li>
+              <li><Link to="/terms" className="hover:text-gray-900 transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
 
@@ -72,6 +74,8 @@ const Footer = () => {
             <Link to="/faqs" className="text-sm text-gray-600 hover:text-gray-900 py-2">FAQs</Link>
             <Link to="/contact" className="text-sm text-gray-600 hover:text-gray-900 py-2">Contact Us</Link>
             <Link to="/delivery" className="text-sm text-gray-600 hover:text-gray-900 py-2">Delivery</Link>
+            <Link to="/terms" className="text-sm text-gray-600 hover:text-gray-900 py-2">Terms</Link>
+            <Link to="/privacy" className="text-sm text-gray-600 hover:text-gray-900 py-2">Privacy</Link>
           </div>
         </div>
 
@@ -79,8 +83,8 @@ const Footer = () => {
         <div className="border-t mt-8 pt-6 pb-16 lg:pb-0 text-center">
           <p className="text-xs lg:text-sm text-gray-600">
             All Rights Reserved © Designed by{' '}
-            <a 
-              href="https://www.qeematech.net/" 
+            <a
+              href="https://www.qeematech.net/"
               rel="dofollow"
               target="_blank"
               className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"

@@ -21,6 +21,8 @@ import Contact from './pages/Contact';
 import Delivery from './pages/Delivery';
 import Brands from './pages/Brands';
 import OrderDetails from './pages/OrderDetails';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 function App() {
   return (
@@ -45,6 +47,8 @@ function App() {
             <Route path="contact" element={<Contact />} />
             <Route path="delivery" element={<Delivery />} />
             <Route path="brands" element={<Brands />} />
+            <Route path="terms" element={<TermsAndConditions />} />
+            <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="account/orders/:id" element={<OrderDetails />} />
           </Route>
 

@@ -7,11 +7,13 @@ import FeaturesSection from '../components/sections/FeaturesSection';
 import CategoriesSectionHome2 from '../components/sections/CategoriesSectionHome2';
 import { fetchCategories } from '../api/categories';
 import { fetchBestSellers } from '../api/products';
+import { fetchHomeHeroVideo } from '../api/settings';
 import { useApp } from '../context/AppContext';
 
 const Home2 = () => {
   const [categories, setCategories] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
+  const [heroVideo, setHeroVideo] = useState("https://www.pexels.com/download/video/3917742/");
   const [isLoading, setIsLoading] = useState(true);
   const { setAudience } = useApp();
 
@@ -21,12 +23,14 @@ const Home2 = () => {
 
     const loadHome2Data = async () => {
       try {
-        const [catsRes, bestRes] = await Promise.all([
+        const [catsRes, bestRes, videoUrl] = await Promise.all([
           fetchCategories('NEXT'),
-          fetchBestSellers('NEXT')
+          fetchBestSellers('NEXT'),
+          fetchHomeHeroVideo()
         ]);
         setCategories(catsRes.data || []);
         setBestSellers(bestRes.data || []);
+        setHeroVideo(videoUrl);
       } catch (err) {
         console.error("Error loading home2 data:", err);
       } finally {
@@ -43,7 +47,7 @@ const Home2 = () => {
         {/* Hero Image */}
         <div className="absolute inset-0">
           <video
-            src="https://www.pexels.com/download/video/3917742/"
+            src={heroVideo}
             className="w-full h-full object-cover"
             autoPlay
             loop
