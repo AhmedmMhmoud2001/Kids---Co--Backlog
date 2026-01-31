@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const CartItem = ({ item, onRemove, onQuantityChange }) => {
   const quantity = item.quantity || 1;
 
@@ -20,17 +22,19 @@ const CartItem = ({ item, onRemove, onQuantityChange }) => {
       </button>
 
       {/* Product Image */}
-      <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+      <Link to={`/product/${item.id}`} className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 block">
         <img
           src={item.image}
           alt={item.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover hover:opacity-80 transition-opacity"
         />
-      </div>
+      </Link>
 
       {/* Product Details */}
       <div className="flex-grow">
-        <h3 className="font-medium text-sm mb-1">{item.name}</h3>
+        <Link to={`/product/${item.id}`} className="hover:text-blue-500 transition-colors">
+          <h3 className="font-medium text-sm mb-1">{item.name}</h3>
+        </Link>
         <p className="text-blue-500 font-semibold">{item.price}</p>
       </div>
 

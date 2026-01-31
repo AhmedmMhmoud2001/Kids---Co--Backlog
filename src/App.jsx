@@ -20,6 +20,7 @@ import FAQs from './pages/FAQs';
 import Contact from './pages/Contact';
 import Delivery from './pages/Delivery';
 import Brands from './pages/Brands';
+import OrderDetails from './pages/OrderDetails';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="contact" element={<Contact />} />
             <Route path="delivery" element={<Delivery />} />
             <Route path="brands" element={<Brands />} />
+            <Route path="account/orders/:id" element={<OrderDetails />} />
           </Route>
 
           {/* Auth Layout - Simple layout for auth pages */}

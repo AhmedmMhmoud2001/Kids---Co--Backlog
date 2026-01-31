@@ -9,8 +9,19 @@ export const filterByPriceRange = (products, priceRange) => {
   if (priceRange === 'all') return products;
 
   return products.filter(product => {
-    const price = parseFloat(product.price.replace(/[^0-9.]/g, ''));
-    
+    let price = 0;
+    if (typeof product.price === 'number') {
+      price = product.price;
+    } else if (typeof product.price === 'string') {
+      price = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+    } else if (product.price && product.price.$numberDecimal) {
+      price = parseFloat(product.price.$numberDecimal);
+    } else {
+      price = parseFloat(String(product.price).replace(/[^0-9.]/g, ''));
+    }
+
+    if (isNaN(price)) price = 0;
+
     switch (priceRange) {
       case '0-1200':
         return price >= 0 && price <= 1200;
@@ -31,8 +42,8 @@ export const filterByPriceRange = (products, priceRange) => {
  */
 export const filterByBrands = (products, selectedBrands) => {
   if (selectedBrands.length === 0) return products;
-  
-  return products.filter(product => 
+
+  return products.filter(product =>
     selectedBrands.includes(product.brand)
   );
 };
@@ -42,25 +53,39 @@ export const filterByBrands = (products, selectedBrands) => {
  */
 export const filterByColors = (products, selectedColors) => {
   if (selectedColors.length === 0) return products;
-  
+
   return products.filter(product => {
-    if (product.colors && product.colors.length > 0) {
-      return selectedColors.some(() => true); // Simplified - in real app, match actual colors
+    let productColors = product.colors;
+
+    // Handle JSON string from backend
+    if (typeof productColors === 'string') {
+      try {
+        productColors = JSON.parse(productColors);
+      } catch (e) {
+        productColors = [];
+      }
     }
-    return true;
+
+    if (Array.isArray(productColors) && productColors.length > 0) {
+      // Check if any selected color is in the product's color list
+      // Using case-insensitive comparison for safety
+      return productColors.some(color =>
+        selectedColors.some(selected => selected.toLowerCase() === color.toLowerCase())
+      );
+    }
+    return false; // If no colors, it doesn't match a color filter
   });
 };
 
-/**
- * Filter products by category
- */
-export const filterByCategory = (products, category) => {
-  if (!category) return products;
-  
+export const filterByCategory = (products, categorySlug) => {
+  if (!categorySlug) return products;
+
   return products.filter(product => {
-    const productCategory = product.category.toLowerCase();
-    const normalizedProductCategory = productCategory.replace(/\s+/g, '-');
-    return normalizedProductCategory === category;
+    // Handle both string category and object category from backend
+    const slug = product.category?.slug ||
+      (typeof product.category === 'string' ? product.category.toLowerCase().replace(/\s+/g, '-') : '');
+
+    return slug === categorySlug;
   });
 };
 
@@ -69,20 +94,28 @@ export const filterByCategory = (products, category) => {
  */
 export const sortProducts = (products, sortBy) => {
   const sorted = [...products];
-  
+
   switch (sortBy) {
     case 'price-low':
       sorted.sort((a, b) => {
-        const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
-        const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
-        return priceA - priceB;
+        const getPrice = (p) => {
+          if (typeof p === 'number') return p;
+          if (typeof p === 'string') return parseFloat(p.replace(/[^0-9.]/g, '')) || 0;
+          if (p && p.$numberDecimal) return parseFloat(p.$numberDecimal) || 0;
+          return parseFloat(String(p).replace(/[^0-9.]/g, '')) || 0;
+        };
+        return getPrice(a.price) - getPrice(b.price);
       });
       break;
     case 'price-high':
       sorted.sort((a, b) => {
-        const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
-        const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
-        return priceB - priceA;
+        const getPrice = (p) => {
+          if (typeof p === 'number') return p;
+          if (typeof p === 'string') return parseFloat(p.replace(/[^0-9.]/g, '')) || 0;
+          if (p && p.$numberDecimal) return parseFloat(p.$numberDecimal) || 0;
+          return parseFloat(String(p).replace(/[^0-9.]/g, '')) || 0;
+        };
+        return getPrice(b.price) - getPrice(a.price);
       });
       break;
     case 'newness':
@@ -94,7 +127,7 @@ export const sortProducts = (products, sortBy) => {
       // Keep original order
       break;
   }
-  
+
   return sorted;
 };
 
@@ -102,15 +135,15 @@ export const sortProducts = (products, sortBy) => {
  * Apply all filters and sorting to products
  */
 export const applyFilters = (products, filters, category = null) => {
-  let filtered = category 
+  let filtered = category
     ? filterByCategory(products, category)
     : [...products];
-  
+
   filtered = filterByPriceRange(filtered, filters.priceRange);
   filtered = filterByBrands(filtered, filters.selectedBrands);
   filtered = filterByColors(filtered, filters.selectedColors);
   filtered = sortProducts(filtered, filters.sortBy);
-  
+
   return filtered;
 };
 

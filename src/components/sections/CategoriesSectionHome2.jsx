@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Section from '../common/Section';
+import { useApp } from '../../context/AppContext';
 
 /**
  * Categories section component matching the design with circle background and popping images
@@ -10,6 +11,8 @@ const CategoriesSectionHome2 = ({
   gridCols = 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5',
   className = ''
 }) => {
+  const { audience } = useApp();
+
   // Map category names to URL paths
   const getCategoryPath = (categoryName) => {
     const categoryPathMap = {
@@ -33,7 +36,7 @@ const CategoriesSectionHome2 = ({
           return (
             <Link
               key={idx}
-              to={`/category/${categoryPath}`}
+              to={`/category/${category.slug || categoryPath}?audience=${audience}`}
               className="group flex flex-col items-center justify-center text-center cursor-pointer"
             >
               {/* Image Container */}

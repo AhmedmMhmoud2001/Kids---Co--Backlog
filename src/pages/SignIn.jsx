@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { validateCredentials } from '../data/users';
+import { loginUser } from '../api/auth';
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -19,20 +19,26 @@ const SignIn = () => {
     setError('');
     setIsLoading(true);
 
-    // Validate credentials
-    const result = validateCredentials(formData.email, formData.password);
+    try {
+      const res = await loginUser(formData.email, formData.password);
 
-    if (result.success) {
-      // Login user
-      login(result.user);
+      if (res.success) {
+        // Store token
+        localStorage.setItem('authToken', res.data.token);
 
-      // Navigate to account page
-      navigate('/account');
-    } else {
-      setError(result.error || 'Invalid email or password');
+        // Login user in context
+        login(res.data.user);
+
+        // Navigate to homepage
+        navigate('/');
+      } else {
+        setError(res.message || 'Login failed');
+      }
+    } catch (err) {
+      setError(err.message || 'Invalid email or password');
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleChange = (e) => {

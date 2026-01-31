@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { products } from "../data/products";
+import { useSearchParams } from "react-router-dom";
 import Container from "../components/common/Container";
 import Breadcrumb from "../components/common/Breadcrumb";
 import ProductGrid from "../components/product/ProductGrid";
@@ -9,13 +9,29 @@ import ProductQuickView from "../components/product/ProductQuickView";
 import Pagination from "../components/common/Pagination";
 import EmptyState from "../components/common/EmptyState";
 import { applyFilters } from "../utils/productFilters";
+import { fetchProducts } from "../api/products";
+import { useApp } from "../context/AppContext";
 
 const Shop = () => {
+  const [searchParams] = useSearchParams();
+  const queryAudience = searchParams.get('audience');
+  const search = searchParams.get('search'); // Get search query from URL
+  const { audience: contextAudience, setAudience } = useApp();
+
+  // URL param takes priority over context
+  const audience = queryAudience || contextAudience;
+
+  // Sync URL audience with context (only when needed)
+  useEffect(() => {
+    if (queryAudience && queryAudience !== contextAudience) {
+      setAudience(queryAudience);
+    }
+  }, [queryAudience]); // Only depend on queryAudience to avoid infinite loop
+
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-
-  // ✅ خلي default مناسب للموبايل (لو ProductGrid بيترجمها)
   const [viewMode, setViewMode] = useState("grid-4");
-
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -26,6 +42,29 @@ const Shop = () => {
     selectedColors: [],
     selectedBrands: [],
   });
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        // Pass both audience and search to the API
+        const res = await fetchProducts({ audience, search });
+        setProducts(res.data || []);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadProducts();
+  }, [audience, search]); // React to audience or search changes
+
+  // Reset page and close filters on audience/search change
+  useEffect(() => {
+    setCurrentPage(1);
+    setShowFilters(false);
+    window.scrollTo(0, 0);
+  }, [audience, search]);
 
   // ✅ اقفل سكرول الصفحة لما الفلاتر مفتوحة على الموبايل (Overlay)
   useEffect(() => {
@@ -42,7 +81,7 @@ const Shop = () => {
   // Apply filters to products
   const filteredProducts = useMemo(() => {
     return applyFilters(products, filters);
-  }, [filters]);
+  }, [products, filters]);
 
   // Paginate products
   const paginatedProducts = useMemo(() => {
@@ -86,7 +125,10 @@ const Shop = () => {
     <Container className="py-5 sm:py-8 px-3 sm:px-6">
       {/* Breadcrumb */}
       <Breadcrumb
-        items={[{ label: "Home", to: "/" }, { label: "Shop" }]}
+        items={[
+          { label: audience === 'NEXT' ? 'Home 2' : 'Home', to: audience === 'NEXT' ? '/home2' : '/' },
+          { label: "Shop" }
+        ]}
       />
 
       {/* Toolbar */}
@@ -112,7 +154,10 @@ const Shop = () => {
           <button
             aria-label="Close filters overlay"
             className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-            onClick={() => setShowFilters(false)}
+            onClick={() => {
+              setShowFilters(false);
+              clearFilters();
+            }}
           />
         )}
 
@@ -151,8 +196,12 @@ const Shop = () => {
         <div className="relative z-50">
           <FilterSidebarWrapper
             isOpen={showFilters}
-            onClose={() => setShowFilters(false)}
+            onClose={() => {
+              setShowFilters(false);
+              clearFilters();
+            }}
             onFilterChange={handleFilterChange}
+            filters={filters}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Section from '../common/Section';
+import { useApp } from '../../context/AppContext';
 
 /**
  * Categories section component
@@ -10,6 +11,8 @@ const CategoriesSection = ({
   gridCols = 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6',
   className = ''
 }) => {
+  const { audience } = useApp();
+
   // Map category names to URL paths
   const getCategoryPath = (categoryName) => {
     const categoryPathMap = {
@@ -43,7 +46,7 @@ const CategoriesSection = ({
           return (
             <Link
               key={idx}
-              to={`/category/${categoryPath}`}
+              to={`/category/${category.slug || categoryPath}?audience=${audience}`}
               className={`group text-center hover:text-gray-500 }`}
             >
               <div className={`aspect-square  rounded-full overflow-hidden mb-3  shadow-md ${getCategoryClasses(category)}`}>

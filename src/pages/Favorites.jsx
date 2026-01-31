@@ -1,16 +1,45 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useMemo } from 'react';
-import { products } from '../data/products';
+import { products as staticProducts } from '../data/products';
 import { useApp } from '../context/AppContext';
 import ProductGrid from '../components/product/ProductGrid';
+import ProductQuickView from '../components/product/ProductQuickView';
+import { fetchFavorites } from '../api/favorites';
+import { normalizeProduct } from '../api/products';
 
 const Favorites = () => {
-  const { favorites } = useApp();
+  const { favorites, user } = useApp();
+  const [favoriteProducts, setFavoriteProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Get favorite products based on favorite IDs
-  const favoriteProducts = useMemo(() => {
-    return products.filter(product => favorites.includes(product.id));
-  }, [favorites]);
+  useEffect(() => {
+    const loadFavoriteProducts = async () => {
+      if (!user) {
+        // For guests, use static products filter (existing behavior)
+        setFavoriteProducts(staticProducts.filter(p => favorites.includes(p.id)));
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const res = await fetchFavorites();
+        if (res.success && Array.isArray(res.data)) {
+          // Normalize the product data from the favorite objects
+          const prods = res.data.map(fav => normalizeProduct(fav.product));
+          setFavoriteProducts(prods);
+        }
+      } catch (err) {
+        console.error('Error loading full favorites info:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadFavoriteProducts();
+  }, [favorites, user]);
+
+  if (isLoading) return <div className="text-center py-20">Loading favorites...</div>;
 
   return (
     <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
@@ -38,33 +67,19 @@ const Favorites = () => {
       ) : (
         <>
           <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">Favorites</h1>
-          <ProductGrid products={favoriteProducts} />
-
-          {/* Pagination */}
-          <div className="flex items-center justify-center gap-2 mt-12">
-            <button className="px-3 py-1 border hover:bg-gray-50">
-              ‹
-            </button>
-            <button className="px-3 py-1 border hover:bg-gray-50">
-              1
-            </button>
-            <button className="px-3 py-1 bg-blue-500 text-white">
-              2
-            </button>
-            <button className="px-3 py-1 border hover:bg-gray-50">
-              3
-            </button>
-            <button className="px-3 py-1 border hover:bg-gray-50">
-              4
-            </button>
-            <button className="px-3 py-1 border hover:bg-gray-50">
-              5
-            </button>
-            <button className="px-3 py-1 border hover:bg-gray-50">
-              ›
-            </button>
-          </div>
+          <ProductGrid
+            products={favoriteProducts}
+            onQuickView={(product) => setSelectedProduct(product)}
+          />
         </>
+      )}
+
+      {/* Quick View Modal */}
+      {selectedProduct && (
+        <ProductQuickView
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
       )}
     </div>
   );

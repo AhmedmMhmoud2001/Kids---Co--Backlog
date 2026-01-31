@@ -1,40 +1,57 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { products } from '../data/products';
 import { useApp } from '../context/AppContext';
 import Container from '../components/common/Container';
 import Breadcrumb from '../components/common/Breadcrumb';
+import { fetchProductById } from '../api/products';
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const product = products.find((p) => p.id === parseInt(id)) || products[0];
+  const [product, setProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { addToCart } = useApp();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
-  // Use product.images array if available, otherwise fallback to single image repeated
-  const images = (product.images && product.images.length >= 6)
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetchProductById(id);
+        setProduct(res.data);
+      } catch (err) {
+        console.error("Error fetching product:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadProduct();
+  }, [id]);
+
+  if (isLoading) return <div className="py-20 text-center">Loading...</div>;
+  if (!product) return <div className="py-20 text-center">Product not found</div>;
+
+  // Use available images from the product
+  const images = (product.images && product.images.length > 0)
     ? product.images.slice(0, 6)
-    : Array(6).fill(product.image);
+    : (product.image ? [product.image] : []);
 
   // Get category path for breadcrumb
   const getCategoryPath = () => {
-    return product.category || 'shop';
+    return product.categorySlug || 'shop';
   };
 
   // Get category display name
   const getCategoryDisplayName = () => {
-    return product.categoryDisplay ||
-      product.category
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ') || 'Shop';
+    return product.categoryName || 'Shop';
   };
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    const size = product.sizes?.[selectedSize];
+    const color = product.colors?.[selectedColor];
+    addToCart(product, quantity, size, color);
     // Optional: Show success message or redirect
     alert('Product added to cart!');
   };
@@ -44,8 +61,8 @@ const ProductDetail = () => {
       {/* Breadcrumb */}
       <div className="mb-3 sm:mb-4">
         <Breadcrumb items={[
-          { label: 'Home', to: '/' },
-          { label: getCategoryDisplayName(), to: `/category/${getCategoryPath()}` },
+          { label: product.audience === 'NEXT' ? 'Home 2' : 'Home', to: product.audience === 'NEXT' ? '/home2' : '/' },
+          { label: getCategoryDisplayName(), to: `/category/${getCategoryPath()}?audience=${product.audience}` },
           { label: product.name },
         ]} />
       </div>
@@ -90,7 +107,9 @@ const ProductDetail = () => {
         <div className="space-y-3 sm:space-y-4 md:space-y-5 w-full max-w-full">
           <div>
             <h1 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1.5 sm:mb-2 md:mb-3 leading-tight break-words">{product.name}</h1>
-            <p className="text-xl sm:text-2xl md:text-3xl text-blue-500 font-semibold">{product.price}</p>
+            <p className="text-xl sm:text-2xl md:text-3xl text-blue-500 font-semibold">
+              {typeof product.price === 'number' ? `${product.price.toFixed(2)} EE` : product.price}
+            </p>
           </div>
 
           {/* Description */}
@@ -102,41 +121,45 @@ const ProductDetail = () => {
           </div>
 
           {/* Color Selection */}
-          <div className="w-full max-w-full">
-            <h3 className="font-semibold text-sm sm:text-base mb-2">Color:</h3>
-            <div className="flex gap-2 flex-wrap">
-              {product.colors?.map((color, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedColor(idx)}
-                  className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full border-2 transition-all ${selectedColor === idx
-                    ? 'border-blue-500 ring-2 ring-blue-200'
-                    : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
+          {product.colors && (
+            <div className="w-full max-w-full">
+              <h3 className="font-semibold text-sm sm:text-base mb-2">Color:</h3>
+              <div className="flex gap-2 flex-wrap">
+                {product.colors.map((color, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedColor(idx)}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full border-2 transition-all ${selectedColor === idx
+                      ? 'border-blue-500 ring-2 ring-blue-200'
+                      : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Size Selection */}
-          <div className="w-full max-w-full">
-            <h3 className="font-semibold text-sm sm:text-base mb-2">Size:</h3>
-            <div className="flex gap-1.5 sm:gap-2 flex-wrap">
-              {product.sizes?.map((size, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedSize(idx)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border rounded transition-all ${selectedSize === idx
-                    ? 'border-blue-500 bg-blue-50 text-blue-600 font-semibold'
-                    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                    }`}
-                >
-                  {size}
-                </button>
-              ))}
+          {product.sizes && (
+            <div className="w-full max-w-full">
+              <h3 className="font-semibold text-sm sm:text-base mb-2">Size:</h3>
+              <div className="flex gap-1.5 sm:gap-2 flex-wrap">
+                {product.sizes.map((size, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedSize(idx)}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border rounded transition-all ${selectedSize === idx
+                      ? 'border-blue-500 bg-blue-50 text-blue-600 font-semibold'
+                      : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                      }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Quantity and Add to Cart */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 md:gap-4 w-full">
@@ -174,16 +197,15 @@ const ProductDetail = () => {
           {/* Product Meta */}
           <div className="pt-4 sm:pt-6 border-t space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
             <div className="flex gap-2">
-              <span className="font-semibold">SKU:</span>
-              <span className="text-gray-600">{product.sku || 'IMS002644'}</span>
+              <span className="text-gray-600">{product.sku || '-'}</span>
             </div>
             <div className="flex gap-2">
               <span className="font-semibold">Category:</span>
-              <span className="text-gray-600">{product.categoryDisplay || product.category}</span>
+              <span className="text-gray-600">{product.categoryName}</span>
             </div>
             <div className="flex gap-2">
               <span className="font-semibold">Brand:</span>
-              <span className="text-gray-600">{product.brand}</span>
+              <span className="text-gray-600">{product.brand || 'No Brand'}</span>
             </div>
           </div>
 
@@ -212,17 +234,19 @@ const ProductDetail = () => {
           </div>
 
           {/* Additional Information */}
-          <details className="border-t pt-3 sm:pt-4">
-            <summary className="font-semibold text-sm sm:text-base cursor-pointer flex items-center justify-between">
-              Additional Information
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-600">
-              <p>Material composition and care instructions will be displayed here.</p>
-            </div>
-          </details>
+          {product.additionalInfo && (
+            <details className="border-t pt-3 sm:pt-4">
+              <summary className="font-semibold text-sm sm:text-base cursor-pointer flex items-center justify-between">
+                Additional Information
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-600">
+                <p>{product.additionalInfo}</p>
+              </div>
+            </details>
+          )}
         </div>
       </div>
 

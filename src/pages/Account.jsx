@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import { updateUserProfile } from "../data/users";
+import { updateProfile } from "../api/auth";
+import { fetchMyOrders } from "../api/orders";
 
 const Account = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ const Account = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
 
   // Load user data
   useEffect(() => {
@@ -37,24 +40,25 @@ const Account = () => {
       city: currentUser.city || "",
       country: currentUser.country || "Egypt",
     });
-  }, [currentUser, navigate]);
 
-  const [orders] = useState([
-    {
-      id: "ORD-001",
-      date: "2025-01-01",
-      status: "Delivered",
-      total: "7,300.00 EE",
-      items: 2,
-    },
-    {
-      id: "ORD-002",
-      date: "2025-01-03",
-      status: "In Transit",
-      total: "4,200.00 EE",
-      items: 1,
-    },
-  ]);
+    if (activeTab === "orders") {
+      loadOrders();
+    }
+  }, [currentUser, navigate, activeTab]);
+
+  const loadOrders = async () => {
+    try {
+      setOrdersLoading(true);
+      const response = await fetchMyOrders();
+      if (response.success) {
+        setOrders(response.data);
+      }
+    } catch (err) {
+      console.error("Failed to load orders:", err);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -66,23 +70,30 @@ const Account = () => {
     setIsLoading(true);
     setSuccessMessage("");
 
-    const result = updateUserProfile(currentUser.id, {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      phone: user.phone,
-      address: user.address,
-      city: user.city,
-      country: user.country,
-    });
+    try {
+      const response = await updateProfile({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        // email: user.email, // Often email updates require verification, keeping it simple for now or assuming backend handles it
+        phone: user.phone,
+        address: user.address,
+        city: user.city,
+        country: user.country,
+      });
 
-    if (result.success) {
-      login(result.user);
-      setSuccessMessage("Profile updated successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000);
+      if (response.success) {
+        // Update local context with new user data
+        login(response.data, localStorage.getItem('authToken'));
+        setSuccessMessage("Profile updated successfully!");
+        setTimeout(() => setSuccessMessage(""), 3000);
+      }
+    } catch (error) {
+      console.error(error);
+      // Maybe set an error message state here to show to user
+      alert("Failed to update profile: " + error.message);
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   if (!currentUser) return null;
@@ -125,10 +136,9 @@ const Account = () => {
                 className={`w-full text-left rounded-lg transition-colors
                   px-3 sm:px-4 py-2 sm:py-3
                   text-sm sm:text-base
-                  ${
-                    activeTab === "profile"
-                      ? "bg-blue-500 text-white"
-                      : "hover:bg-gray-100"
+                  ${activeTab === "profile"
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-gray-100"
                   }`}
               >
                 Profile Information
@@ -139,10 +149,9 @@ const Account = () => {
                 className={`w-full text-left rounded-lg transition-colors
                   px-3 sm:px-4 py-2 sm:py-3
                   text-sm sm:text-base
-                  ${
-                    activeTab === "orders"
-                      ? "bg-blue-500 text-white"
-                      : "hover:bg-gray-100"
+                  ${activeTab === "orders"
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-gray-100"
                   }`}
               >
                 My Orders
@@ -326,7 +335,11 @@ const Account = () => {
                 My Orders
               </h2>
 
-              {orders.length === 0 ? (
+              {ordersLoading ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                </div>
+              ) : orders.length === 0 ? (
                 <div className="text-center py-12">
                   <svg
                     className="w-16 h-16 mx-auto text-gray-300 mb-4"
@@ -348,7 +361,6 @@ const Account = () => {
                     Start shopping to see your orders here
                   </p>
 
-                  {/* ✅ Start Shopping button smaller on mobile */}
                   <Link
                     to="/shop"
                     className="
@@ -378,17 +390,18 @@ const Account = () => {
                           <h3 className="font-semibold text-base sm:text-lg">
                             Order #{order.id}
                           </h3>
-                          <p className="text-sm text-gray-600">{order.date}</p>
+                          <p className="text-sm text-gray-600">
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </p>
                         </div>
 
                         <span
-                          className={`px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium w-fit ${
-                            order.status === "Delivered"
-                              ? "bg-green-100 text-green-800"
-                              : order.status === "In Transit"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
+                          className={`px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium w-fit ${order.status === "DELIVERED"
+                            ? "bg-green-100 text-green-800"
+                            : order.status === "PENDING"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-blue-100 text-blue-800"
+                            }`}
                         >
                           {order.status}
                         </span>
@@ -396,16 +409,19 @@ const Account = () => {
 
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div className="text-sm text-gray-600">
-                          {order.items} items
+                          {order.items?.length || 0} items
                         </div>
                         <div className="text-lg font-semibold text-blue-500">
-                          {order.total}
+                          {parseFloat(order.totalAmount).toFixed(2)} EE
                         </div>
                       </div>
 
-                      <button className="mt-3 text-blue-500 hover:text-blue-600 font-medium text-sm">
+                      <Link
+                        to={`/account/orders/${order.id}`}
+                        className="mt-3 inline-block text-blue-500 hover:text-blue-600 font-medium text-sm"
+                      >
                         View Details →
-                      </button>
+                      </Link>
                     </div>
                   ))}
                 </div>

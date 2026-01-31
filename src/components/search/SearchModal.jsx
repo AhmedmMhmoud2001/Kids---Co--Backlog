@@ -1,13 +1,18 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { products } from '../../data/products';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../product/ProductCard';
 import ProductQuickView from '../product/ProductQuickView';
+import { useApp } from '../../context/AppContext';
+import { fetchProducts } from '../../api/products';
 
 const SearchModal = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const { audience } = useApp();
   const inputRef = useRef(null);
+  const navigate = useNavigate();
 
   // Focus input when modal opens
   useEffect(() => {
@@ -16,26 +21,39 @@ const SearchModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Filter products based on search query
-  const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
+  // Fetch search results from backend
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (!searchQuery.trim()) {
+        setSearchResults([]);
+        return;
+      }
 
-    const query = searchQuery.toLowerCase().trim();
-    return products.filter(product => {
-      const nameMatch = product.name.toLowerCase().includes(query);
-      const categoryMatch = (product.categoryDisplay || product.category).toLowerCase().includes(query);
-      const brandMatch = product.brand?.toLowerCase().includes(query);
-      const descriptionMatch = product.description?.toLowerCase().includes(query);
+      try {
+        setIsLoading(true);
+        const res = await fetchProducts({
+          search: searchQuery,
+          audience: audience
+        });
 
-      return nameMatch || categoryMatch || brandMatch || descriptionMatch;
-    }).slice(0, 8); // Limit to 8 results
-  }, [searchQuery]);
+        if (res.success && Array.isArray(res.data)) {
+          setSearchResults(res.data.slice(0, 8)); // Limit to 8 results
+        }
+      } catch (err) {
+        console.error("Error fetching search results:", err);
+        setSearchResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300); // Debounce API calls
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, audience]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to shop with search query
-      window.location.href = `/shop?search=${encodeURIComponent(searchQuery)}`;
+      navigate(`/shop?search=${encodeURIComponent(searchQuery)}&audience=${audience}`);
       onClose();
     }
   };
@@ -102,7 +120,12 @@ const SearchModal = ({ isOpen, onClose }) => {
 
           {/* Search Results */}
           <div className="flex-1 overflow-y-auto p-6">
-            {searchQuery.trim() ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-gray-500">Searching for products...</p>
+              </div>
+            ) : searchQuery.trim() ? (
               searchResults.length > 0 ? (
                 <div>
                   <div className="mb-4">
@@ -123,7 +146,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                   {searchResults.length >= 8 && (
                     <div className="mt-4 text-center">
                       <Link
-                        to={`/shop?search=${encodeURIComponent(searchQuery)}`}
+                        to={`/shop?search=${encodeURIComponent(searchQuery)}&audience=${audience}`}
                         onClick={onClose}
                         className="text-blue-500 hover:text-blue-600 font-medium"
                       >
@@ -138,7 +161,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <h3 className="text-lg font-semibold text-gray-700 mb-2">No products found</h3>
-                  <p className="text-gray-500">Try searching with different keywords</p>
+                  <p className="text-gray-500">Try searching with different keywords in the current category</p>
                 </div>
               )
             ) : (
@@ -147,7 +170,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <h3 className="text-lg font-semibold text-gray-700 mb-2">Start searching</h3>
-                <p className="text-gray-500">Type to search for products</p>
+                <p className="text-gray-500">Type to search for products in {audience === 'NEXT' ? 'NEXT' : 'KIDS'}</p>
               </div>
             )}
           </div>

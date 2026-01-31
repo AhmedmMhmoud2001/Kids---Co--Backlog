@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { products } from '../data/products';
+import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
 import Container from '../components/common/Container';
 import Breadcrumb from '../components/common/Breadcrumb';
 import ProductGrid from '../components/product/ProductGrid';
@@ -10,10 +9,28 @@ import ProductQuickView from '../components/product/ProductQuickView';
 import Pagination from '../components/common/Pagination';
 import EmptyState from '../components/common/EmptyState';
 import { applyFilters } from '../utils/productFilters';
+import { fetchProducts } from '../api/products';
+import { useApp } from '../context/AppContext';
 
 const Category = () => {
   const { category } = useParams();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const queryAudience = searchParams.get('audience');
+  const { audience: contextAudience, setAudience } = useApp();
 
+  // URL param takes priority over context
+  const audience = queryAudience || contextAudience;
+
+  // Sync URL audience with context (only when needed)
+  useEffect(() => {
+    if (queryAudience && queryAudience !== contextAudience) {
+      setAudience(queryAudience);
+    }
+  }, [queryAudience]); // Only depend on queryAudience to avoid infinite loop
+
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('grid-4');
   const [itemsPerPage, setItemsPerPage] = useState(15);
@@ -26,22 +43,37 @@ const Category = () => {
     selectedBrands: [],
   });
 
-  // ✅ Reset when category changes
+  // Reset page, filters and scroll to top on category/audience change
   useEffect(() => {
-    // setCurrentPage(1);
-    // setSelectedProduct(null);
-    // setShowFilters(false);
+    setCurrentPage(1);
+    setProducts([]); // Clear current products to avoid showing stale data while loading
+    setFilters({
+      sortBy: 'popularity',
+      priceRange: 'all',
+      selectedColors: [],
+      selectedBrands: [],
+    });
+    setShowFilters(false);
+    window.scrollTo(0, 0);
+  }, [category, queryAudience]); // Use queryAudience instead of audience
 
-    // لو عايز كل كاتيجوري تبدأ بدون فلاتر، فك التعليق:
-    // setFilters({
-    //   sortBy: 'popularity',
-    //   priceRange: 'all',
-    //   selectedColors: [],
-    //   selectedBrands: [],
-    // });
+  useEffect(() => {
+    const loadProducts = async () => {
+      // Only load if we have both category and audience
+      if (!category || !audience) return;
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [category]);
+      try {
+        setIsLoading(true);
+        const res = await fetchProducts({ category, audience });
+        setProducts(res.data || []);
+      } catch (err) {
+        console.error("Error fetching category products:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadProducts();
+  }, [category, queryAudience, contextAudience]); // Depend on both URL and context audience
 
   // Format category name for display
   const categoryName =
@@ -53,7 +85,7 @@ const Category = () => {
   // Filter products by category and apply filters
   const filteredProducts = useMemo(() => {
     return applyFilters(products, filters, category);
-  }, [category, filters]);
+  }, [products, category, filters]);
 
   // Paginate products
   const paginatedProducts = useMemo(() => {
@@ -100,7 +132,7 @@ const Category = () => {
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
-            { label: 'Home', to: '/' },
+            { label: audience === 'NEXT' ? 'Home 2' : 'Home', to: audience === 'NEXT' ? '/home2' : '/' },
             { label: categoryName },
           ]}
         />
@@ -126,10 +158,14 @@ const Category = () => {
         <div className="relative">
           {/* Products Grid */}
           <div className={showFilters ? 'lg:mr-80' : ''}>
-            {paginatedProducts.length > 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+            ) : paginatedProducts.length > 0 ? (
               <>
                 <ProductGrid
-                  key={category} // ✅ important: force re-render on category change
+                  key={`${category}-${audience}`} // Force re-render on category or audience change
                   products={paginatedProducts}
                   viewMode={viewMode}
                   onQuickView={setSelectedProduct}
@@ -154,8 +190,13 @@ const Category = () => {
           {/* Filter Sidebar */}
           <FilterSidebarWrapper
             isOpen={showFilters}
-            onClose={() => setShowFilters(false)}
+            onClose={() => {
+              setShowFilters(false);
+              clearFilters();
+            }}
             onFilterChange={handleFilterChange}
+            filters={filters}
+            audience={audience}
           />
         </div>
 

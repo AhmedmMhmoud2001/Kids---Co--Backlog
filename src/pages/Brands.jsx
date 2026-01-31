@@ -1,28 +1,34 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchBrands } from '../api/brands';
 
 const Brands = () => {
-  const brands = [
-    {
-      name: 'TED Baker',
-      description: 'British luxury brand known for its distinctive prints and attention to detail.',
-      category: 'Premium Fashion'
-    },
-    {
-      name: 'River Island',
-      description: 'Contemporary fashion brand offering trendy and affordable children\'s clothing.',
-      category: 'Contemporary Fashion'
-    },
-    {
-      name: 'GUCCI',
-      description: 'Italian luxury brand offering high-end children\'s fashion and accessories.',
-      category: 'Luxury'
-    },
-    {
-      name: 'Golden Goose',
-      description: 'Italian luxury brand known for its unique and stylish children\'s footwear.',
-      category: 'Luxury Footwear'
-    }
-  ];
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadBrands = async () => {
+      try {
+        const res = await fetchBrands();
+        if (res.success) {
+          setBrands(res.data);
+        }
+      } catch (err) {
+        console.error("Error loading brands:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadBrands();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <p className="text-gray-500">Loading brands...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
@@ -31,17 +37,19 @@ const Brands = () => {
         <p className="text-gray-700 mb-8 text-lg">
           We carefully curate our collection from the world's most trusted and beloved children's fashion brands.
         </p>
-        
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {brands.map((brand, index) => (
-            <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">{brand.name}</h2>
-                <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
-                  {brand.category}
-                </span>
+            <div key={brand.id || index} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col items-center text-center">
+              {brand.image && (
+                <div className="h-24 w-full flex items-center justify-center mb-4">
+                  <img src={brand.image} alt={brand.name} className="h-full object-contain" />
+                </div>
+              )}
+              <div className="mb-2">
+                <h2 className="text-xl font-bold text-gray-900">{brand.name}</h2>
               </div>
-              <p className="text-gray-700 leading-relaxed">{brand.description}</p>
+              <p className="text-gray-600 leading-relaxed text-sm line-clamp-3">{brand.description || 'No description available.'}</p>
             </div>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 
 const ProductQuickView = ({ product, onClose }) => {
@@ -8,13 +9,15 @@ const ProductQuickView = ({ product, onClose }) => {
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
-  // Use product.images array if available, otherwise fallback to single image repeated
-  const images = (product.images && product.images.length >= 6)
+  // Use available images from the product
+  const images = (product.images && product.images.length > 0)
     ? product.images.slice(0, 6)
-    : Array(6).fill(product.image);
+    : (product.image ? [product.image] : []);
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    const color = product.colors?.[selectedColor];
+    const size = product.sizes?.[selectedSize];
+    addToCart(product, quantity, size, color);
     // Optional: Show success message
     alert('Product added to cart!');
     onClose();
@@ -50,11 +53,13 @@ const ProductQuickView = ({ product, onClose }) => {
 
             {/* Main Image */}
             <div className="flex-1 h-[600px] overflow-hidden">
-              <img
-                src={images[selectedImage]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+              <Link to={`/product/${product.id}`} onClick={onClose}>
+                <img
+                  src={images[selectedImage]}
+                  alt={product.name}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-zoom-in"
+                />
+              </Link>
             </div>
           </div>
 
@@ -63,13 +68,28 @@ const ProductQuickView = ({ product, onClose }) => {
             className="flex flex-col gap-8 w-[468px] shrink-0"
           >
             {/* Product Name */}
-            <h2 className="text-[20px] font-semibold text-black leading-tight w-[80%]">
-              {product.name}
-            </h2>
+            <div>
+              <Link
+                to={`/product/${product.id}`}
+                onClick={onClose}
+                className="text-[20px] font-semibold text-black leading-tight w-[80%] hover:text-blue-500 transition-colors"
+              >
+                {product.name}
+              </Link>
+              <div className="mt-2">
+                <Link
+                  to={`/product/${product.id}`}
+                  onClick={onClose}
+                  className="text-sm text-blue-500 hover:underline"
+                >
+                  View full details
+                </Link>
+              </div>
+            </div>
 
             {/* Price */}
             <div className="text-[24px] font-bold text-[#63adfc]">
-              {product.price.replace('EE', 'E£')}
+              {typeof product.price === 'number' ? `${product.price.toFixed(2)} EE` : product.price}
             </div>
 
             {/* Description */}
@@ -83,39 +103,43 @@ const ProductQuickView = ({ product, onClose }) => {
             </div>
 
             {/* Color Selection */}
-            <div className="flex gap-4 items-center">
-              <span className="text-[16px] font-semibold text-[#333]">Color:</span>
-              <div className="flex gap-4">
-                {(product.colors || ['#FFC0CB', '#FFE4B5']).map((color, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedColor(idx)}
-                    className={`w-6 h-6 rounded-full transition-all ${selectedColor === idx ? 'ring-2 ring-offset-2 ring-[#63adfc]' : ''
-                      }`}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
+            {product.colors && (
+              <div className="flex gap-4 items-center">
+                <span className="text-[16px] font-semibold text-[#333]">Color:</span>
+                <div className="flex gap-4">
+                  {product.colors.map((color, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedColor(idx)}
+                      className={`w-6 h-6 rounded-full border border-gray-200 transition-all ${selectedColor === idx ? 'ring-2 ring-offset-2 ring-[#63adfc]' : ''
+                        }`}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Size Selection */}
-            <div className="flex gap-4 items-center">
-              <span className="text-[16px] font-semibold text-[#333]">Size:</span>
-              <div className="flex gap-2 flex-1">
-                {(product.sizes || ['0 - 3 Years', '0 - 3 Years', '0 - 3 Years']).map((size, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedSize(idx)}
-                    className={`px-4 py-2 border transition-colors ${selectedSize === idx
-                      ? 'border-[#63adfc] text-[#63adfc] font-medium'
-                      : 'border-[#f2f2f2] text-[#999]'
-                      }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {product.sizes && (
+              <div className="flex gap-4 items-center">
+                <span className="text-[16px] font-semibold text-[#333]">Size:</span>
+                <div className="flex gap-2 flex-1">
+                  {product.sizes.map((size, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedSize(idx)}
+                      className={`px-4 py-2 border transition-colors ${selectedSize === idx
+                        ? 'border-[#63adfc] text-[#63adfc] font-medium'
+                        : 'border-[#f2f2f2] text-[#999]'
+                        }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Quantity and Add to Cart */}
             <div className="flex gap-6 items-center">
@@ -167,13 +191,13 @@ const ProductQuickView = ({ product, onClose }) => {
               {/* Category */}
               <div className="flex gap-4 items-center text-[16px]">
                 <span className="font-semibold text-[#333]">Category:</span>
-                <span className="text-[#767676]">{product.categoryDisplay || 'Girl'}</span>
+                <span className="text-[#767676]">{product.categoryName}</span>
               </div>
 
               {/* Brand */}
               <div className="flex gap-4 items-center text-[16px]">
                 <span className="font-semibold text-[#333]">Brand:</span>
-                <span className="text-[#767676]">{product.brand}</span>
+                <span className="text-[#767676]">{product.brand || 'No Brand'}</span>
               </div>
 
               {/* Share */}

@@ -1,23 +1,59 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
-const FilterSidebar = ({ onFilterChange }) => {
-  const [sortBy, setSortBy] = useState('popularity');
-  const [priceRange, setPriceRange] = useState('all');
-  const [selectedColors, setSelectedColors] = useState([]);
-  const [selectedBrands, setSelectedBrands] = useState([]);
+const FilterSidebar = ({ onFilterChange, filters = {}, audience }) => {
+  // Use properties directly from props to avoid sync loops
+  const {
+    sortBy = 'popularity',
+    priceRange = 'all',
+    selectedColors = [],
+    selectedBrands = [],
+  } = filters;
 
-  // Notify parent component when filters change
+  const [availableBrands, setAvailableBrands] = useState([]);
+  const [availableColors, setAvailableColors] = useState([]);
+
   useEffect(() => {
-    if (onFilterChange) {
-      onFilterChange({
-        sortBy,
-        priceRange,
-        selectedColors,
-        selectedBrands,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy, priceRange, selectedColors, selectedBrands]);
+    const loadFilters = async () => {
+      try {
+        // Load Brands
+        const { fetchBrands } = await import('../../api/brands');
+        const brandsData = await fetchBrands();
+        const brandsList = Array.isArray(brandsData) ? brandsData : (brandsData.data || []);
+        setAvailableBrands(brandsList);
+
+        // Load Colors
+        const { fetchColors } = await import('../../api/products');
+        const colorsData = await fetchColors();
+        const colorsList = Array.isArray(colorsData) ? colorsData : (colorsData.data || []);
+        setAvailableColors(colorsList);
+      } catch (error) {
+        console.error('Failed to load filter options:', error);
+      }
+    };
+    loadFilters();
+  }, []);
+
+  const handleSortByChange = (value) => {
+    onFilterChange({ ...filters, sortBy: value });
+  };
+
+  const handlePriceRangeChange = (value) => {
+    onFilterChange({ ...filters, priceRange: value });
+  };
+
+  const toggleColor = (colorName) => {
+    const newColors = selectedColors.includes(colorName)
+      ? selectedColors.filter(c => c !== colorName)
+      : [...selectedColors, colorName];
+    onFilterChange({ ...filters, selectedColors: newColors });
+  };
+
+  const toggleBrand = (brandName) => {
+    const newBrands = selectedBrands.includes(brandName)
+      ? selectedBrands.filter(b => b !== brandName)
+      : [...selectedBrands, brandName];
+    onFilterChange({ ...filters, selectedBrands: newBrands });
+  };
 
   const sortOptions = [
     { value: 'popularity', label: 'Popularity' },
@@ -35,43 +71,8 @@ const FilterSidebar = ({ onFilterChange }) => {
     { value: '3600+', label: '3,600 EE +' },
   ];
 
-  const colors = [
-    { name: 'Black', count: 1, color: '#000000' },
-    { name: 'Black Patent', count: 1, color: '#1a1a1a' },
-    { name: 'Bone', count: 1, color: '#e3dac9' },
-    { name: 'Bone Borg', count: 1, color: '#d4c4a8' },
-    { name: 'Confetti Pink', count: 1, color: '#f5c6d5' },
-    { name: 'Cream', count: 1, color: '#fffdd0' },
-  ];
-
-  const brands = [
-    { name: 'Boss', count: 1 },
-    { name: 'KENZO KIDS', count: 1 },
-    { name: 'moschino', count: 1 },
-    { name: 'River Island', count: 1 },
-    { name: 'TED Baker', count: 1 },
-    { name: 'THE MARC JACOBS', count: 1 },
-  ];
-
-  const toggleColor = (colorName) => {
-    setSelectedColors(prev =>
-      prev.includes(colorName)
-        ? prev.filter(c => c !== colorName)
-        : [...prev, colorName]
-    );
-  };
-
-  const toggleBrand = (brandName) => {
-    setSelectedBrands(prev =>
-      prev.includes(brandName)
-        ? prev.filter(b => b !== brandName)
-        : [...prev, brandName]
-    );
-  };
-
   return (
     <div className="w-full space-y-8">
-
       {/* Sort By */}
       <div>
         <h3 className="font-semibold mb-4">Sort by</h3>
@@ -79,10 +80,10 @@ const FilterSidebar = ({ onFilterChange }) => {
           {sortOptions.map((option) => (
             <button
               key={option.value}
-              onClick={() => setSortBy(option.value)}
+              onClick={() => handleSortByChange(option.value)}
               className={`px-4 py-2 border rounded transition-colors ${sortBy === option.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-600'
-                  : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                ? 'border-blue-500 bg-blue-50 text-blue-600'
+                : 'border-gray-300 text-gray-600 hover:border-gray-400'
                 }`}
             >
               {option.label}
@@ -100,10 +101,10 @@ const FilterSidebar = ({ onFilterChange }) => {
           {priceRanges.map((range) => (
             <button
               key={range.value}
-              onClick={() => setPriceRange(range.value)}
+              onClick={() => handlePriceRangeChange(range.value)}
               className={`px-4 py-2 border rounded transition-colors ${priceRange === range.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-600'
-                  : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                ? 'border-blue-500 bg-blue-50 text-blue-600'
+                : 'border-gray-300 text-gray-600 hover:border-gray-400'
                 }`}
             >
               {range.label}
@@ -118,54 +119,63 @@ const FilterSidebar = ({ onFilterChange }) => {
       <div>
         <h3 className="font-semibold mb-4">Color</h3>
         <div className="flex flex-wrap gap-2">
-          {colors.map((color) => (
-            <button
-              key={color.name}
-              onClick={() => toggleColor(color.name)}
-              className={`px-3 py-2 border rounded flex items-center gap-2 transition-colors ${selectedColors.includes(color.name)
+          {availableColors.length === 0 ? (
+            <p className="text-sm text-gray-500">No colors available</p>
+          ) : (
+            availableColors.map((colorName) => (
+              <button
+                key={colorName}
+                onClick={() => toggleColor(colorName)}
+                className={`px-3 py-2 border rounded flex items-center gap-2 transition-colors ${selectedColors.includes(colorName)
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-300 hover:border-gray-400'
-                }`}
-            >
-              <div
-                className="w-4 h-4 rounded-full border"
-                style={{ backgroundColor: color.color }}
-              />
-              <span className="text-sm">
-                {color.name} ({color.count})
-              </span>
-            </button>
-          ))}
+                  }`}
+              >
+                <div
+                  className="w-4 h-4 rounded-full border shadow-sm"
+                  style={{ backgroundColor: colorName.toLowerCase().replace(' ', '') }}
+                />
+                <span className="text-sm">
+                  {colorName}
+                </span>
+              </button>
+            ))
+          )}
         </div>
       </div>
 
       <hr />
 
-      {/* Brands */}
-      <div>
-        <h3 className="font-semibold mb-4">Brands</h3>
-        <div className="space-y-2">
-          {brands.map((brand) => (
-            <label
-              key={brand.name}
-              className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
-            >
-              <input
-                type="checkbox"
-                checked={selectedBrands.includes(brand.name)}
-                onChange={() => toggleBrand(brand.name)}
-                className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm">
-                {brand.name} ({brand.count})
-              </span>
-            </label>
-          ))}
+      {/* Brands - Hide for NEXT audience */}
+      {audience !== 'NEXT' && (
+        <div>
+          <h3 className="font-semibold mb-4">Brands</h3>
+          <div className="space-y-2">
+            {availableBrands.length === 0 ? (
+              <p className="text-sm text-gray-500">Loading brands...</p>
+            ) : (
+              availableBrands.map((brand) => (
+                <label
+                  key={brand.id || brand.name}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedBrands.includes(brand.name)}
+                    onChange={() => toggleBrand(brand.name)}
+                    className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm">
+                    {brand.name}
+                  </span>
+                </label>
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
 export default FilterSidebar;
-

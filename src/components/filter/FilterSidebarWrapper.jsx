@@ -3,7 +3,7 @@ import FilterSidebar from './FilterSidebar';
 /**
  * Filter sidebar wrapper with overlay and close button
  */
-const FilterSidebarWrapper = ({ isOpen, onClose, onFilterChange }) => {
+const FilterSidebarWrapper = ({ isOpen, onClose, onFilterChange, filters, audience }) => {
   return (
     <>
       {/* Overlay */}
@@ -16,9 +16,8 @@ const FilterSidebarWrapper = ({ isOpen, onClose, onFilterChange }) => {
 
       {/* Filter Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 lg:z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 lg:z-40 transform transition-transform duration-300 ease-in-out overflow-y-auto ${isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="p-6">
           {/* Close Button */}
@@ -34,7 +33,7 @@ const FilterSidebarWrapper = ({ isOpen, onClose, onFilterChange }) => {
               </svg>
             </button>
           </div>
-          <FilterSidebar onFilterChange={onFilterChange} />
+          <FilterSidebar onFilterChange={onFilterChange} filters={filters} audience={audience} />
         </div>
       </div>
     </>

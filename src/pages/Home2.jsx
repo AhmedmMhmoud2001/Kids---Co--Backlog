@@ -1,47 +1,41 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { products } from '../data/products';
 import Section from '../components/common/Section';
 import BrandsSection from '../components/sections/BrandsSection';
-import CategoriesSection from '../components/sections/CategoriesSection';
 import BestSellersSection from '../components/sections/BestSellersSection';
 import FeaturesSection from '../components/sections/FeaturesSection';
-import boy from '../assets/Rectangle 5.png';
-import Girl from '../assets/Rectangle 5 (1).png';
-import BabyBoy from '../assets/Rectangle 4 (2).png';
-import BabyGirl from '../assets/Rectangle 4 (3).png';
-import Footwear from '../assets/Rectangle 4 (1).png';
 import CategoriesSectionHome2 from '../components/sections/CategoriesSectionHome2';
-
-const categories = [
-  {
-    name: 'Boy',
-    image: boy,
-    bgcolor: 'blue',
-  },
-  {
-    name: 'Girl',
-    image: Girl,
-    bgcolor: 'pink',
-  },
-  {
-    name: 'Baby Boy',
-    image: BabyBoy,
-    bgcolor: 'blue'
-  },
-  {
-    name: 'Baby Girl',
-    image: BabyGirl,
-    bgcolor: 'pink'
-  },
-
-  {
-    name: 'Footwear',
-    image: Footwear,
-
-  },
-];
+import { fetchCategories } from '../api/categories';
+import { fetchBestSellers } from '../api/products';
+import { useApp } from '../context/AppContext';
 
 const Home2 = () => {
+  const [categories, setCategories] = useState([]);
+  const [bestSellers, setBestSellers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { setAudience } = useApp();
+
+  useEffect(() => {
+    // Set global audience for navigation
+    setAudience('NEXT');
+
+    const loadHome2Data = async () => {
+      try {
+        const [catsRes, bestRes] = await Promise.all([
+          fetchCategories('NEXT'),
+          fetchBestSellers('NEXT')
+        ]);
+        setCategories(catsRes.data || []);
+        setBestSellers(bestRes.data || []);
+      } catch (err) {
+        console.error("Error loading home2 data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadHome2Data();
+  }, [setAudience]);
+
   return (
     <div className="container mx-auto">
       {/* Hero Section - Full Width with Overlay Text */}
@@ -83,15 +77,11 @@ const Home2 = () => {
       {/* Categories Section */}
       <CategoriesSectionHome2 categories={categories} />
 
-      {/* Categories Section - Limited to 5 items */}
-      {/* <CategoriesSection 
-        categories={categories} 
-        limit={5}
-        gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-5"
-      /> */}
-
       {/* Best Sellers Section */}
-      <BestSellersSection products={products} />
+      <BestSellersSection
+        products={bestSellers}
+        moreLink="/shop?audience=NEXT"
+      />
 
       {/* Features Section */}
       <FeaturesSection />

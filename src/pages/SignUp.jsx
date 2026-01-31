@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { registerUser } from '../data/users';
+import { registerUser } from '../api/auth';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -21,6 +21,11 @@ const SignUp = () => {
     e.preventDefault();
     setError('');
 
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     if (!formData.agreeToTerms) {
       setError('Please agree to terms and conditions');
       return;
@@ -28,20 +33,26 @@ const SignUp = () => {
 
     setIsLoading(true);
 
-    // Register user
-    const result = registerUser(formData);
+    try {
+      const res = await registerUser(formData);
 
-    if (result.success) {
-      // Auto login after registration
-      login(result.user);
+      if (res.success) {
+        // Store token
+        localStorage.setItem('authToken', res.data.token);
 
-      // Navigate to account page
-      navigate('/account');
-    } else {
-      setError(result.error || 'Registration failed. Please try again.');
+        // Auto login after registration
+        login(res.data.user);
+
+        // Navigate to homepage
+        navigate('/');
+      } else {
+        setError(res.message || 'Registration failed');
+      }
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleChange = (e) => {

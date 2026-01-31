@@ -6,13 +6,29 @@ import logo1 from "../../assets/logo1.png";
 import MobileMenu from "./MobileMenu";
 import SearchModal from "../search/SearchModal";
 import { NavLink } from "react-router-dom";
+import { fetchCategories } from "../../api/categories";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, logout, cartCount, favoritesCount, setIsCartOpen } = useApp();
+  const { user, logout, cartCount, favoritesCount, setIsCartOpen, audience } = useApp();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const res = await fetchCategories(audience);
+        if (res.success) {
+          setCategories(res.data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching header categories:", err);
+      }
+    };
+    loadCategories();
+  }, [audience]);
 
   const userMenuRef = useRef(null);
 
@@ -334,7 +350,7 @@ const Header = () => {
       </header>
       {/* Logo Center Row - Hidden on mobile, animated on desktop */}
       <div
-        className={`hidden lg:block text-center  transition-all duration-300 overflow-hidden sticky top-0 z-50 bg-white shadow-sm  px-4 sm:px-6 md:px-10 lg:px-20 py-5`}
+        className={`hidden lg:block text-center  transition-all duration-300 overflow-hidden sticky top-0 z-40 bg-white shadow-sm  px-4 sm:px-6 md:px-10 lg:px-20 py-5`}
       >
         <Link to="/" className="inline-block">
           <img
@@ -349,6 +365,7 @@ const Header = () => {
       <MobileMenu
         isOpen={showMobileMenu}
         onClose={() => setShowMobileMenu(false)}
+        categories={categories}
       />
 
       {/* Search Modal */}

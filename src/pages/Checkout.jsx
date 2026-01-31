@@ -1,15 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { initialCartItems } from '../data/products';
+import { useApp } from '../context/AppContext';
+import { createOrder } from '../api/orders';
+import { API_BASE_URL } from '../api/config';
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const [cartItems] = useState(initialCartItems);
+  const { cartItems, cartTotal, appliedCoupon, user, clearCart, setAppliedCoupon } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!user) {
+      alert('Please sign in to complete your order.');
+      navigate('/signin?redirect=/checkout');
+    }
+  }, [user, navigate]);
+
   const [formData, setFormData] = useState({
     // Billing Information
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
     phone: '',
 
     // Shipping Address
@@ -20,7 +32,7 @@ const Checkout = () => {
     country: 'Egypt',
 
     // Payment
-    paymentMethod: 'card',
+    paymentMethod: 'COD',
 
     // Additional
     orderNotes: '',
@@ -34,21 +46,83 @@ const Checkout = () => {
     }));
   };
 
-  const subtotal = cartItems.reduce((total, item) => {
-    const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
-    return total + price * item.quantity;
-  }, 0);
+  const [shipping, setShipping] = useState(150); // Default/fallback
 
-  const shipping = 150; // Fixed shipping cost
-  const total = subtotal + shipping;
+  useEffect(() => {
+    const getShipping = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/settings/shipping_fee`);
+        const result = await response.json();
+        if (result.success && result.data) {
+          setShipping(parseFloat(result.data.value));
+        }
+      } catch (error) {
+        console.error('Failed to fetch shipping fee:', error);
+      }
+    };
+    getShipping();
+  }, []);
 
-  const handleSubmit = (e) => {
+  const discount = appliedCoupon ? Number(appliedCoupon.discount || 0) : 0;
+  const total = cartTotal + shipping - discount;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would process the order
-    console.log('Order submitted:', formData);
-    alert('Order placed successfully!');
-    navigate('/account');
+    setLoading(true);
+    setError(null);
+
+    const orderData = {
+      items: cartItems.map(item => ({
+        productId: item.id,
+        quantity: item.quantity
+      })),
+      paymentMethod: formData.paymentMethod,
+      notes: formData.orderNotes,
+      billingInfo: {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone
+      },
+      shippingAddress: {
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        country: formData.country
+      },
+      shippingFee: shipping,
+      discount: discount
+    };
+
+    console.log('Sending order data:', orderData);
+
+    try {
+      const response = await createOrder(orderData);
+      console.log('Order response:', response);
+      if (response.success) {
+        alert('Order placed successfully!');
+        clearCart();
+        setAppliedCoupon(null);
+        navigate('/account');
+      } else {
+        setError(response.message || 'Failed to place order');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
+        <Link to="/shop" className="text-blue-500 underline">Continue Shopping</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-6 sm:py-8">
@@ -66,7 +140,7 @@ const Checkout = () => {
       <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form id="checkout-form" onSubmit={handleSubmit} className="space-y-8">
             {/* Billing Information */}
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
               <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Billing Information</h2>
@@ -229,8 +303,8 @@ const Checkout = () => {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="card"
-                    checked={formData.paymentMethod === 'card'}
+                    value="CARD"
+                    checked={formData.paymentMethod === 'CARD'}
                     onChange={handleChange}
                     className="w-5 h-5 text-blue-500"
                   />
@@ -250,8 +324,8 @@ const Checkout = () => {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="cod"
-                    checked={formData.paymentMethod === 'cod'}
+                    value="COD"
+                    checked={formData.paymentMethod === 'COD'}
                     onChange={handleChange}
                     className="w-5 h-5 text-blue-500"
                   />
@@ -293,12 +367,12 @@ const Checkout = () => {
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-16 h-16 object-cover"
+                    className="w-16 h-16 object-cover rounded"
                   />
                   <div className="flex-1">
                     <h3 className="text-sm font-medium line-clamp-2">{item.name}</h3>
                     <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
-                    <p className="text-sm font-semibold text-blue-500">{item.price}</p>
+                    <p className="text-sm font-semibold text-blue-500">{item.price?.replace(' EE', ' EE')}</p>
                   </div>
                 </div>
               ))}
@@ -308,28 +382,44 @@ const Checkout = () => {
 
             {/* Totals */}
             <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">{subtotal.toFixed(2)} EE</span>
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Subtotal</span>
+                <span className="font-medium text-gray-900">{cartTotal.toFixed(2)} EE</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Shipping</span>
-                <span className="font-medium">{shipping.toFixed(2)} EE</span>
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Shipping</span>
+                <span className="font-medium text-gray-900">{shipping.toFixed(2)} EE</span>
               </div>
+
+              {appliedCoupon && (
+                <div className="flex justify-between text-sm text-emerald-600 font-medium">
+                  <span>Discount ({appliedCoupon.code})</span>
+                  <span>-{Number(appliedCoupon.discount || 0).toFixed(2)} EE</span>
+                </div>
+              )}
+
               <hr />
-              <div className="flex justify-between text-lg font-bold">
+              <div className="flex justify-between text-lg font-bold text-gray-900">
                 <span>Total</span>
-                <span className="text-blue-500">{total.toFixed(2)} EE</span>
+                <span className="text-blue-600">{total.toFixed(2)} EE</span>
               </div>
             </div>
 
+            {error && (
+              <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-lg text-sm font-medium">
+                {error}
+              </div>
+            )}
+
             {/* Place Order Button */}
-            <Link
-              to="/payment"
-              className="block w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 transition-colors text-center"
+            <button
+              form="checkout-form"
+              type="submit"
+              disabled={loading}
+              className={`block w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-blue-200 active:scale-95 text-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Proceed to Payment
-            </Link>
+              {loading ? 'Processing...' : 'Place Order'}
+            </button>
 
             {/* Security Note */}
             <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">

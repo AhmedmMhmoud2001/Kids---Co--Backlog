@@ -17,34 +17,55 @@ const ProductCard = ({ product, onQuickView }) => {
     onQuickView?.(product); // ✅ افتح المودال
   };
 
+  const getProductImage = () => {
+    if (product.image) return product.image;
+    if (product.thumbnails) {
+      try {
+        const thumbs = typeof product.thumbnails === 'string'
+          ? JSON.parse(product.thumbnails)
+          : product.thumbnails;
+        if (Array.isArray(thumbs) && thumbs.length > 0) return thumbs[0];
+        if (typeof thumbs === 'string') return thumbs;
+      } catch (e) {
+        console.error("Error parsing thumbnails", e);
+      }
+    }
+    return null;
+  };
+
+  const productImage = getProductImage();
+
   return (
     <div className="group relative">
       <Link to={`/product/${product.id}`} className="block">
         {/* Product Image */}
-        <div className="relative aspect-square bg-gray-50  overflow-hidden mb-3 border border-gray-100">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-            onError={(e) => {
-              e.target.style.display = "none";
-              e.target.parentElement.classList.add("bg-gray-200");
-            }}
-          />
+        <div className="relative aspect-square bg-blue-50/50  overflow-hidden mb-3 border border-gray-100 flex items-center justify-center">
+          {productImage ? (
+            <img
+              src={productImage}
+              alt={product.name}
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.parentElement.classList.add("bg-gray-100");
+                e.target.parentElement.innerHTML += '<div class="text-blue-200 font-bold text-4xl uppercase select-none">' + product.name.substring(0, 2) + '</div>';
+              }}
+            />
+          ) : (
+            <div className="text-blue-200 font-bold text-4xl uppercase select-none">
+              {product.name.substring(0, 2)}
+            </div>
+          )}
 
           {/* Shop Now Button */}
-          <button
-            className="absolute inset-x-0 bottom-0 mx-4 mb-1 bg-white/95 backdrop-blur-sm text-gray-500 hover:text-gray-900 font-medium py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-blue-100"
-            onClick={() => {
-              // لو عايزه يروح للمنتج سيبه من غير preventDefault
-              // هنا سيبه يفتح صفحة المنتج طبيعي (لأنه جوه Link)
-            }}
+          <div
+            className="absolute inset-x-0 bottom-0 mx-4 mb-1 bg-white/95 backdrop-blur-sm text-gray-500 hover:text-gray-900 font-medium py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-blue-100 text-center"
           >
-            <span className="w-full h-full hover:scale-110 hover:text-black transition-all z-10">
+            <span className="w-full h-full hover:scale-110 hover:text-black transition-all z-10 uppercase text-sm tracking-wider">
               shop now
             </span>
-          </button>
+          </div>
 
           {/* Favorite Button */}
           <button
@@ -99,9 +120,11 @@ const ProductCard = ({ product, onQuickView }) => {
             {product.name}
           </h3>
           <p className="text-xs text-gray-500">
-            {product.categoryDisplay || product.category}
+            {product.categoryDisplay || product.category?.name || product.category}
           </p>
-          <p className="text-blue-500 font-semibold text-sm">{product.price}</p>
+          <p className="text-blue-500 font-semibold text-sm">
+            {typeof product.price === 'number' ? `${product.price.toFixed(2)} EE` : product.price}
+          </p>
         </div>
       </Link>
     </div>

@@ -12,14 +12,14 @@ import 'swiper/css/pagination';
 /**
  * Best Sellers section component with Swiper carousel
  */
-const BestSellersSection = ({ 
-  products = [], 
+const BestSellersSection = ({
+  products = [],
   title = 'Best Sellers',
   showMoreLink = true,
   moreLink = '/shop',
   limit = 10,
   className = '',
-  onProductSelect 
+  onProductSelect
 }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -38,8 +38,8 @@ const BestSellersSection = ({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">{title}</h2>
           {showMoreLink && (
-            <Link 
-              to={moreLink} 
+            <Link
+              to={moreLink}
               className="text-blue-500 hover:text-blue-600 font-medium text-sm sm:text-base"
             >
               More
@@ -53,7 +53,7 @@ const BestSellersSection = ({
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={20}
             slidesPerView={1}
-            pagination={{ 
+            pagination={{
               clickable: true,
               dynamicBullets: true,
             }}
@@ -62,7 +62,7 @@ const BestSellersSection = ({
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
             }}
-            loop={true}
+            loop={productsToShow.length > 5}
             breakpoints={{
               640: {
                 slidesPerView: 2,
@@ -91,12 +91,12 @@ const BestSellersSection = ({
           </Swiper>
         </div>
       </Section>
-      
+
       {/* Quick View Modal */}
       {selectedProduct && (
-        <ProductQuickView 
-          product={selectedProduct} 
-          onClose={() => setSelectedProduct(null)} 
+        <ProductQuickView
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
         />
       )}
     </>

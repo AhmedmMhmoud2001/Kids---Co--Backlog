@@ -1,10 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import { validateCoupon } from "../api/coupons";
 
 const Cart = () => {
-  const { cartItems, updateCartQuantity, removeFromCart } = useApp();
+  const {
+    cartItems,
+    updateCartQuantity,
+    removeFromCart,
+    cartTotal,
+    appliedCoupon,
+    setAppliedCoupon,
+    removeCoupon
+  } = useApp();
+
   const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
 
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
@@ -15,10 +27,26 @@ const Cart = () => {
     removeFromCart(id);
   };
 
-  const subtotal = cartItems.reduce((total, item) => {
-    const price = parseFloat(item.price.replace(/[^0-9.]/g, ""));
-    return total + price * item.quantity;
-  }, 0);
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return;
+    setCouponLoading(true);
+    setCouponError("");
+    try {
+      const res = await validateCoupon(couponCode, cartTotal);
+      if (res.success) {
+        setAppliedCoupon(res.data);
+        setCouponCode("");
+      }
+    } catch (err) {
+      setCouponError(err.message);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const finalTotal = appliedCoupon
+    ? cartTotal - Number(appliedCoupon.discount || 0)
+    : cartTotal;
 
   return (
     <div className="container mx-auto px-3 sm:px-6 md:px-10 lg:px-20 py-6 sm:py-8">
@@ -38,10 +66,7 @@ const Cart = () => {
           <div className="w-full max-w-5xl mb-8">
             <div className="hidden md:grid grid-cols-12 gap-4 pb-4 border-b font-semibold text-sm">
               <div className="col-span-1"></div>
-              <div className="col-span-5">Product</div>
-              <div className="col-span-2">Price</div>
-              <div className="col-span-2">Quantity</div>
-              <div className="col-span-2">Subtotal</div>
+              <div className="col-span-11">Product</div>
             </div>
           </div>
 
@@ -85,20 +110,24 @@ const Cart = () => {
                 <div className="col-span-5">Product</div>
                 <div className="col-span-2">Price</div>
                 <div className="col-span-2">Quantity</div>
-                <div className="col-span-2">Subtotal</div>
+                <div className="col-span-2 text-right">Subtotal</div>
               </div>
 
               {/* Cart Items */}
-              <div className="divide-y">
+              <div className="divide-y text-sm">
                 {cartItems.map((item) => {
-                  const price = parseFloat(
-                    item.price.replace(/[^0-9.]/g, "")
-                  );
+                  let price = 0;
+                  if (typeof item.price === 'number') {
+                    price = item.price;
+                  } else if (typeof item.price === 'string') {
+                    price = parseFloat(item.price.replace(/[^0-9.]/g, "") || 0);
+                  }
                   const itemSubtotal = price * item.quantity;
+                  const itemId = item.cartItemId || item.id;
 
                   return (
                     <div
-                      key={item.id}
+                      key={itemId}
                       className="
                         py-4
                         flex flex-col gap-3
@@ -110,23 +139,12 @@ const Cart = () => {
                         {/* Remove Button */}
                         <div className="md:col-span-1 flex justify-end md:justify-start">
                           <button
-                            onClick={() => removeItem(item.id)}
-                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => removeItem(itemId)}
+                            className="text-gray-400 hover:text-red-500 transition-colors"
                             aria-label="Remove item"
                           >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle cx="12" cy="12" r="10" strokeWidth={2} />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15 9l-6 6m0-6l6 6"
-                              />
+                            <svg className="w-5 h-5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </button>
                         </div>
@@ -138,10 +156,13 @@ const Cart = () => {
                             alt={item.name}
                             className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
                           />
-                          <div className="min-w-0">
-                            <h3 className="font-medium text-sm sm:text-base line-clamp-2">
+                          <div className="min-w-0 flex flex-col justify-center">
+                            <h3 className="font-medium text-gray-900 line-clamp-2">
                               {item.name}
                             </h3>
+                            {item.selectedSize && (
+                              <p className="text-xs text-gray-500 mt-1">Size: {item.selectedSize}</p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -150,37 +171,37 @@ const Cart = () => {
                       <div className="grid grid-cols-2 gap-3 md:contents">
                         {/* Price */}
                         <div className="md:col-span-2">
-                          <p className="text-xs text-gray-500 md:hidden">
+                          <p className="text-xs text-gray-400 md:hidden uppercase tracking-wider mb-1">
                             Price
                           </p>
-                          <span className="text-blue-500 font-medium">
-                            {item.price}
+                          <span className="text-gray-700 font-medium">
+                            {item.price?.replace(' EE', ' EE')}
                           </span>
                         </div>
 
                         {/* Quantity */}
                         <div className="md:col-span-2">
-                          <p className="text-xs text-gray-500 md:hidden">
+                          <p className="text-xs text-gray-400 md:hidden uppercase tracking-wider mb-1">
                             Quantity
                           </p>
-                          <div className="flex items-center border rounded w-fit">
+                          <div className="flex items-center border border-gray-200 rounded w-fit bg-white">
                             <button
                               onClick={() =>
-                                updateQuantity(item.id, item.quantity - 1)
+                                updateQuantity(itemId, item.quantity - 1)
                               }
-                              className="px-3 py-1 hover:bg-gray-100"
+                              className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors"
                               aria-label="Decrease quantity"
                             >
                               -
                             </button>
-                            <span className="px-4 py-1 border-x min-w-[50px] text-center">
+                            <span className="w-10 text-center font-medium">
                               {item.quantity}
                             </span>
                             <button
                               onClick={() =>
-                                updateQuantity(item.id, item.quantity + 1)
+                                updateQuantity(itemId, item.quantity + 1)
                               }
-                              className="px-3 py-1 hover:bg-gray-100"
+                              className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors"
                               aria-label="Increase quantity"
                             >
                               +
@@ -189,11 +210,11 @@ const Cart = () => {
                         </div>
 
                         {/* Subtotal */}
-                        <div className="col-span-2 md:col-span-2">
-                          <p className="text-xs text-gray-500 md:hidden">
+                        <div className="col-span-2 md:col-span-2 md:text-right">
+                          <p className="text-xs text-gray-400 md:hidden uppercase tracking-wider mb-1">
                             Subtotal
                           </p>
-                          <span className="text-blue-500 font-semibold">
+                          <span className="text-blue-600 font-bold">
                             {itemSubtotal.toFixed(2)} EE
                           </span>
                         </div>
@@ -207,47 +228,81 @@ const Cart = () => {
 
           {/* Cart Totals */}
           <div className="lg:col-span-1 lg:sticky lg:top-6 h-fit">
-            <div className="bg-gray-50 rounded-lg p-5 sm:p-6 space-y-6">
-              <h2 className="text-lg sm:text-xl font-bold">Cart totals</h2>
+            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 space-y-6">
+              <h2 className="text-xl font-bold text-gray-900">Summary</h2>
 
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="font-medium">Subtotal</span>
-                  <span className="font-medium">{subtotal.toFixed(2)} EE</span>
+              <div className="space-y-4 text-sm sm:text-base">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span className="font-medium text-gray-900">{cartTotal.toFixed(2)} EE</span>
                 </div>
 
-                <div className="flex justify-between text-lg">
-                  <span className="font-semibold">Total</span>
-                  <span className="text-blue-500 font-semibold">
-                    {subtotal.toFixed(2)} EE
-                  </span>
+                {appliedCoupon && (
+                  <div className="flex justify-between text-emerald-600 font-medium bg-emerald-50 p-2 rounded-lg">
+                    <div className="flex flex-col">
+                      <span>Discount ({appliedCoupon.code})</span>
+                      <button
+                        onClick={removeCoupon}
+                        className="text-[10px] uppercase tracking-wider underline text-red-500 text-left mt-1 hover:text-red-700"
+                      >
+                        Remove Coupon
+                      </button>
+                    </div>
+                    <span>-{Number(appliedCoupon.discount || 0).toFixed(2)} EE</span>
+                  </div>
+                )}
+
+                <div className="pt-4 border-t border-gray-100">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-gray-900">Total</span>
+                    <span className="text-2xl font-black text-blue-600">
+                      {finalTotal.toFixed(2)} EE
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Coupon Code */}
-              <div className="pt-4 border-t">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Coupon Code"
-                    className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded font-medium transition-colors">
-                    Apply
-                  </button>
+              {!appliedCoupon && (
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-sm font-bold text-gray-900 mb-3">Promotional Code</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="Enter Code"
+                      className="flex-1 px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold"
+                    />
+                    <button
+                      disabled={couponLoading || !couponCode}
+                      onClick={handleApplyCoupon}
+                      className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-all disabled:opacity-50"
+                    >
+                      {couponLoading ? "..." : "Apply"}
+                    </button>
+                  </div>
+                  {couponError && (
+                    <p className="mt-2 text-xs text-red-500 font-medium">{couponError}</p>
+                  )}
                 </div>
-              </div>
+              )}
 
               {/* Checkout Button */}
               <Link
                 to="/checkout"
-                className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded text-center transition-colors"
+                className="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl text-center transition-all shadow-lg hover:shadow-blue-200 active:scale-95 text-lg"
               >
-                Checkout
+                Go to Checkout
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
               </Link>
             </div>
+
+            <p className="text-center text-xs text-gray-400 mt-6 px-4">
+              Taxes and shipping are calculated at checkout. By clicking "Go to Checkout" you agree to our terms.
+            </p>
           </div>
         </div>
       )}
