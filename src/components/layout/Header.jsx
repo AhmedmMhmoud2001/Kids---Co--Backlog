@@ -77,14 +77,17 @@ const Header = () => {
 
             {/* Logo */}
             <div className="flex items-center gap-2 lg:gap-4">
-              <NavLink to="/" className="text-xl font-bold  lg:hidden">
+
+              {/* <NavLink to="/" className="text-xl font-bold  lg:hidden">
                 <img src={logo} alt="logo" className="h-8 lg:h-auto" />
-              </NavLink>
+              </NavLink> */}
+
+
               <NavLink
                 to="/"
                 end
                 className={({ isActive }) =>
-                  `hidden lg:flex items-end justify-center
+                  `lg:flex items-end justify-center
      h-12 w-24 relative
      transition-colors 
      after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px]
@@ -101,7 +104,7 @@ const Header = () => {
               <NavLink
                 to="/home2"
                 className={({ isActive }) =>
-                  `hidden lg:flex items-end justify-center
+                  `lg:flex items-end justify-center
      h-12 w-24 relative
      transition-colors text-2xl
      after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px]
