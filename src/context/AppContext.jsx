@@ -95,8 +95,73 @@ export const AppProvider = ({ children }) => {
 
   // Sync cart and favorites on user change
   useEffect(() => {
-    loadCart();
-    loadFavorites();
+    const syncUserData = async () => {
+      if (user) {
+        // User just logged in - merge guest data with user data
+        const guestCart = localStorage.getItem(getStorageKey('cart', 'guest'));
+        const guestFavorites = localStorage.getItem(getStorageKey('favorites', 'guest'));
+
+        // Load user's cart from backend
+        try {
+          const res = await cartApi.fetchCart();
+          if (res.success && res.data && Array.isArray(res.data.items)) {
+            const normalizedItems = res.data.items.map(item => ({
+              ...normalizeProduct(item.product),
+              quantity: item.quantity,
+              cartItemId: item.id,
+              selectedSize: item.selectedSize,
+              selectedColor: item.selectedColor
+            }));
+            setCartItems(normalizedItems);
+          }
+        } catch (err) {
+          console.error('Error loading cart from backend:', err);
+        }
+
+        // Merge guest cart items with user cart
+        if (guestCart) {
+          const guestItems = JSON.parse(guestCart);
+          for (const item of guestItems) {
+            try {
+              await cartApi.addToCart(
+                item.id,
+                item.quantity,
+                item.selectedSize,
+                item.selectedColor
+              );
+            } catch (err) {
+              console.error('Error merging guest cart item:', err);
+            }
+          }
+          // Clear guest cart after merging
+          localStorage.removeItem(getStorageKey('cart', 'guest'));
+          // Reload cart to get updated data
+          await loadCart();
+        }
+
+        // Merge guest favorites with user favorites
+        if (guestFavorites) {
+          const guestFavs = JSON.parse(guestFavorites);
+          for (const productId of guestFavs) {
+            try {
+              await favoritesApi.addToFavorites(productId);
+            } catch (err) {
+              console.error('Error merging guest favorite:', err);
+            }
+          }
+          // Clear guest favorites after merging
+          localStorage.removeItem(getStorageKey('favorites', 'guest'));
+          // Reload favorites to get updated data
+          await loadFavorites();
+        }
+      } else {
+        // User logged out - load guest data
+        loadCart();
+        loadFavorites();
+      }
+    };
+
+    syncUserData();
   }, [user]);
 
   const addToCart = async (product, quantity = 1, selectedSize = null, selectedColor = null) => {

@@ -118,7 +118,7 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
                       </button>
                     </div>
                     <span className="font-semibold text-blue-500">
-                      {item.price}
+                      {item.price} EGP
                     </span>
                   </div>
                 </div>
@@ -132,7 +132,7 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
           <div className="border-t p-4 space-y-4 bg-gray-50">
             <div className="flex justify-between items-center text-lg font-bold">
               <span>Subtotal</span>
-              <span className="text-blue-500">{subtotal.toFixed(2)} EE</span>
+              <span className="text-blue-500">{subtotal.toFixed(2)} EGP</span>
             </div>
             <p className="text-xs text-gray-500 text-center">Shipping and taxes calculated at checkout.</p>
 

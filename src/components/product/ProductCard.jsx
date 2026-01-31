@@ -123,7 +123,7 @@ const ProductCard = ({ product, onQuickView }) => {
             {product.categoryDisplay || product.category?.name || product.category}
           </p>
           <p className="text-blue-500 font-semibold text-sm">
-            {typeof product.price === 'number' ? `${product.price.toFixed(2)} EE` : product.price}
+            {typeof product.price === 'number' ? `${product.price.toFixed(2)} EGP` : product.price + ` EGP`}
           </p>
         </div>
       </Link>

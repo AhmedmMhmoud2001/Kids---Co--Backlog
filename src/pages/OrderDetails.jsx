@@ -153,10 +153,10 @@ const OrderDetails = () => {
                                         </div>
                                         <div className="mt-3 flex items-center justify-between">
                                             <span className="text-blue-600 font-bold text-lg">
-                                                {parseFloat(item.priceAtPurchase).toFixed(2)} EE
+                                                {parseFloat(item.priceAtPurchase).toFixed(2)} EGP
                                             </span>
                                             <span className="text-sm text-gray-400">
-                                                Subtotal: {(parseFloat(item.priceAtPurchase) * item.quantity).toFixed(2)} EE
+                                                Subtotal: {(parseFloat(item.priceAtPurchase) * item.quantity).toFixed(2)} EGP
                                             </span>
                                         </div>
                                     </div>
@@ -174,21 +174,21 @@ const OrderDetails = () => {
                         <div className="space-y-4">
                             <div className="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
-                                <span>{parseFloat(order.subtotal || 0).toFixed(2)} EE</span>
+                                <span>{parseFloat(order.subtotal || 0).toFixed(2)} EGP</span>
                             </div>
                             <div className="flex justify-between text-gray-600">
                                 <span>Shipping Fees</span>
-                                <span>{parseFloat(order.shippingFee || 0).toFixed(2)} EE</span>
+                                <span>{parseFloat(order.shippingFee || 0).toFixed(2)} EGP</span>
                             </div>
                             {parseFloat(order.discount || 0) > 0 && (
                                 <div className="flex justify-between text-green-600 italic">
                                     <span>Discount</span>
-                                    <span>-{parseFloat(order.discount).toFixed(2)} EE</span>
+                                    <span>-{parseFloat(order.discount).toFixed(2)} EGP</span>
                                 </div>
                             )}
                             <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
                                 <span className="text-lg font-bold text-gray-900">Total</span>
-                                <span className="text-2xl font-bold text-blue-600">{parseFloat(order.totalAmount).toFixed(2)} EE</span>
+                                <span className="text-2xl font-bold text-blue-600">{parseFloat(order.totalAmount).toFixed(2)} EGP</span>
                             </div>
                         </div>
                     </div>

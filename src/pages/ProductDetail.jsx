@@ -108,17 +108,11 @@ const ProductDetail = () => {
           <div>
             <h1 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1.5 sm:mb-2 md:mb-3 leading-tight break-words">{product.name}</h1>
             <p className="text-xl sm:text-2xl md:text-3xl text-blue-500 font-semibold">
-              {typeof product.price === 'number' ? `${product.price.toFixed(2)} EE` : product.price}
+              {typeof product.price === 'number' ? `${product.price.toFixed(2)} EGP` : product.price + ' EGP'}
             </p>
           </div>
 
-          {/* Description */}
-          <div className="w-full max-w-full">
-            <h3 className="font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Description:</h3>
-            <p className="text-gray-600 text-xs sm:text-sm leading-relaxed break-words">
-              {product.description}
-            </p>
-          </div>
+
 
           {/* Color Selection */}
           {product.colors && (
@@ -194,6 +188,13 @@ const ProductDetail = () => {
             </button>
           </div>
 
+          {/* Description */}
+          <div className="w-full max-w-full">
+            <h3 className="font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Description:</h3>
+            <p className="text-gray-600 text-xs sm:text-sm leading-relaxed break-words">
+              {product.description}
+            </p>
+          </div>
           {/* Product Meta */}
           <div className="pt-4 sm:pt-6 border-t space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
             <div className="flex gap-2">

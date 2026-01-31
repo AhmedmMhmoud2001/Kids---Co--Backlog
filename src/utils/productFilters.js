@@ -152,10 +152,10 @@ export const applyFilters = (products, filters, category = null) => {
  */
 export const getPriceRangeText = (priceRange) => {
   const rangeMap = {
-    '0-1200': '0.00 - 1,200 EE',
-    '1200-2400': '1,200 - 2,400 EE',
-    '2400-3600': '2,400 - 3,600 EE',
-    '3600+': '3,600 EE +',
+    '0-1200': '0.00 - 1,200 EGP',
+    '1200-2400': '1,200 - 2,400 EGP',
+    '2400-3600': '2,400 - 3,600 EGP',
+    '3600+': '3,600 EGP +',
   };
   return rangeMap[priceRange] || priceRange;
 };

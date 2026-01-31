@@ -372,7 +372,7 @@ const Checkout = () => {
                   <div className="flex-1">
                     <h3 className="text-sm font-medium line-clamp-2">{item.name}</h3>
                     <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
-                    <p className="text-sm font-semibold text-blue-500">{item.price?.replace(' EE', ' EE')}</p>
+                    <p className="text-sm font-semibold text-blue-500">{item.price + ' EGP'}</p>
                   </div>
                 </div>
               ))}
@@ -384,24 +384,24 @@ const Checkout = () => {
             <div className="space-y-3">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Subtotal</span>
-                <span className="font-medium text-gray-900">{cartTotal.toFixed(2)} EE</span>
+                <span className="font-medium text-gray-900">{cartTotal.toFixed(2)} EGP</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Shipping</span>
-                <span className="font-medium text-gray-900">{shipping.toFixed(2)} EE</span>
+                <span className="font-medium text-gray-900">{shipping.toFixed(2)} EGP</span>
               </div>
 
               {appliedCoupon && (
                 <div className="flex justify-between text-sm text-emerald-600 font-medium">
                   <span>Discount ({appliedCoupon.code})</span>
-                  <span>-{Number(appliedCoupon.discount || 0).toFixed(2)} EE</span>
+                  <span>-{Number(appliedCoupon.discount || 0).toFixed(2)} EGP</span>
                 </div>
               )}
 
               <hr />
               <div className="flex justify-between text-lg font-bold text-gray-900">
                 <span>Total</span>
-                <span className="text-blue-600">{total.toFixed(2)} EE</span>
+                <span className="text-blue-600">{total.toFixed(2)} EGP</span>
               </div>
             </div>
 

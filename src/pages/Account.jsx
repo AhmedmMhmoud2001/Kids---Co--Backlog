@@ -412,7 +412,7 @@ const Account = () => {
                           {order.items?.length || 0} items
                         </div>
                         <div className="text-lg font-semibold text-blue-500">
-                          {parseFloat(order.totalAmount).toFixed(2)} EE
+                          {parseFloat(order.totalAmount).toFixed(2)} EGP
                         </div>
                       </div>
 

@@ -65,10 +65,10 @@ const FilterSidebar = ({ onFilterChange, filters = {}, audience }) => {
 
   const priceRanges = [
     { value: 'all', label: 'All' },
-    { value: '0-1200', label: '0.00 EE - 1,200 EE' },
-    { value: '1200-2400', label: '1,200 EE - 2,400 EE' },
-    { value: '2400-3600', label: '2,400 EE - 3,600 EE' },
-    { value: '3600+', label: '3,600 EE +' },
+    { value: '0-1200', label: '0.00 EGP - 1,200 EGP' },
+    { value: '1200-2400', label: '1,200 EGP - 2,400 EGP' },
+    { value: '2400-3600', label: '2,400 EGP - 3,600 EGP' },
+    { value: '3600+', label: '3,600 EGP +' },
   ];
 
   return (

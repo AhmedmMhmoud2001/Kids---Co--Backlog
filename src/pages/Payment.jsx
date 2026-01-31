@@ -325,12 +325,12 @@ const Payment = () => {
                   {cartItems.reduce((total, item) => {
                     const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
                     return total + price * item.quantity;
-                  }, 0).toFixed(2)} EE
+                  }, 0).toFixed(2)} EGP
                 </span>
               </div>
               <div className="flex justify-between text-xs sm:text-sm">
                 <span className="text-gray-600">Shipping</span>
-                <span className="font-medium">150.00 EE</span>
+                <span className="font-medium">150.00 EGP</span>
               </div>
               <hr />
               <div className="flex justify-between text-base sm:text-lg font-bold">
@@ -339,7 +339,7 @@ const Payment = () => {
                   {(cartItems.reduce((total, item) => {
                     const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
                     return total + price * item.quantity;
-                  }, 0) + 150).toFixed(2)} EE
+                  }, 0) + 150).toFixed(2)} EGP
                 </span>
               </div>
             </div>

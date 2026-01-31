@@ -35,7 +35,7 @@ const CartItem = ({ item, onRemove, onQuantityChange }) => {
         <Link to={`/product/${item.id}`} className="hover:text-blue-500 transition-colors">
           <h3 className="font-medium text-sm mb-1">{item.name}</h3>
         </Link>
-        <p className="text-blue-500 font-semibold">{item.price}</p>
+        <p className="text-blue-500 font-semibold">{item.price} EGP</p>
       </div>
 
       {/* Quantity Controls - Hidden on Mobile Cart Sidebar */}

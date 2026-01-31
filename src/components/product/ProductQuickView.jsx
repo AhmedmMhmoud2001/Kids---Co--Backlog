@@ -89,18 +89,10 @@ const ProductQuickView = ({ product, onClose }) => {
 
             {/* Price */}
             <div className="text-[24px] font-bold text-[#63adfc]">
-              {typeof product.price === 'number' ? `${product.price.toFixed(2)} EE` : product.price}
+              {typeof product.price === 'number' ? `${product.price.toFixed(2)} EGP` : product.price + ` EGP`}
             </div>
 
-            {/* Description */}
-            <div className="flex flex-col gap-2">
-              <h3 className="text-[16px] font-semibold text-[#333]">
-                Description:
-              </h3>
-              <p className="text-[16px] text-[#767676] leading-relaxed">
-                {product.description}
-              </p>
-            </div>
+
 
             {/* Color Selection */}
             {product.colors && (
@@ -175,6 +167,15 @@ const ProductQuickView = ({ product, onClose }) => {
               >
                 Add to cart
               </button>
+            </div>
+            {/* Description */}
+            <div className="flex flex-col gap-2">
+              <h3 className="text-[16px] font-semibold text-[#333]">
+                Description:
+              </h3>
+              <p className="text-[16px] text-[#767676] leading-relaxed">
+                {product.description}
+              </p>
             </div>
 
             {/* Divider */}
