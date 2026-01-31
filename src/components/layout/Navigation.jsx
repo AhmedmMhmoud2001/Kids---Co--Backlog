@@ -21,11 +21,11 @@ const Navigation = () => {
 
       // Don't load if no audience is available
       if (!effectiveAudience) {
-        console.log('Navigation: No audience available');
+
         return;
       }
 
-      console.log('Navigation: Loading categories for audience:', effectiveAudience);
+
       setLoading(true);
       try {
         const res = await fetchCategories(effectiveAudience);
@@ -39,7 +39,6 @@ const Navigation = () => {
             path: `/category/${cat.slug}`
           }));
           setCategories(mappedCategories);
-          console.log('Navigation: Loaded', mappedCategories.length, 'categories');
         }
       } catch (error) {
         console.error('Error loading navigation categories:', error);
@@ -92,7 +91,7 @@ const Navigation = () => {
             // Check if this category is active by comparing pathnames
             const isActive = location.pathname === category.path;
 
-            console.log('Navigation Link:', category.name, '-> targetPath:', targetPath, 'isActive:', isActive);
+
 
             return (
               <li key={category.id || category.path}>

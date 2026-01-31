@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { updateProfile } from "../api/auth";
 import { fetchMyOrders } from "../api/orders";
@@ -8,7 +8,10 @@ const Account = () => {
   const navigate = useNavigate();
   const { user: currentUser, logout, login } = useApp();
 
-  const [activeTab, setActiveTab] = useState("profile");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialTab = queryParams.get("tab") || "profile";
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",

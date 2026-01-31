@@ -92,7 +92,8 @@ const Checkout = () => {
         country: formData.country
       },
       shippingFee: shipping,
-      discount: discount
+      discount: discount,
+      couponCode: appliedCoupon ? appliedCoupon.code : null
     };
 
     console.log('Sending order data:', orderData);
@@ -101,10 +102,9 @@ const Checkout = () => {
       const response = await createOrder(orderData);
       console.log('Order response:', response);
       if (response.success) {
-        alert('Order placed successfully!');
         clearCart();
         setAppliedCoupon(null);
-        navigate('/account');
+        navigate('/account?tab=orders');
       } else {
         setError(response.message || 'Failed to place order');
       }
@@ -365,7 +365,7 @@ const Checkout = () => {
               {cartItems.map((item) => (
                 <div key={item.id} className="flex gap-4">
                   <img
-                    src={item.image}
+                    src={item.image || null}
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded"
                   />

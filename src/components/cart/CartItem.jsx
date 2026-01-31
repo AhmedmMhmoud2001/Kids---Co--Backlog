@@ -24,7 +24,7 @@ const CartItem = ({ item, onRemove, onQuantityChange }) => {
       {/* Product Image */}
       <Link to={`/product/${item.id}`} className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 block">
         <img
-          src={item.image}
+          src={item.image || null}
           alt={item.name}
           className="w-full h-full object-cover hover:opacity-80 transition-opacity"
         />

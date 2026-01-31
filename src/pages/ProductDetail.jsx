@@ -9,7 +9,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { addToCart } = useApp();
+  const { addToCart, setIsCartOpen } = useApp();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
@@ -53,7 +53,7 @@ const ProductDetail = () => {
     const color = product.colors?.[selectedColor];
     addToCart(product, quantity, size, color);
     // Optional: Show success message or redirect
-    alert('Product added to cart!');
+    setIsCartOpen(true);
   };
 
   return (
@@ -75,7 +75,7 @@ const ProductDetail = () => {
             {/* Main Image */}
             <div className="order-1 sm:order-2 w-full sm:flex-1 h-[250px] xs:h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] overflow-hidden rounded">
               <img
-                src={images[selectedImage]}
+                src={images[selectedImage] || null}
                 alt={product.name}
                 className="w-full h-full object-contain bg-gray-50"
               />
@@ -93,7 +93,7 @@ const ProductDetail = () => {
                     }`}
                 >
                   <img
-                    src={img}
+                    src={img || null}
                     alt={`Thumbnail ${idx + 1}`}
                     className="w-full h-full object-cover"
                   />

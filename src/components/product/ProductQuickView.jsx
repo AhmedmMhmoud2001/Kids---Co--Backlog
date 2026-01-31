@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 
 const ProductQuickView = ({ product, onClose }) => {
-  const { addToCart } = useApp();
+  const { addToCart, setIsCartOpen } = useApp();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
@@ -19,7 +19,7 @@ const ProductQuickView = ({ product, onClose }) => {
     const size = product.sizes?.[selectedSize];
     addToCart(product, quantity, size, color);
     // Optional: Show success message
-    alert('Product added to cart!');
+    setIsCartOpen(true);
     onClose();
   };
 
@@ -43,7 +43,7 @@ const ProductQuickView = ({ product, onClose }) => {
                     }`}
                 >
                   <img
-                    src={img}
+                    src={img || null}
                     alt={`Thumbnail ${idx + 1}`}
                     className="w-full h-full object-cover"
                   />
@@ -55,7 +55,7 @@ const ProductQuickView = ({ product, onClose }) => {
             <div className="flex-1 h-[600px] overflow-hidden">
               <Link to={`/product/${product.id}`} onClick={onClose}>
                 <img
-                  src={images[selectedImage]}
+                  src={images[selectedImage] || null}
                   alt={product.name}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-zoom-in"
                 />

@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { products as staticProducts } from '../data/products';
 import { useApp } from '../context/AppContext';
 import ProductGrid from '../components/product/ProductGrid';
 import ProductQuickView from '../components/product/ProductQuickView';
 import { fetchFavorites } from '../api/favorites';
-import { normalizeProduct } from '../api/products';
+import { normalizeProduct, fetchProductById } from '../api/products';
 
 const Favorites = () => {
   const { favorites, user } = useApp();
@@ -16,8 +15,26 @@ const Favorites = () => {
   useEffect(() => {
     const loadFavoriteProducts = async () => {
       if (!user) {
-        // For guests, use static products filter (existing behavior)
-        setFavoriteProducts(staticProducts.filter(p => favorites.includes(p.id)));
+        // For guests, fetch individual product details from backend if we have IDs
+        if (favorites.length === 0) {
+          setFavoriteProducts([]);
+          return;
+        }
+
+        try {
+          setIsLoading(true);
+          const productPromises = favorites.map(id => fetchProductById(id));
+          const results = await Promise.all(productPromises);
+          const prods = results
+            .filter(res => res.success && res.data)
+            .map(res => res.data);
+          setFavoriteProducts(prods);
+        } catch (err) {
+          console.error('Error loading guest favorites:', err);
+          setFavoriteProducts([]);
+        } finally {
+          setIsLoading(false);
+        }
         return;
       }
 

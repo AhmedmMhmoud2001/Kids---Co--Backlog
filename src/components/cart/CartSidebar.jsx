@@ -71,7 +71,7 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
                 {/* Product Image - Sharp */}
                 <div className="w-20 h-24 shrink-0 overflow-hidden border border-gray-100">
                   <img
-                    src={item.image}
+                    src={item.image || null}
                     alt={item.name}
                     className="w-full h-full object-cover"
                   />

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { initialCartItems } from '../data/products';
+import { useApp } from '../context/AppContext';
 
 const Payment = () => {
   const navigate = useNavigate();
-  const [cartItems] = useState(initialCartItems);
+  const { cartItems } = useApp();
   const [paymentData, setPaymentData] = useState({
     cardNumber: '',
     cardName: '',
@@ -302,7 +302,7 @@ const Payment = () => {
               {cartItems.map((item) => (
                 <div key={item.id} className="flex gap-3 sm:gap-4">
                   <img
-                    src={item.image}
+                    src={item.image || null}
                     alt={item.name}
                     className="w-14 h-14 sm:w-16 sm:h-16 object-cover flex-shrink-0"
                   />

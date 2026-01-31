@@ -46,7 +46,7 @@ const CategoriesSectionHome2 = ({
 
                 {/* ✅ Product Image (خارجة) + ✅ hover عليها فقط */}
                 <img
-                  src={category.image}
+                  src={category.image || null}
                   alt={category.name}
                   className="
                     absolute left-1/2 top-10 -translate-x-1/2

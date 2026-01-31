@@ -59,7 +59,7 @@ const BrandsSection = () => {
             {/* حاوية ثابتة عشان كل الصور تبقى قصاد بعض */}
             <div className="h-16 w-full flex items-center justify-center cursor-pointer group px-4">
               <img
-                src={item.image}
+                src={item.image || null}
                 alt={item.name}
                 className="h-full w-full p-3 object-contain filter grayscale opacity-70 hover:grayscale-0 hover:opacity-100 hover:scale-105 transition-all duration-300"
                 loading="lazy"

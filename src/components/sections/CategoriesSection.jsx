@@ -51,7 +51,7 @@ const CategoriesSection = ({
             >
               <div className={`aspect-square  rounded-full overflow-hidden mb-3  shadow-md ${getCategoryClasses(category)}`}>
                 <img
-                  src={category.image}
+                  src={category.image || null}
                   alt={category.name}
                   className="relative w-full h-full object-cover object-center z-10"
                   loading="lazy"

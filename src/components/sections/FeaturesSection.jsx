@@ -43,10 +43,10 @@ const FeaturesSection = ({ features = [], className = '' }) => {
             <div key={idx} className="text-center group">
               <div className="flex justify-center mb-3 sm:mb-4">
                 <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                  <img 
-                    src={iconSrc} 
-                    alt={featureData.title} 
-                    className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain" 
+                  <img
+                    src={iconSrc || null}
+                    alt={featureData.title}
+                    className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain"
                   />
                 </div>
               </div>
