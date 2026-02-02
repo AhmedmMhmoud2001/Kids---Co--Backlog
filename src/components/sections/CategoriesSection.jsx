@@ -26,12 +26,21 @@ const CategoriesSection = ({
     return categoryPathMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, '-');
   };
   const getCategoryClasses = (category) => {
-    if (category.bgcolor === "blue") {
-      return "text-gray-700 hover:text-[#63adfc] bg-gray-100 hover:bg-blue-200 transition-colors duration-700 ease-in-out ";
-    } else if (category.bgcolor === "pink") {
-      return "text-gray-700 hover:text-[#ff92a5] bg-gray-100 hover:bg-[#f1a6b3] transition-colors duration-700 ease-in-out border-b-2 border-transparent hover:border-[#ff92a5]";
+    const name = category.name.toLowerCase();
+    const isBoy = name.includes('boy');
+    const isGirl = name.includes('girl');
+
+    const baseClasses = "text-gray-700 bg-gray-50 border-2 border-gray-100/50 transition-all duration-700 shadow-sm group-hover:shadow-md";
+
+    if (isBoy) {
+      return `${baseClasses} hover:bg-blue-50 hover:border-blue-200`;
     }
-    return "relative overflow-hidden text-gray-700 hover:text-[#ff92a5] bg-gray-100  border-b-2 border-transparent hover:border-[#ff92a5] before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-200 before:to-[#f1a6b3] before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700 before:ease-in-out before:z-0 ";
+    if (isGirl) {
+      return `${baseClasses} hover:bg-pink-50 hover:border-pink-200`;
+    }
+
+    // لبيقة التصنيفات: تدريج ناعم عند الـ Hover
+    return `${baseClasses} hover:bg-gradient-to-br hover:from-pink-100/20 hover:to-blue-100/20 hover:border-blue-200`;
   };
 
 

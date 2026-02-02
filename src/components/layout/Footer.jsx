@@ -47,8 +47,6 @@ const Footer = () => {
               <li><Link to="/contact" className="hover:text-gray-900 transition-colors">Contact Us</Link></li>
               <li><Link to="/delivery" className="hover:text-gray-900 transition-colors">Delivery & Return</Link></li>
               <li><Link to="/brands" className="hover:text-gray-900 transition-colors">Our Brands</Link></li>
-              <li><Link to="/terms" className="hover:text-gray-900 transition-colors">Terms & Conditions</Link></li>
-              <li><Link to="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
 
@@ -74,8 +72,6 @@ const Footer = () => {
             <Link to="/faqs" className="text-sm text-gray-600 hover:text-gray-900 py-2">FAQs</Link>
             <Link to="/contact" className="text-sm text-gray-600 hover:text-gray-900 py-2">Contact Us</Link>
             <Link to="/delivery" className="text-sm text-gray-600 hover:text-gray-900 py-2">Delivery</Link>
-            <Link to="/terms" className="text-sm text-gray-600 hover:text-gray-900 py-2">Terms</Link>
-            <Link to="/privacy" className="text-sm text-gray-600 hover:text-gray-900 py-2">Privacy</Link>
           </div>
         </div>
 

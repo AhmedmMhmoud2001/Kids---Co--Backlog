@@ -14,6 +14,9 @@ import Payment from './pages/Payment';
 import Favorites from './pages/Favorites';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import OAuthCallback from './pages/OAuthCallback';
 import Account from './pages/Account';
 import About from './pages/About';
 import FAQs from './pages/FAQs';
@@ -21,8 +24,12 @@ import Contact from './pages/Contact';
 import Delivery from './pages/Delivery';
 import Brands from './pages/Brands';
 import OrderDetails from './pages/OrderDetails';
+import Invoice from './pages/Invoice';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import EditOrder from './pages/EditOrder';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailed from './pages/PaymentFailed';
 
 function App() {
   return (
@@ -40,6 +47,8 @@ function App() {
             <Route path="cart" element={<Cart />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="payment" element={<Payment />} />
+            <Route path="payment-success" element={<PaymentSuccess />} />
+            <Route path="payment-failed" element={<PaymentFailed />} />
             <Route path="favorites" element={<Favorites />} />
             <Route path="account" element={<Account />} />
             <Route path="about" element={<About />} />
@@ -50,12 +59,17 @@ function App() {
             <Route path="terms" element={<TermsAndConditions />} />
             <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="account/orders/:id" element={<OrderDetails />} />
+            <Route path="account/orders/:id/edit" element={<EditOrder />} />
+            <Route path="account/orders/:id/invoice" element={<Invoice />} />
           </Route>
 
           {/* Auth Layout - Simple layout for auth pages */}
           <Route element={<AuthLayout />}>
             <Route path="signin" element={<SignIn />} />
             <Route path="signup" element={<SignUp />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="reset-password" element={<ResetPassword />} />
+            <Route path="oauth-callback" element={<OAuthCallback />} />
           </Route>
         </Routes>
       </Router>

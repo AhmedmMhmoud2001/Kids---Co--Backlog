@@ -7,6 +7,7 @@ import MobileMenu from "./MobileMenu";
 import SearchModal from "../search/SearchModal";
 import { NavLink } from "react-router-dom";
 import { fetchCategories } from "../../api/categories";
+import { Search, Heart, User, ShoppingBag, Menu } from "lucide-react";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -59,20 +60,9 @@ const Header = () => {
             <button
               onClick={() => setShowMobileMenu(true)}
               className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+              aria-label="Open menu"
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+              <Menu className="w-6 h-6 text-gray-700" />
             </button>
 
             {/* Logo */}
@@ -121,46 +111,23 @@ const Header = () => {
             </div>
 
             {/* Right Icons */}
-            <div className=" hidden lg:inline-flex items-center gap-2 lg:gap-4">
+            <div className="hidden lg:flex items-center gap-1 sm:gap-2">
               {/* Search Icon */}
               <button
                 onClick={() => setShowSearchModal(true)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
                 aria-label="Search"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+                <Search className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors" />
               </button>
 
               {/* Favorites Icon */}
               <Link
                 to="/favorites"
-                className="p-2 hover:bg-gray-100 rounded-full relative"
+                className="p-2 hover:bg-gray-100 rounded-full relative group transition-colors"
+                aria-label="Favorites"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
+                <Heart className="w-5 h-5 text-gray-700 group-hover:text-red-500 transition-colors" />
                 {favoritesCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                     {favoritesCount}
@@ -173,20 +140,9 @@ const Header = () => {
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="User menu"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
+                  <User className="w-5 h-5 text-gray-700" />
                 </button>
 
                 {/* User Dropdown Menu */}
@@ -326,21 +282,10 @@ const Header = () => {
               {/* Cart Icon */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="p-2 hover:bg-gray-100 rounded-full relative transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-full relative transition-colors group"
+                aria-label="Shopping cart"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
+                <ShoppingBag className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors" />
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                     {cartCount}

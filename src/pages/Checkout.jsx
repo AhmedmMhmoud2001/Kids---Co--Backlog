@@ -104,7 +104,15 @@ const Checkout = () => {
       if (response.success) {
         clearCart();
         setAppliedCoupon(null);
-        navigate('/account?tab=orders');
+        
+        // If CARD payment, redirect to payment page
+        if (formData.paymentMethod === 'CARD') {
+          const orderId = response.data?.id || response.data?.order?.id;
+          navigate(`/payment?orderId=${orderId}`);
+        } else {
+          // COD - go to orders page
+          navigate('/account?tab=orders');
+        }
       } else {
         setError(response.message || 'Failed to place order');
       }
@@ -418,7 +426,11 @@ const Checkout = () => {
               disabled={loading}
               className={`block w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-blue-200 active:scale-95 text-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {loading ? 'Processing...' : 'Place Order'}
+              {loading 
+                ? 'Processing...' 
+                : formData.paymentMethod === 'CARD' 
+                  ? 'Continue to Payment' 
+                  : 'Place Order'}
             </button>
 
             {/* Security Note */}

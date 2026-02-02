@@ -31,8 +31,9 @@ const About = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="container mx-auto px-4 py-8 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500">
+        </div>
       </div>
     );
   }
@@ -54,13 +55,24 @@ const About = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-8">
-      <div className="max-w-4xl mx-auto">
+      <div className=" mx-auto">
         <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">{pageData.title}</h1>
+        <div className="max-w-7xl overflow-hidden">
+          <div
+            className="
+                      prose 
+                      prose-gray 
+                      max-w-none
+                      break-words
+                      overflow-wrap-anywhere
+                      prose-a:break-all
+                      prose-pre:whitespace-pre-wrap
+                    "
+            dangerouslySetInnerHTML={{ __html: pageData.content }}
+          />
+        </div>
 
-        <div
-          className="prose prose-lg max-w-none space-y-6 text-gray-700"
-          dangerouslySetInnerHTML={{ __html: pageData.content }}
-        />
+
 
         <div className="mt-8">
           <Link

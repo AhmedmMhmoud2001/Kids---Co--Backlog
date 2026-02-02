@@ -42,3 +42,28 @@ export const fetchOrderById = async (id) => {
         return { success: false, message: error.message };
     }
 };
+export const updateOrderDetails = async (id, data) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/orders/${id}/details`, {
+            method: 'PATCH',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+        return await response.json();
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+};
+
+export const updateOrderItems = async (id, items) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/orders/${id}/items`, {
+            method: 'PATCH',
+            headers: getHeaders(),
+            body: JSON.stringify({ items })
+        });
+        return await response.json();
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+};

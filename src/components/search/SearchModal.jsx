@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import ProductCard from '../product/ProductCard';
 import ProductQuickView from '../product/ProductQuickView';
 import { useApp } from '../../context/AppContext';
 import { fetchProducts } from '../../api/products';
+import { Search, X, Loader2, ArrowRight, CornerDownLeft } from 'lucide-react';
 
 const SearchModal = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,12 +14,24 @@ const SearchModal = ({ isOpen, onClose }) => {
   const { audience } = useApp();
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Focus input when modal opens
+  // Close modal when location changes
+  useEffect(() => {
+    if (isOpen) {
+      onClose();
+    }
+  }, [location.pathname]);
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+      setTimeout(() => inputRef.current.focus(), 100);
     }
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
   // Fetch search results from backend
@@ -51,7 +64,7 @@ const SearchModal = ({ isOpen, onClose }) => {
   }, [searchQuery, audience]);
 
   const handleSearch = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/shop?search=${encodeURIComponent(searchQuery)}&audience=${audience}`);
       onClose();
@@ -68,111 +81,119 @@ const SearchModal = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Overlay */}
+      {/* Search Modal Overlay */}
       <div
-        className="fixed inset-0 bg-black/50 z-50 transition-opacity duration-300"
-        onClick={onClose}
-      />
-
-      {/* Search Modal */}
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+        className="fixed inset-0 z-[100] flex items-start justify-center pt-2 md:pt-20 px-0 md:px-4"
+        onKeyDown={handleKeyDown}
+      >
+        {/* Backdrop glassmorphism */}
         <div
-          className="bg-white shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-2 right-2 p-2 hover:bg-gray-100 transition-colors z-10"
-          >
-            <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          className="fixed inset-0 bg-white/80 backdrop-blur-xl animate-fade-in"
+          onClick={onClose}
+        />
 
-          {/* Search Input */}
-          <div className="p-6 border-b pt-10">
-            <form onSubmit={handleSearch} className="flex gap-2">
-              <div className="flex-1 relative">
+        {/* Modal Container */}
+        <div className="bg-white w-full max-w-4xl max-h-[100vh] md:max-h-[85vh] md:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden flex flex-col relative animate-slide-in-bottom">
+
+          {/* Header Area */}
+          <div className="p-6 md:p-8 border-b border-gray-100 bg-white/50 sticky top-0 z-10">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-2">
+                <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">Search</span>
+                <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter">Find something special</h2>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 rounded-full transition-all group"
+              >
+                <X className="w-6 h-6 text-gray-400 group-hover:text-gray-900 group-hover:rotate-90 transition-all duration-300" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSearch} className="relative group">
+              <div className="relative flex items-center">
+                <Search className="absolute left-5 w-6 h-6 text-gray-300 group-focus-within:text-blue-600 transition-colors" />
                 <input
                   ref={inputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Search for products"
-                  className="w-full px-4 py-3 border border-gray-300 bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={`Search in ${audience === 'NEXT' ? 'NEXT' : 'KIDS'}...`}
+                  className="w-full pl-16 pr-24 py-5 bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl text-xl font-bold text-gray-900 placeholder-gray-300 outline-none transition-all"
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+
+                <div className="absolute right-5 flex items-center gap-3">
+                  {isLoading ? (
+                    <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+                  ) : searchQuery.trim() && (
+                    <button
+                      type="submit"
+                      className="hidden md:flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase transition-all shadow-lg shadow-blue-200 active:scale-95"
+                    >
+                      Search
+                      <CornerDownLeft className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               </div>
-              <button
-                type="submit"
-                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors"
-              >
-                Search
-              </button>
             </form>
           </div>
 
-          {/* Search Results */}
-          <div className="flex-1 overflow-y-auto p-6">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-gray-500">Searching for products...</p>
+          {/* Results Area */}
+          <div className="flex-1 overflow-y-auto p-6 md:p-8 scrollbar-hide">
+            {!searchQuery.trim() ? (
+              <div className="text-center py-20 animate-fade-in">
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Search className="w-10 h-10 text-gray-200" />
+                </div>
+                <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter mb-2">Start searching</h3>
+                <p className="text-gray-400 max-w-xs mx-auto text-sm">
+                  Type to search for products in {audience === 'NEXT' ? 'NEXT' : 'KIDS'}...
+                </p>
               </div>
-            ) : searchQuery.trim() ? (
-              searchResults.length > 0 ? (
-                <div>
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-600">
-                      Found {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} for "{searchQuery}"
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {searchResults.map((product) => (
-                      <div key={product.id} className="border p-4 hover:shadow-md transition-shadow">
-                        <ProductCard
-                          product={product}
-                          onQuickView={setSelectedProduct}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  {searchResults.length >= 8 && (
-                    <div className="mt-4 text-center">
-                      <Link
-                        to={`/shop?search=${encodeURIComponent(searchQuery)}&audience=${audience}`}
-                        onClick={onClose}
-                        className="text-blue-500 hover:text-blue-600 font-medium"
-                      >
-                        View all results →
-                      </Link>
+            ) : searchResults.length > 0 ? (
+              <div className="animate-fade-in">
+                <div className="flex items-center justify-between mb-6">
+                  <p className="text-sm font-bold text-gray-500 uppercase">
+                    Displaying results for <span className="text-gray-900">"{searchQuery}"</span>
+                  </p>
+                  <Link
+                    to={`/shop?search=${encodeURIComponent(searchQuery)}&audience=${audience}`}
+                    onClick={onClose}
+                    className="flex items-center gap-2 text-blue-600 text-xs font-black uppercase tracking-wider hover:underline"
+                  >
+                    View Collection
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                  {searchResults.map((product) => (
+                    <div key={product.id} className="group cursor-pointer">
+                      <ProductCard
+                        product={product}
+                        onQuickView={setSelectedProduct}
+                      />
                     </div>
-                  )}
+                  ))}
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">No products found</h3>
-                  <p className="text-gray-500">Try searching with different keywords in the current category</p>
+              </div>
+            ) : !isLoading && (
+              <div className="text-center py-20 animate-fade-in">
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Search className="w-10 h-10 text-gray-200" />
                 </div>
-              )
-            ) : (
-              <div className="text-center py-12">
-                <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Start searching</h3>
-                <p className="text-gray-500">Type to search for products in {audience === 'NEXT' ? 'NEXT' : 'KIDS'}</p>
+                <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter mb-2">No matches found</h3>
+                <p className="text-gray-400 max-w-xs mx-auto text-sm">
+                  We couldn't find anything matching your search. Try checking your spelling or use more general terms.
+                </p>
               </div>
             )}
+          </div>
+
+          {/* Footer Area */}
+          <div className="p-4 bg-gray-50 border-t border-gray-100 text-center">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Press <kbd className="px-1.5 py-0.5 bg-white border border-gray-200 rounded-md text-gray-900 shadow-sm mx-1">ESC</kbd> to close</p>
           </div>
         </div>
       </div>
@@ -189,4 +210,5 @@ const SearchModal = ({ isOpen, onClose }) => {
 };
 
 export default SearchModal;
+
 
