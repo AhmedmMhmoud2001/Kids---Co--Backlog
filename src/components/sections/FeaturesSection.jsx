@@ -1,5 +1,5 @@
 import Section from '../common/Section';
-import icon1 from '../../assets/truck-delivery.png';
+import icon1 from '../../assets/truck-delivery.webp';
 import icon2 from '../../assets/card-tick.svg';
 import icon3 from '../../assets/delivery-return-01.svg';
 import icon4 from '../../assets/customer-support.svg';

@@ -8,14 +8,15 @@ import FilterSidebarWrapper from "../components/filter/FilterSidebarWrapper";
 import ProductQuickView from "../components/product/ProductQuickView";
 import Pagination from "../components/common/Pagination";
 import EmptyState from "../components/common/EmptyState";
+import Loading from "../components/common/Loading";
 import { applyFilters } from "../utils/productFilters";
-import { fetchProducts } from "../api/products";
+import { useProducts } from "../hooks/useProducts";
 import { useApp } from "../context/AppContext";
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
   const queryAudience = searchParams.get('audience');
-  const search = searchParams.get('search'); // Get search query from URL
+  const search = searchParams.get('search');
   const { audience: contextAudience, setAudience } = useApp();
 
   // URL param takes priority over context
@@ -26,10 +27,23 @@ const Shop = () => {
     if (queryAudience && queryAudience !== contextAudience) {
       setAudience(queryAudience);
     }
-  }, [queryAudience]); // Only depend on queryAudience to avoid infinite loop
+  }, [queryAudience, contextAudience, setAudience]);
 
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // ✅ استخدام React Query للـ caching - تلقائي مع auto-refetch
+  const { 
+    data: products = [], 
+    isLoading, 
+    isError,
+    error,
+    refetch 
+  } = useProducts(
+    { audience, search },
+    {
+      // Keep previous data while fetching new
+      placeholderData: (previousData) => previousData,
+    }
+  );
+
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState("grid-4");
   const [itemsPerPage, setItemsPerPage] = useState(15);
@@ -43,22 +57,6 @@ const Shop = () => {
     selectedBrands: [],
   });
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setIsLoading(true);
-        // Pass both audience and search to the API
-        const res = await fetchProducts({ audience, search });
-        setProducts(res.data || []);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadProducts();
-  }, [audience, search]); // React to audience or search changes
-
   // Reset page and close filters on audience/search change
   useEffect(() => {
     setCurrentPage(1);
@@ -66,7 +64,7 @@ const Shop = () => {
     window.scrollTo(0, 0);
   }, [audience, search]);
 
-  // ✅ اقفل سكرول الصفحة لما الفلاتر مفتوحة على الموبايل (Overlay)
+  // Lock body scroll when filters are open on mobile
   useEffect(() => {
     if (showFilters) {
       document.body.style.overflow = "hidden";
@@ -97,7 +95,7 @@ const Shop = () => {
     setCurrentPage(1);
   }, []);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setFilters({
       sortBy: "popularity",
       priceRange: "all",
@@ -105,7 +103,7 @@ const Shop = () => {
       selectedBrands: [],
     });
     setCurrentPage(1);
-  };
+  }, []);
 
   const hasActiveFilters =
     filters.priceRange !== "all" ||
@@ -120,6 +118,25 @@ const Shop = () => {
   const handleRemovePriceFilter = () => {
     setFilters({ ...filters, priceRange: "all" });
   };
+
+  // Error state
+  if (isError) {
+    return (
+      <Container className="py-5 sm:py-8 px-3 sm:px-6">
+        <div className="text-center py-12">
+          <p className="text-red-500 mb-4">
+            حدث خطأ في تحميل المنتجات: {error?.message}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            حاول مرة أخرى
+          </button>
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container className="py-5 sm:py-8 px-3 sm:px-6">
@@ -149,7 +166,7 @@ const Shop = () => {
 
       {/* Main Content */}
       <div className="relative">
-        {/* ✅ Overlay على الموبايل لما الفلاتر مفتوحة */}
+        {/* Overlay on mobile when filters are open */}
         {showFilters && (
           <button
             aria-label="Close filters overlay"
@@ -163,7 +180,11 @@ const Shop = () => {
 
         {/* Products Grid */}
         <div className={showFilters ? "lg:mr-80" : ""}>
-          {paginatedProducts.length > 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loading />
+            </div>
+          ) : paginatedProducts.length > 0 ? (
             <>
               <ProductGrid
                 products={paginatedProducts}
@@ -191,8 +212,7 @@ const Shop = () => {
           )}
         </div>
 
-        {/* ✅ Sidebar: على الموبايل يبقى fixed overlay (ده غالبًا جوه FilterSidebarWrapper)
-            بس احنا كمان بنخليه ياخد z-index أعلى من overlay */}
+        {/* Filter Sidebar */}
         <div className="relative z-50">
           <FilterSidebarWrapper
             isOpen={showFilters}

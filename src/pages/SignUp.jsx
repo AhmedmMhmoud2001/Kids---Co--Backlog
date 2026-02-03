@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { registerUser } from '../api/auth';
+import { registerUser, verifyEmail, resendVerificationCode, checkEmail } from '../api/auth';
 import { API_BASE_URL } from '../api/config';
 
 const SignUp = () => {
   const navigate = useNavigate();
   const { login } = useApp();
+  const [step, setStep] = useState('register'); // 'register' | 'verify'
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,8 +16,21 @@ const SignUp = () => {
     confirmPassword: '',
     agreeToTerms: false,
   });
+  const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
+  const [fieldError, setFieldError] = useState({ field: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  
+  const codeInputRefs = useRef([]);
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   // OAuth handlers
   const handleGoogleLogin = () => {
@@ -27,12 +41,40 @@ const SignUp = () => {
     window.location.href = `${API_BASE_URL}/auth/facebook`;
   };
 
+  // Validate email on blur
+  const handleEmailBlur = async () => {
+    if (!formData.email) return;
+    
+    try {
+      const result = await checkEmail(formData.email);
+      if (!result.isValid) {
+        setFieldError({ field: 'email', message: result.error || 'Invalid email address' });
+      } else if (result.isDisposable) {
+        setFieldError({ field: 'email', message: 'Disposable emails are not allowed' });
+      } else if (result.warning) {
+        setFieldError({ field: 'email', message: result.warning });
+      } else {
+        setFieldError({ field: '', message: '' });
+      }
+    } catch {
+      // Ignore check errors
+    }
+  };
+
+  // Registration form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldError({ field: '', message: '' });
 
+    // Validations
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setFieldError({ field: 'password', message: 'Password must be at least 6 characters' });
       return;
     }
 
@@ -47,19 +89,110 @@ const SignUp = () => {
       const res = await registerUser(formData);
 
       if (res.success) {
-        // Store token
-        localStorage.setItem('authToken', res.data.token);
-
-        // Auto login after registration
-        login(res.data.user);
-
-        // Navigate to homepage
-        navigate('/');
+        // Check if verification is required
+        if (res.data.requiresVerification) {
+          setStep('verify');
+          setResendCooldown(60);
+        } else if (res.data.user) {
+          // Direct login (verification skipped, token in httpOnly cookie)
+          login(res.data);
+          navigate('/');
+        }
       } else {
         setError(res.message || 'Registration failed');
       }
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      const message = err.message || 'Registration failed. Please try again.';
+      // Check if it's a field-specific error
+      if (message.toLowerCase().includes('email')) {
+        setFieldError({ field: 'email', message });
+      } else if (message.toLowerCase().includes('password')) {
+        setFieldError({ field: 'password', message });
+      } else {
+        setError(message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle verification code input
+  const handleCodeChange = (index, value) => {
+    // Only allow digits
+    if (value && !/^\d$/.test(value)) return;
+    
+    const newCode = [...verificationCode];
+    newCode[index] = value;
+    setVerificationCode(newCode);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      codeInputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  // Handle paste for verification code
+  const handleCodePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pastedData.length === 6) {
+      setVerificationCode(pastedData.split(''));
+      codeInputRefs.current[5]?.focus();
+    }
+  };
+
+  // Handle backspace in code input
+  const handleCodeKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !verificationCode[index] && index > 0) {
+      codeInputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  // Verify email code
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    const code = verificationCode.join('');
+    if (code.length !== 6) {
+      setError('Please enter the 6-digit code');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const res = await verifyEmail(formData.email, code);
+
+      if (res.success && res.data.user) {
+        // Token is in httpOnly cookie
+        login(res.data);
+        navigate('/');
+      } else {
+        setError(res.message || 'Verification failed');
+      }
+    } catch (err) {
+      setError(err.message || 'Invalid verification code');
+      setVerificationCode(['', '', '', '', '', '']);
+      codeInputRefs.current[0]?.focus();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Resend verification code
+  const handleResend = async () => {
+    if (resendCooldown > 0) return;
+    
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await resendVerificationCode(formData.email);
+      setResendCooldown(60);
+      setVerificationCode(['', '', '', '', '', '']);
+    } catch (err) {
+      setError(err.message || 'Failed to resend code');
     } finally {
       setIsLoading(false);
     }
@@ -71,8 +204,113 @@ const SignUp = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Clear field error when user types
+    if (fieldError.field === name) {
+      setFieldError({ field: '', message: '' });
+    }
   };
 
+  // Verification Step UI
+  if (step === 'verify') {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-16">
+        <div className="max-w-md mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Verify Your Email</h1>
+            <p className="text-gray-600">
+              We sent a 6-digit code to<br />
+              <span className="font-semibold text-gray-800">{formData.email}</span>
+            </p>
+          </div>
+
+          {/* Verification Form */}
+          <div className="bg-white shadow-md p-8">
+            <form onSubmit={handleVerify} className="space-y-6">
+              {/* Code Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-4 text-center">
+                  Enter verification code
+                </label>
+                <div className="flex justify-center gap-2 sm:gap-3" onPaste={handleCodePaste}>
+                  {verificationCode.map((digit, index) => (
+                    <input
+                      key={index}
+                      ref={el => codeInputRefs.current[index] = el}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleCodeChange(index, e.target.value)}
+                      onKeyDown={(e) => handleCodeKeyDown(index, e)}
+                      className="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm text-center rounded-lg">
+                  {error}
+                </div>
+              )}
+
+              {/* Verify Button */}
+              <button
+                type="submit"
+                disabled={isLoading || verificationCode.join('').length !== 6}
+                className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
+              >
+                {isLoading ? 'Verifying...' : 'Verify Email'}
+              </button>
+
+              {/* Resend */}
+              <div className="text-center">
+                <p className="text-sm text-gray-600 mb-2">Didn't receive the code?</p>
+                {resendCooldown > 0 ? (
+                  <p className="text-sm text-gray-400">
+                    Resend in {resendCooldown}s
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={isLoading}
+                    className="text-green-600 hover:text-green-700 font-semibold text-sm"
+                  >
+                    Resend Code
+                  </button>
+                )}
+              </div>
+
+              {/* Change Email */}
+              <div className="text-center pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep('register');
+                    setVerificationCode(['', '', '', '', '', '']);
+                    setError('');
+                  }}
+                  className="text-gray-600 hover:text-gray-800 text-sm"
+                >
+                  ← Change email address
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Registration Step UI
   return (
     <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-20 py-16">
       <div className="max-w-md mx-auto">
@@ -99,9 +337,14 @@ const SignUp = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    fieldError.field === 'firstName' ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   placeholder="John"
                 />
+                {fieldError.field === 'firstName' && (
+                  <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>
+                )}
               </div>
 
               {/* Last Name */}
@@ -116,9 +359,14 @@ const SignUp = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    fieldError.field === 'lastName' ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   placeholder="Doe"
                 />
+                {fieldError.field === 'lastName' && (
+                  <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>
+                )}
               </div>
             </div>
 
@@ -133,10 +381,16 @@ const SignUp = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={handleEmailBlur}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  fieldError.field === 'email' ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="your.email@example.com"
               />
+              {fieldError.field === 'email' && (
+                <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -152,9 +406,15 @@ const SignUp = () => {
                 onChange={handleChange}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  fieldError.field === 'password' ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="Create a password (min. 6 characters)"
               />
+              {fieldError.field === 'password' && (
+                <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>
+              )}
+              <p className="text-gray-400 text-xs mt-1">At least 6 characters with letters and numbers</p>
             </div>
 
             {/* Confirm Password */}
@@ -176,7 +436,7 @@ const SignUp = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm rounded-lg">
                 {error}
               </div>
             )}
@@ -189,7 +449,7 @@ const SignUp = () => {
                   name="agreeToTerms"
                   checked={formData.agreeToTerms}
                   onChange={handleChange}
-                  className="w-4 h-4 mt-0.5 text-blue-500 border-gray-300 focus:ring-blue-500"
+                  className="w-4 h-4 mt-0.5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-600">
                   I agree to the{' '}
@@ -208,7 +468,7 @@ const SignUp = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold py-3 transition-colors"
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
             >
               {isLoading ? 'Creating account...' : 'Create Account'}
             </button>
@@ -228,7 +488,7 @@ const SignUp = () => {
               <button
                 type="button"
                 onClick={handleFacebookLogin}
-                className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -267,4 +527,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-

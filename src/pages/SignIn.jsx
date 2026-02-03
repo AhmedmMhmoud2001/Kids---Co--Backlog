@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { loginUser } from '../api/auth';
+import { loginUser, resendVerificationCode } from '../api/auth';
 import { API_BASE_URL } from '../api/config';
 
 const SignIn = () => {
@@ -14,7 +14,9 @@ const SignIn = () => {
     rememberMe: false,
   });
   const [error, setError] = useState(searchParams.get('error') ? 'Social login failed. Please try again.' : '');
+  const [needsVerification, setNeedsVerification] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   // OAuth handlers
   const handleGoogleLogin = () => {
@@ -25,20 +27,32 @@ const SignIn = () => {
     window.location.href = `${API_BASE_URL}/auth/facebook`;
   };
 
+  // Handle resend verification
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    try {
+      await resendVerificationCode(formData.email);
+      // Redirect to signup page with verification step
+      navigate('/signup', { state: { email: formData.email, step: 'verify' } });
+    } catch (err) {
+      setError(err.message || 'Failed to resend verification code');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setNeedsVerification(false);
     setIsLoading(true);
 
     try {
       const res = await loginUser(formData.email, formData.password);
 
       if (res.success) {
-        // Store token
-        localStorage.setItem('authToken', res.data.token);
-
-        // Login user in context
-        login(res.data.user);
+        // Login user in context (token is in httpOnly cookie)
+        login(res.data);
 
         // Navigate to homepage
         navigate('/');
@@ -46,7 +60,13 @@ const SignIn = () => {
         setError(res.message || 'Login failed');
       }
     } catch (err) {
-      setError(err.message || 'Invalid email or password');
+      const message = err.message || 'Invalid email or password';
+      setError(message);
+      
+      // Check if user needs to verify email
+      if (message.toLowerCase().includes('verify')) {
+        setNeedsVerification(true);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -108,8 +128,18 @@ const SignIn = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
-                {error}
+              <div className={`px-4 py-3 text-sm rounded-lg ${needsVerification ? 'bg-yellow-50 border border-yellow-200 text-yellow-800' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+                <p>{error}</p>
+                {needsVerification && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={resendLoading}
+                    className="mt-2 text-yellow-700 hover:text-yellow-800 font-semibold underline"
+                  >
+                    {resendLoading ? 'Sending...' : 'Click here to verify your email'}
+                  </button>
+                )}
               </div>
             )}
 

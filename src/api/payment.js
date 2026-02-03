@@ -1,18 +1,14 @@
 import { API_BASE_URL } from './config';
 
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('authToken');
-    return {
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : ''
-    };
-};
+// All requests use credentials: 'include' for httpOnly cookies
 
 /**
  * Get available payment methods
  */
 export const getPaymentMethods = async () => {
-    const response = await fetch(`${API_BASE_URL}/payment/methods`);
+    const response = await fetch(`${API_BASE_URL}/payment/methods`, {
+        credentials: 'include'
+    });
     return response.json();
 };
 
@@ -21,7 +17,7 @@ export const getPaymentMethods = async () => {
  */
 export const getPaymentStatus = async (orderId) => {
     const response = await fetch(`${API_BASE_URL}/payment/status/${orderId}`, {
-        headers: getAuthHeaders()
+        credentials: 'include'
     });
     return response.json();
 };
@@ -36,7 +32,8 @@ export const getPaymentStatus = async (orderId) => {
 export const createStripePaymentIntent = async (orderId) => {
     const response = await fetch(`${API_BASE_URL}/payment/stripe/create-intent`, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ orderId })
     });
     return response.json();
@@ -48,7 +45,8 @@ export const createStripePaymentIntent = async (orderId) => {
 export const confirmStripePayment = async (paymentIntentId) => {
     const response = await fetch(`${API_BASE_URL}/payment/stripe/confirm`, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ paymentIntentId })
     });
     return response.json();
@@ -64,7 +62,8 @@ export const confirmStripePayment = async (paymentIntentId) => {
 export const initPaymobCardPayment = async (orderId, billingData = {}) => {
     const response = await fetch(`${API_BASE_URL}/payment/paymob/card`, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ orderId, billingData })
     });
     return response.json();
@@ -76,7 +75,8 @@ export const initPaymobCardPayment = async (orderId, billingData = {}) => {
 export const initPaymobWalletPayment = async (orderId, phoneNumber) => {
     const response = await fetch(`${API_BASE_URL}/payment/paymob/wallet`, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ orderId, phoneNumber })
     });
     return response.json();

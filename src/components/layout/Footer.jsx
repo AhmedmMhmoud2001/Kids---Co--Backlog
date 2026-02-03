@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import facebookIcon from '../../assets/logos_facebook.png';
-import instagramIcon from '../../assets/skill-icons_instagram.png';
-import logo from '../../assets/logo.png';
+import facebookIcon from '../../assets/logos_facebook.webp';
+import instagramIcon from '../../assets/skill-icons_instagram.webp';
+import logo from '../../assets/logo.webp';
 
 const Footer = () => {
   return (

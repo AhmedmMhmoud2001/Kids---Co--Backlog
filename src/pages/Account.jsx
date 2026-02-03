@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { updateProfile } from "../api/auth";
 import { fetchMyOrders } from "../api/orders";
+import { uploadFile } from "../api/apiClient";
 
 const Account = () => {
   const navigate = useNavigate();
   const { user: currentUser, logout, login } = useApp();
+  const fileInputRef = useRef(null);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -20,9 +22,11 @@ const Account = () => {
     address: "",
     city: "",
     country: "Egypt",
+    image: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
@@ -42,6 +46,7 @@ const Account = () => {
       address: currentUser.address || "",
       city: currentUser.city || "",
       country: currentUser.country || "Egypt",
+      image: currentUser.image || "",
     });
 
     if (activeTab === "orders") {
@@ -68,6 +73,74 @@ const Account = () => {
     navigate("/");
   };
 
+  // Handle image upload
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      alert('Please select a valid image file (JPEG, PNG, or WebP)');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size must be less than 5MB');
+      return;
+    }
+
+    setImageLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      // Use apiClient which handles credentials automatically
+      const data = await uploadFile('/upload', formData);
+
+      if (data.success) {
+        // Update profile with new image
+        const updateResponse = await updateProfile({ image: data.data.url });
+        
+        if (updateResponse.success) {
+          setUser(prev => ({ ...prev, image: data.data.url }));
+          login(updateResponse.data);
+          setSuccessMessage("Profile picture updated!");
+          setTimeout(() => setSuccessMessage(""), 3000);
+        }
+      } else {
+        throw new Error(data.message || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      alert('Failed to upload image: ' + error.message);
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  // Remove profile image
+  const handleRemoveImage = async () => {
+    if (!user.image) return;
+    
+    setImageLoading(true);
+    try {
+      const response = await updateProfile({ image: '' });
+      if (response.success) {
+        setUser(prev => ({ ...prev, image: '' }));
+        login(response.data);
+        setSuccessMessage("Profile picture removed!");
+        setTimeout(() => setSuccessMessage(""), 3000);
+      }
+    } catch (error) {
+      alert('Failed to remove image: ' + error.message);
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -77,7 +150,6 @@ const Account = () => {
       const response = await updateProfile({
         firstName: user.firstName,
         lastName: user.lastName,
-        // email: user.email, // Often email updates require verification, keeping it simple for now or assuming backend handles it
         phone: user.phone,
         address: user.address,
         city: user.city,
@@ -85,14 +157,12 @@ const Account = () => {
       });
 
       if (response.success) {
-        // Update local context with new user data
-        login(response.data, localStorage.getItem('authToken'));
+        login(response.data);
         setSuccessMessage("Profile updated successfully!");
         setTimeout(() => setSuccessMessage(""), 3000);
       }
     } catch (error) {
       console.error(error);
-      // Maybe set an error message state here to show to user
       alert("Failed to update profile: " + error.message);
     } finally {
       setIsLoading(false);
@@ -101,9 +171,7 @@ const Account = () => {
 
   if (!currentUser) return null;
 
-  const initials = `${user.firstName?.charAt(0) || ""}${user.lastName?.charAt(
-    0
-  ) || ""}`;
+  const initials = `${user.firstName?.charAt(0) || ""}${user.lastName?.charAt(0) || ""}`.toUpperCase();
 
   return (
     <div className="container mx-auto px-3 sm:px-6 md:px-10 lg:px-20 py-6 sm:py-8">
@@ -121,10 +189,26 @@ const Account = () => {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="text-center mb-5">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-2xl sm:text-3xl font-bold text-blue-500">
-                  {initials}
-                </span>
+              {/* Profile Image */}
+              <div className="relative inline-block">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center mx-auto mb-3 border-4 border-white shadow-lg">
+                  {user.image ? (
+                    <img 
+                      src={user.image} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-2xl sm:text-3xl font-bold text-blue-500">
+                      {initials}
+                    </span>
+                  )}
+                </div>
+                {imageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
               <h3 className="font-semibold text-base sm:text-lg truncate">
                 {user.firstName} {user.lastName}
@@ -132,7 +216,7 @@ const Account = () => {
               <p className="text-sm text-gray-600 truncate">{user.email}</p>
             </div>
 
-            {/* ✅ Responsive nav buttons (smaller on mobile) */}
+            {/* Nav buttons */}
             <nav className="space-y-2">
               <button
                 onClick={() => setActiveTab("profile")}
@@ -191,10 +275,73 @@ const Account = () => {
 
               {/* Success Message */}
               {successMessage && (
-                <div className="mb-4 sm:mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+                <div className="mb-4 sm:mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
                   {successMessage}
                 </div>
               )}
+
+              {/* Profile Picture Section */}
+              <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gray-50 rounded-xl">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4">Profile Picture</h3>
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                  {/* Current Image */}
+                  <div className="relative">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center border-4 border-white shadow-lg">
+                      {user.image ? (
+                        <img 
+                          src={user.image} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-3xl sm:text-4xl font-bold text-blue-500">
+                          {initials}
+                        </span>
+                      )}
+                    </div>
+                    {imageLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                        <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Upload/Remove Buttons */}
+                  <div className="flex flex-col gap-2 text-center sm:text-left">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={imageLoading}
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                      {imageLoading ? 'Uploading...' : 'Upload New Photo'}
+                    </button>
+                    {user.image && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        disabled={imageLoading}
+                        className="px-4 py-2 text-red-600 hover:bg-red-50 text-sm font-medium rounded-lg transition-colors"
+                      >
+                        Remove Photo
+                      </button>
+                    )}
+                    <p className="text-xs text-gray-500 mt-1">
+                      JPG, PNG or WebP. Max 5MB.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
               {/* Account Created Date */}
               {currentUser.createdAt && (
@@ -240,7 +387,7 @@ const Account = () => {
                   </div>
                 </div>
 
-                {/* Email */}
+                {/* Email (Read-only) */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Email Address
@@ -248,9 +395,10 @@ const Account = () => {
                   <input
                     type="email"
                     value={user.email}
-                    onChange={(e) => setUser({ ...user, email: e.target.value })}
-                    className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled
+                    className="w-full px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                 </div>
 
                 {/* Phone */}
@@ -262,6 +410,7 @@ const Account = () => {
                     type="tel"
                     value={user.phone}
                     onChange={(e) => setUser({ ...user, phone: e.target.value })}
+                    placeholder="01XXXXXXXXX"
                     className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -310,15 +459,15 @@ const Account = () => {
                   </div>
                 </div>
 
-                {/* ✅ Save Button (smaller height on mobile) */}
+                {/* Save Button */}
                 <button
                   type="submit"
                   disabled={isLoading}
                   className="
                     w-full sm:w-auto
                     text-sm sm:text-base
-                    py-2 sm:py-3
-                    px-4 sm:px-8
+                    py-2.5 sm:py-3
+                    px-6 sm:px-8
                     rounded-lg
                     bg-blue-500 hover:bg-blue-600
                     disabled:bg-blue-300 disabled:cursor-not-allowed

@@ -1,5 +1,10 @@
 import { API_BASE_URL } from './config';
+import { setCsrfToken, clearCsrfToken, startTokenRefresh, stopTokenRefresh } from './apiClient';
 
+/**
+ * Login user
+ * Token is stored in httpOnly cookie by backend
+ */
 export const loginUser = async (email, password) => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -7,15 +12,48 @@ export const loginUser = async (email, password) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include' // Important: receive cookies
     });
 
     const data = await response.json();
     if (!response.ok) {
         throw new Error(data.message || 'Login failed');
     }
+    
+    // Store CSRF token in memory
+    if (data.data?.csrfToken) {
+        setCsrfToken(data.data.csrfToken);
+    }
+    
+    // Start automatic token refresh
+    startTokenRefresh();
+    
     return data;
 };
 
+/**
+ * Logout user
+ * Clears httpOnly cookie on backend
+ */
+export const logoutUser = async () => {
+    try {
+        await fetch(`${API_BASE_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+    
+    // Clear local state
+    localStorage.removeItem('user');
+    clearCsrfToken();
+    stopTokenRefresh();
+};
+
+/**
+ * Register user
+ */
 export const registerUser = async (userData) => {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
@@ -23,6 +61,7 @@ export const registerUser = async (userData) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
+        credentials: 'include'
     });
 
     const data = await response.json();
@@ -32,34 +71,39 @@ export const registerUser = async (userData) => {
     return data;
 };
 
+/**
+ * Get current user
+ */
 export const fetchMe = async () => {
-    const token = localStorage.getItem('authToken');
-    if (!token) return { success: false };
-
     const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include'
     });
 
     const data = await response.json();
     if (!response.ok) {
+        if (response.status === 401) {
+            return { success: false };
+        }
         throw new Error(data.message || 'Failed to fetch user');
     }
+    
+    // If we successfully get user, start token refresh
+    startTokenRefresh();
+    
     return data;
 };
 
+/**
+ * Update user profile
+ */
 export const updateProfile = async (userData) => {
-    const token = localStorage.getItem('authToken');
-    if (!token) throw new Error('No token found');
-
     const response = await fetch(`${API_BASE_URL}/auth/me`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(userData),
+        credentials: 'include'
     });
 
     const data = await response.json();
@@ -71,7 +115,6 @@ export const updateProfile = async (userData) => {
 
 /**
  * Request password reset email
- * @param {string} email - User's email address
  */
 export const forgotPassword = async (email) => {
     const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
@@ -80,6 +123,7 @@ export const forgotPassword = async (email) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
+        credentials: 'include'
     });
 
     const data = await response.json();
@@ -91,8 +135,6 @@ export const forgotPassword = async (email) => {
 
 /**
  * Reset password with token
- * @param {string} token - Reset token from email
- * @param {string} password - New password
  */
 export const resetPassword = async (token, password) => {
     const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
@@ -101,11 +143,89 @@ export const resetPassword = async (token, password) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ token, password }),
+        credentials: 'include'
     });
 
     const data = await response.json();
     if (!response.ok) {
         throw new Error(data.message || 'Failed to reset password');
     }
+    return data;
+};
+
+/**
+ * Verify email with code
+ */
+export const verifyEmail = async (email, code) => {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-email`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, code }),
+        credentials: 'include'
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || 'Verification failed');
+    }
+    
+    // Store CSRF token in memory
+    if (data.data?.csrfToken) {
+        setCsrfToken(data.data.csrfToken);
+    }
+    
+    // Start automatic token refresh
+    startTokenRefresh();
+    
+    return data;
+};
+
+/**
+ * Resend verification code
+ */
+export const resendVerificationCode = async (email) => {
+    const response = await fetch(`${API_BASE_URL}/auth/resend-verification`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include'
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || 'Failed to resend code');
+    }
+    return data;
+};
+
+/**
+ * Check if email is valid (not disposable)
+ */
+export const checkEmail = async (email) => {
+    const response = await fetch(`${API_BASE_URL}/auth/check-email`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include'
+    });
+
+    const data = await response.json();
+    return data;
+};
+
+/**
+ * Get validation rules (regex patterns)
+ */
+export const getValidationRules = async () => {
+    const response = await fetch(`${API_BASE_URL}/auth/validation-rules`, {
+        credentials: 'include'
+    });
+    const data = await response.json();
     return data;
 };

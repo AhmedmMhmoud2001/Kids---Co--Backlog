@@ -15,8 +15,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 // Import images
-import heroImage1 from '../assets/heroImage1.png';
-import heroImage2 from '../assets/heroImage2.png';
+import heroImage1 from '../assets/heroImage1.webp';
+import heroImage2 from '../assets/heroImage2.webp';
 
 const Home = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);

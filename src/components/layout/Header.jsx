@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
-import logo from "../../assets/logo.png";
-import logo1 from "../../assets/logo1.png";
+import logo from "../../assets/logo.webp";
+import logo1 from "../../assets/logo1.webp";
 import MobileMenu from "./MobileMenu";
 import SearchModal from "../search/SearchModal";
 import { NavLink } from "react-router-dom";

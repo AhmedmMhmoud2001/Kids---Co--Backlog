@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { fetchMe } from '../api/auth';
+import { getCsrfToken } from '../api/apiClient';
 
 const OAuthCallback = () => {
     const [searchParams] = useSearchParams();
@@ -11,26 +12,34 @@ const OAuthCallback = () => {
 
     useEffect(() => {
         const handleCallback = async () => {
-            const token = searchParams.get('token');
+            const success = searchParams.get('success');
             const errorParam = searchParams.get('error');
 
             if (errorParam) {
-                setError('Authentication failed. Please try again.');
+                const errorMessages = {
+                    'google_not_configured': 'Google sign in is not configured.',
+                    'facebook_not_configured': 'Facebook sign in is not configured.',
+                    'google_auth_failed': 'Google authentication failed.',
+                    'facebook_auth_failed': 'Facebook authentication failed.',
+                    'invalid_state': 'Invalid authentication state. Please try again.'
+                };
+                setError(errorMessages[errorParam] || 'Authentication failed. Please try again.');
                 setTimeout(() => navigate('/signin'), 3000);
                 return;
             }
 
-            if (!token) {
-                setError('No authentication token received.');
+            if (success !== 'true') {
+                setError('Authentication was not completed.');
                 setTimeout(() => navigate('/signin'), 3000);
                 return;
             }
 
             try {
-                // Store the token
-                localStorage.setItem('authToken', token);
-
-                // Fetch user data
+                // Token is now in httpOnly cookie, set by backend
+                // Fetch CSRF token first
+                await getCsrfToken();
+                
+                // Fetch user data (auth cookie is automatically sent)
                 const res = await fetchMe();
                 
                 if (res.success) {
@@ -45,7 +54,6 @@ const OAuthCallback = () => {
             } catch (err) {
                 console.error('OAuth callback error:', err);
                 setError('Authentication failed. Please try again.');
-                localStorage.removeItem('authToken');
                 setTimeout(() => navigate('/signin'), 3000);
             }
         };
