@@ -8,9 +8,7 @@ export default defineConfig({
     host: 'localhost',
     port: 5173,
     strictPort: false,
-    hmr: {
-      host: 'localhost',
-      port: 5173
-    }
+    // HMR uses same host/port as dev server (no fixed port = no WebSocket mismatch when port changes)
+    hmr: true
   }
 })

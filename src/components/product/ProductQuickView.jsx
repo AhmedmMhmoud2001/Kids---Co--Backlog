@@ -1,24 +1,69 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { getColorSwatchStyle } from '../../api/products';
+import { ChevronUp, ChevronDown } from 'lucide-react';
+
+const THUMB_VISIBLE = 6;
 
 const ProductQuickView = ({ product, onClose }) => {
   const { addToCart, setIsCartOpen } = useApp();
   const [selectedImage, setSelectedImage] = useState(0);
+  const [visibleThumbStart, setVisibleThumbStart] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
-  // Use available images from the product
-  const images = (product.images && product.images.length > 0)
-    ? product.images.slice(0, 6)
-    : (product.image ? [product.image] : []);
+  const colorName = product.colors?.[selectedColor];
+  const images = useMemo(() => {
+    if (!product) return [];
+    if (product.colorImages?.length > 0 && colorName) {
+      const nameLower = (colorName || '').toString().toLowerCase().trim();
+      const forColor = product.colorImages
+        .filter((ci) => {
+          const n = (ci.color?.name ?? ci.colorName ?? '').toString().toLowerCase().trim();
+          return n && n === nameLower;
+        })
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+        .map((ci) => ci.imageUrl)
+        .filter(Boolean);
+      if (forColor.length > 0) return forColor;
+    }
+    return (product.images?.length > 0) ? product.images : (product.image ? [product.image] : []);
+  }, [product?.colorImages, product?.images, product?.image, colorName]);
+
+  const thumbCount = images.length;
+  const maxThumbStart = Math.max(0, thumbCount - THUMB_VISIBLE);
+  const clampedThumbStart = Math.min(Math.max(0, visibleThumbStart), maxThumbStart);
+  const visibleThumbnails = useMemo(() => {
+    if (!images.length) return [];
+    return images.slice(clampedThumbStart, clampedThumbStart + THUMB_VISIBLE).map((img, i) => ({ img, globalIndex: clampedThumbStart + i }));
+  }, [images, clampedThumbStart]);
+
+  useEffect(() => {
+    setVisibleThumbStart(0);
+  }, [selectedColor]);
+
+  const selectedVariant = useMemo(() => {
+    if (!product?.variants?.length || !product.colors?.length || !product.sizes?.length) return null;
+    const c = (product.colors[selectedColor] ?? '').toString().toLowerCase().trim();
+    const s = (product.sizes[selectedSize] ?? '').toString().toLowerCase().trim();
+    return product.variants.find((v) =>
+      (v.color?.name ?? '').toString().toLowerCase().trim() === c &&
+      (v.size?.name ?? '').toString().toLowerCase().trim() === s
+    ) || product.variants.find((v) => (v.color?.name ?? '').toString().toLowerCase().trim() === c) || product.variants[0];
+  }, [product?.variants, product?.colors, product?.sizes, selectedColor, selectedSize]);
+
+  const displayPrice = selectedVariant?.price ?? product.price ?? product.basePrice;
+  const safePrice = typeof displayPrice === 'number' && !Number.isNaN(displayPrice)
+    ? displayPrice
+    : (parseFloat(displayPrice) || 0);
 
   const handleAddToCart = () => {
     const color = product.colors?.[selectedColor];
     const size = product.sizes?.[selectedSize];
-    addToCart(product, quantity, size, color);
-    // Optional: Show success message
+    const productWithVariantPrice = { ...product, price: safePrice };
+    addToCart(productWithVariantPrice, quantity, size, color, selectedVariant?.id);
     setIsCartOpen(true);
     onClose();
   };
@@ -33,29 +78,53 @@ const ProductQuickView = ({ product, onClose }) => {
         <div className="flex gap-4 p-10 max-h-[90vh] overflow-y-auto scrollbar-hide">
           {/* Left Side - Images */}
           <div className="flex gap-5 shrink-0 w-[600px]">
-            {/* Thumbnails */}
-            <div className="flex flex-col gap-5 w-[67px] shrink-0">
-              {images.map((img, idx) => (
+            {/* Thumbnails: 6 visible, arrows to move */}
+            <div className="flex flex-col items-center gap-1 w-[67px] shrink-0">
+              {thumbCount > THUMB_VISIBLE && (
                 <button
-                  key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={`aspect-[67/80] border overflow-hidden transition-colors ${selectedImage === idx ? 'border-[#999]' : 'border-[#f2f2f2]'
-                    }`}
+                  type="button"
+                  onClick={() => setVisibleThumbStart((i) => Math.max(0, i - 1))}
+                  disabled={clampedThumbStart <= 0}
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none"
+                  aria-label="Previous images"
                 >
-                  <img
-                    src={img || null}
-                    alt={`Thumbnail ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                  />
+                  <ChevronUp size={16} />
                 </button>
-              ))}
+              )}
+              <div className="flex flex-col gap-5">
+                {visibleThumbnails.map(({ img, globalIndex }) => (
+                  <button
+                    key={globalIndex}
+                    type="button"
+                    onClick={() => setSelectedImage(globalIndex)}
+                    className={`aspect-[67/80] border overflow-hidden transition-colors ${selectedImage === globalIndex ? 'border-[#999]' : 'border-[#f2f2f2]'}`}
+                  >
+                    <img
+                      src={img || null}
+                      alt={`Thumbnail ${globalIndex + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+              {thumbCount > THUMB_VISIBLE && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleThumbStart((i) => Math.min(maxThumbStart, i + 1))}
+                  disabled={clampedThumbStart >= maxThumbStart}
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none"
+                  aria-label="Next images"
+                >
+                  <ChevronDown size={16} />
+                </button>
+              )}
             </div>
 
             {/* Main Image */}
             <div className="flex-1 h-[600px] overflow-hidden">
               <Link to={`/product/${product.id}`} onClick={onClose}>
                 <img
-                  src={images[selectedImage] || null}
+                  src={images[Math.min(selectedImage, images.length - 1)] || null}
                   alt={product.name}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-zoom-in"
                 />
@@ -64,9 +133,7 @@ const ProductQuickView = ({ product, onClose }) => {
           </div>
 
           {/* Right Side - Product Info */}
-          <div
-            className="flex flex-col gap-8 w-[468px] shrink-0"
-          >
+          <div className="flex flex-col gap-8 w-[468px] shrink-0">
             {/* Product Name */}
             <div>
               <Link
@@ -89,25 +156,32 @@ const ProductQuickView = ({ product, onClose }) => {
 
             {/* Price */}
             <div className="text-[24px] font-bold text-[#63adfc]">
-              {typeof product.price === 'number' ? `${product.price.toFixed(2)} EGP` : product.price + ` EGP`}
+              {safePrice.toFixed(2)} EGP
             </div>
 
 
 
             {/* Color Selection */}
-            {product.colors && (
+            {product.colors && product.colors.length > 0 && (
               <div className="flex gap-4 items-center">
                 <span className="text-[16px] font-semibold text-[#333]">Color:</span>
                 <div className="flex gap-4">
-                  {product.colors.map((color, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedColor(idx)}
-                      className={`w-6 h-6 rounded-full border border-gray-200 transition-all ${selectedColor === idx ? 'ring-2 ring-offset-2 ring-[#63adfc]' : ''
-                        }`}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
+                  {product.colors.map((color, idx) => {
+                    const swatchStyle = getColorSwatchStyle(color);
+                    const hasBg = swatchStyle.backgroundColor;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => { setSelectedColor(idx); setSelectedImage(0); }}
+                        className={`w-6 h-6 rounded-full border border-gray-200 transition-all flex items-center justify-center shrink-0 ${selectedColor === idx ? 'ring-2 ring-offset-2 ring-[#63adfc]' : ''}
+                          ${!hasBg ? 'min-w-[1.5rem] text-[10px] text-[#333]' : ''}`}
+                        style={hasBg ? swatchStyle : {}}
+                        title={typeof color === 'string' ? color : ''}
+                      >
+                        {!hasBg && <span className="truncate max-w-[2rem]">{typeof color === 'string' ? color.charAt(0) : ''}</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}

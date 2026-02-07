@@ -11,17 +11,15 @@ export const fetchCart = async () => {
     return data;
 };
 
-export const addToCart = async (productId, quantity, selectedSize = null, selectedColor = null) => {
+export const addToCart = async (productId, quantity, selectedSize = null, selectedColor = null, productVariantId = null) => {
+    const body = productVariantId
+        ? { productVariantId: parseInt(productVariantId), quantity: parseInt(quantity) }
+        : { productId: parseInt(productId), quantity: parseInt(quantity), selectedSize: selectedSize || undefined, selectedColor: selectedColor || undefined };
     const response = await fetch(`${API_BASE_URL}/cart/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-            productId: parseInt(productId),
-            quantity: parseInt(quantity),
-            selectedSize,
-            selectedColor
-        })
+        body: JSON.stringify(body)
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || 'Failed to add to cart');

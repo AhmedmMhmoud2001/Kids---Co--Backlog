@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { fetchOrderById } from "../api/orders";
+import { getProductFirstImage, getProductImageForColor } from "../api/products";
 import { useApp } from "../context/AppContext";
 
 const OrderDetails = () => {
@@ -70,16 +71,14 @@ const OrderDetails = () => {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case "DELIVERED":
-                return "bg-green-100 text-green-800";
-            case "PENDING":
-                return "bg-amber-100 text-amber-800";
-            case "CANCELLED":
-                return "bg-red-100 text-red-800";
-            case "PROCESSING":
-                return "bg-blue-100 text-blue-800";
-            default:
-                return "bg-gray-100 text-gray-800";
+            case "DELIVERED": return "bg-green-100 text-green-800";
+            case "PENDING": return "bg-amber-100 text-amber-800";
+            case "PAID": return "bg-green-100 text-green-800";
+            case "CONFIRMED": return "bg-emerald-100 text-emerald-800";
+            case "SHIPPED": return "bg-purple-100 text-purple-800";
+            case "CANCELED": return "bg-red-100 text-red-800";
+            case "RETURNED": return "bg-orange-100 text-orange-800";
+            default: return "bg-gray-100 text-gray-800";
         }
     };
 
@@ -123,7 +122,7 @@ const OrderDetails = () => {
                 </div>
             </div>
 
-            {order.status === "CANCELLED" && order.cancelReason && (
+            {order.status === "CANCELED" && order.cancelReason && (
                 <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-4">
                     <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 text-red-600">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,10 +147,10 @@ const OrderDetails = () => {
                             {order.items?.map((item) => (
                                 <div key={item.id} className="p-6 flex items-center gap-4 sm:gap-6">
                                     <div className="w-20 h-24 sm:w-24 sm:h-32 flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden">
-                                        {item.product?.images?.[0] ? (
+                                        {getProductImageForColor(item.product, item.color) ? (
                                             <img
-                                                src={item.product.images[0] || null}
-                                                alt={item.productName || item.product.title}
+                                                src={getProductImageForColor(item.product, item.color)}
+                                                alt={item.productName || item.product?.name}
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
@@ -164,7 +163,7 @@ const OrderDetails = () => {
                                     </div>
                                     <div className="flex-grow min-w-0">
                                         <h3 className="font-semibold text-gray-900 text-base sm:text-lg truncate">
-                                            {item.productName || item.product?.title || "Product Info Unavailable"}
+                                            {item.productName || item.product?.name || "Product Info Unavailable"}
                                         </h3>
                                         <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
                                             {item.color && (

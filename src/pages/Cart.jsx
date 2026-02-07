@@ -117,13 +117,15 @@ const Cart = () => {
               <div className="divide-y text-sm">
                 {cartItems.map((item) => {
                   let price = 0;
-                  if (typeof item.price === 'number') {
+                  if (typeof item.price === 'number' && !Number.isNaN(item.price)) {
                     price = item.price;
                   } else if (typeof item.price === 'string') {
                     price = parseFloat(item.price.replace(/[^0-9.]/g, "") || 0);
+                  } else {
+                    price = Number(item.price) || 0;
                   }
                   const itemSubtotal = price * item.quantity;
-                  const itemId = item.cartItemId || item.id;
+                  const itemId = item.cartItemId ?? `${item.id}_${item.selectedSize ?? ''}_${item.selectedColor ?? ''}`;
 
                   return (
                     <div
@@ -175,7 +177,7 @@ const Cart = () => {
                             Price
                           </p>
                           <span className="text-gray-700 font-medium">
-                            {item.price?.replace(' EGP', ' EGP')}
+                            {price.toFixed(2)} EGP
                           </span>
                         </div>
 

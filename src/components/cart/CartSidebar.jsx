@@ -1,6 +1,7 @@
 
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getColorSwatchStyle } from '../../api/products';
 
 const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => {
   const navigate = useNavigate();
@@ -17,9 +18,10 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
     };
   }, [isOpen]);
 
-  // Calculate subtotal
+  // Calculate subtotal (price may be number or string)
+  const getPrice = (p) => (typeof p === 'number' && !Number.isNaN(p)) ? p : parseFloat(String(p || 0).replace(/[^0-9.]/g, '')) || 0;
   const subtotal = items.reduce((total, item) => {
-    const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+    const price = getPrice(item.price);
     return total + (price * (item.quantity || 1));
   }, 0);
 
@@ -67,7 +69,7 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
             </div>
           ) : (
             items.map((item) => (
-              <div key={item.id} className="flex gap-4 p-2 hover:bg-gray-50 transition-colors border-b last:border-0 pb-4 last:pb-2">
+              <div key={item.cartItemId ?? `${item.id}_${item.selectedSize ?? ''}_${item.selectedColor ?? ''}`} className="flex gap-4 p-2 hover:bg-gray-50 transition-colors border-b last:border-0 pb-4 last:pb-2">
                 {/* Product Image - Sharp */}
                 <div className="w-20 h-24 shrink-0 overflow-hidden border border-gray-100">
                   <img
@@ -83,7 +85,7 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
                     <div className="flex justify-between items-start gap-2">
                       <h3 className="font-medium text-sm line-clamp-2">{item.name}</h3>
                       <button
-                        onClick={() => onRemove(item.id)}
+                        onClick={() => onRemove(item.cartItemId ?? `${item.id}_${item.selectedSize ?? ''}_${item.selectedColor ?? ''}`)}
                         className="text-gray-400 hover:text-red-500 transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,11 +93,12 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
                         </svg>
                       </button>
                     </div>
-                    {item.size && <p className="text-xs text-gray-500 mt-1">Size: {item.size}</p>}
-                    {item.color && (
-                      <div className="flex items-center gap-1 mt-1">
+                    {(item.selectedSize || item.size) && <p className="text-xs text-gray-500 mt-1">Size: {item.selectedSize ?? item.size}</p>}
+                    {(item.selectedColor || item.color) && (
+                      <div className="flex items-center gap-1.5 mt-1">
                         <span className="text-xs text-gray-500">Color:</span>
-                        <div className="w-3 h-3 border border-gray-200" style={{ backgroundColor: item.color }}></div>
+                        <div className="w-3 h-3 border border-gray-200 rounded shrink-0" style={getColorSwatchStyle(item.selectedColor ?? item.color)} title={item.selectedColor ?? item.color} />
+                        <span className="text-xs text-gray-600">{item.selectedColor ?? item.color}</span>
                       </div>
                     )}
                   </div>
@@ -103,7 +106,7 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center border">
                       <button
-                        onClick={() => onQuantityChange(item.id, Math.max(1, (item.quantity || 1) - 1))}
+                        onClick={() => onQuantityChange(item.cartItemId ?? `${item.id}_${item.selectedSize ?? ''}_${item.selectedColor ?? ''}`, Math.max(1, (item.quantity || 1) - 1))}
                         className="px-2 py-1 text-gray-600 hover:bg-gray-100"
                         disabled={(item.quantity || 1) <= 1}
                       >
@@ -111,14 +114,14 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
                       </button>
                       <span className="px-2 text-sm w-8 text-center">{item.quantity || 1}</span>
                       <button
-                        onClick={() => onQuantityChange(item.id, (item.quantity || 1) + 1)}
+                        onClick={() => onQuantityChange(item.cartItemId ?? `${item.id}_${item.selectedSize ?? ''}_${item.selectedColor ?? ''}`, (item.quantity || 1) + 1)}
                         className="px-2 py-1 text-gray-600 hover:bg-gray-100"
                       >
                         +
                       </button>
                     </div>
                     <span className="font-semibold text-blue-500">
-                      {item.price} EGP
+                      {getPrice(item.price).toFixed(2)} EGP
                     </span>
                   </div>
                 </div>

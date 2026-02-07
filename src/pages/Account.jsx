@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { updateProfile } from "../api/auth";
 import { fetchMyOrders } from "../api/orders";
+import { getProductFirstImage } from "../api/products";
 import { uploadFile } from "../api/apiClient";
 
 const Account = () => {
@@ -532,11 +533,20 @@ const Account = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {orders.map((order) => (
+                  {orders.map((order) => {
+                    const firstItem = order.items?.[0];
+                    const orderImage = firstItem ? getProductFirstImage(firstItem.product) : null;
+                    return (
                     <div
                       key={order.id}
-                      className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow"
+                      className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow flex gap-4 sm:gap-5"
                     >
+                      {orderImage && (
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                          <img src={orderImage} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                         <div>
                           <h3 className="font-semibold text-base sm:text-lg">
@@ -574,8 +584,9 @@ const Account = () => {
                       >
                         View Details →
                       </Link>
+                      </div>
                     </div>
-                  ))}
+                  );})}
                 </div>
               )}
             </div>

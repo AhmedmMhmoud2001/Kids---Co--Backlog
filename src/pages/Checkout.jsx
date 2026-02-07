@@ -72,10 +72,19 @@ const Checkout = () => {
     setError(null);
 
     const orderData = {
-      items: cartItems.map(item => ({
-        productId: item.id,
-        quantity: item.quantity
-      })),
+      items: cartItems.map(item => {
+        const price = typeof item.price === 'number' && !Number.isNaN(item.price)
+          ? item.price
+          : (typeof item.price === 'string' ? parseFloat(String(item.price).replace(/[^0-9.]/g, '')) : Number(item.price)) || 0;
+        return {
+          productId: item.id,
+          quantity: item.quantity,
+          price,
+          color: item.selectedColor ?? item.color ?? null,
+          size: item.selectedSize ?? item.size ?? null,
+          productVariantId: item.productVariantId ?? null
+        };
+      }),
       paymentMethod: formData.paymentMethod,
       notes: formData.orderNotes,
       billingInfo: {

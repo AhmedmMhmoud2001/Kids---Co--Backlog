@@ -14,7 +14,7 @@ const ProductCard = ({ product, onQuickView }) => {
   const handleQuickView = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    onQuickView?.(product); // ✅ افتح المودال
+    onQuickView?.(product);
   };
 
   const getProductImage = () => {

@@ -18,6 +18,23 @@ const getStorageKey = (key, userId) => {
   return userId ? `${key}_${userId}` : `${key}_guest`;
 };
 
+// Unique id for a cart row (guest: cartItemId or composite; API: cartItemId)
+export const getCartItemUniqueId = (item) =>
+  item.cartItemId ?? `${item.id}_${item.selectedSize ?? ''}_${item.selectedColor ?? ''}`;
+
+// First image URL for a color from product.colorImages (case-insensitive match)
+const getImageForColor = (product, colorName) => {
+  if (!product?.colorImages?.length || !colorName) return null;
+  const nameLower = String(colorName).toLowerCase().trim();
+  const match = product.colorImages
+    .filter(ci => {
+      const n = (ci.color?.name ?? ci.colorName ?? '').toString().toLowerCase().trim();
+      return n && n === nameLower;
+    })
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  return match[0]?.imageUrl || null;
+};
+
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const abortControllerRef = useRef(null);
@@ -79,13 +96,24 @@ export const CartProvider = ({ children }) => {
       if (signal?.aborted) return;
 
       if (res.success && res.data && Array.isArray(res.data.items)) {
-        const normalizedItems = res.data.items.map(item => ({
-          ...normalizeProduct(item.product),
-          quantity: item.quantity,
-          cartItemId: item.id,
-          selectedSize: item.selectedSize,
-          selectedColor: item.selectedColor
-        }));
+        const normalizedItems = res.data.items.map(item => {
+          const product = item.productVariant?.product ?? item.product;
+          const base = normalizeProduct(product);
+          const price = item.productVariant?.price ?? base.price ?? base.basePrice;
+          const selectedSize = item.productVariant?.size?.name ?? item.selectedSize;
+          const selectedColor = item.productVariant?.color?.name ?? item.selectedColor;
+          const imageForColor = getImageForColor(base, selectedColor) ?? base.image;
+          return {
+            ...base,
+            price,
+            image: imageForColor,
+            quantity: item.quantity,
+            cartItemId: item.id,
+            selectedSize: selectedSize ?? undefined,
+            selectedColor: selectedColor ?? undefined,
+            productVariantId: item.productVariant?.id ?? undefined
+          };
+        });
         setCartItems(normalizedItems);
       }
     } catch (err) {
@@ -158,46 +186,51 @@ export const CartProvider = ({ children }) => {
     };
   }, [user, loadCart]);
 
-  const addToCart = useCallback(async (product, quantity = 1, selectedSize = null, selectedColor = null) => {
+  const addToCart = useCallback(async (product, quantity = 1, selectedSize = null, selectedColor = null, productVariantId = null) => {
     if (!user) {
       setCartItems((prev) => {
         const existingItem = prev.find((item) =>
           item.id === product.id &&
-          item.selectedSize === selectedSize &&
-          item.selectedColor === selectedColor
+          (item.selectedSize ?? null) === (selectedSize ?? null) &&
+          (item.selectedColor ?? null) === (selectedColor ?? null)
         );
 
         if (existingItem) {
           return prev.map((item) =>
             item.id === product.id &&
-              item.selectedSize === selectedSize &&
-              item.selectedColor === selectedColor
-              ? { ...item, quantity: item.quantity + quantity }
+              (item.selectedSize ?? null) === (selectedSize ?? null) &&
+              (item.selectedColor ?? null) === (selectedColor ?? null)
+              ? { ...item, quantity: item.quantity + quantity, cartItemId: item.cartItemId || `guest_${product.id}_${selectedSize ?? ''}_${selectedColor ?? ''}` }
               : item
           );
         }
-        return [...prev, { ...product, quantity, selectedSize, selectedColor }];
+        const guestId = `guest_${product.id}_${selectedSize ?? ''}_${selectedColor ?? ''}`;
+        return [...prev, { ...product, quantity, selectedSize, selectedColor, cartItemId: guestId }];
       });
       return;
     }
 
     try {
-      await cartApi.addToCart(product.id, quantity, selectedSize, selectedColor);
+      await cartApi.addToCart(product.id, quantity, selectedSize, selectedColor, productVariantId);
       await loadCart();
     } catch (err) {
       console.error('Error adding to cart:', err);
-      throw err; // Re-throw for error handling in components
+      throw err;
     }
   }, [user, loadCart]);
 
   const removeFromCart = useCallback(async (itemIdOrProductId) => {
     if (!user) {
-      setCartItems((prev) => prev.filter((item) => item.id !== itemIdOrProductId));
+      setCartItems((prev) =>
+        prev.filter((item) => getCartItemUniqueId(item) !== itemIdOrProductId)
+      );
       return;
     }
 
     try {
-      const item = cartItems.find(i => i.cartItemId === itemIdOrProductId || i.id === itemIdOrProductId);
+      const item = cartItems.find(
+        (i) => getCartItemUniqueId(i) === itemIdOrProductId || i.cartItemId === itemIdOrProductId || i.id === itemIdOrProductId
+      );
       if (item && item.cartItemId) {
         await cartApi.removeCartItem(item.cartItemId);
         await loadCart();
@@ -219,14 +252,16 @@ export const CartProvider = ({ children }) => {
     if (!user) {
       setCartItems((prev) =>
         prev.map((item) =>
-          item.id === itemIdOrProductId ? { ...item, quantity } : item
+          getCartItemUniqueId(item) === itemIdOrProductId ? { ...item, quantity } : item
         )
       );
       return;
     }
 
     try {
-      const item = cartItems.find(i => i.cartItemId === itemIdOrProductId || i.id === itemIdOrProductId);
+      const item = cartItems.find(
+        (i) => getCartItemUniqueId(i) === itemIdOrProductId || i.cartItemId === itemIdOrProductId || i.id === itemIdOrProductId
+      );
       if (item && item.cartItemId) {
         await cartApi.updateCartItem(item.cartItemId, quantity);
         await loadCart();
@@ -249,15 +284,8 @@ export const CartProvider = ({ children }) => {
   // Computed values
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
-  const cartTotal = cartItems.reduce((total, item) => {
-    let price = 0;
-    if (typeof item.price === 'number') {
-      price = item.price;
-    } else if (typeof item.price === 'string') {
-      price = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
-    }
-    return total + price * item.quantity;
-  }, 0);
+  const getItemPrice = (p) => (typeof p === 'number' && !Number.isNaN(p)) ? p : (typeof p === 'string' ? parseFloat(p.replace(/[^0-9.]/g, '')) || 0 : Number(p) || 0);
+  const cartTotal = cartItems.reduce((total, item) => total + getItemPrice(item.price) * item.quantity, 0);
 
   const value = {
     cartItems,

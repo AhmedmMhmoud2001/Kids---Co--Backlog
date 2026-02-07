@@ -26,3 +26,18 @@ export const fetchHomeHeroVideo = async () => {
         return "https://www.pexels.com/download/video/3917742/"; // Fallback
     }
 };
+
+/** Show out-of-stock variants on product detail (true) or hide them (false). Default true. */
+export const fetchShowOutOfStock = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/settings/show_out_of_stock`);
+        const result = await response.json();
+        if (result.success && result.data && result.data.value !== undefined) {
+            return String(result.data.value).toLowerCase() === 'true';
+        }
+        return true; // Default: show out of stock
+    } catch (error) {
+        console.error('Error fetching show_out_of_stock:', error);
+        return true;
+    }
+};
