@@ -11,7 +11,8 @@ const CartDrawer = () => {
         cartItems,
         removeFromCart,
         updateCartQuantity,
-        cartTotal
+        cartTotal,
+        user
     } = useApp();
 
     // Close drawer when pressing Escape
@@ -161,7 +162,7 @@ const CartDrawer = () => {
                             <button
                                 onClick={() => {
                                     setIsCartOpen(false);
-                                    navigate('/checkout');
+                                    navigate(user ? '/checkout' : '/signin?redirect=/checkout');
                                 }}
                                 className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 text-center transition-colors"
                             >

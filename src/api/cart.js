@@ -13,8 +13,8 @@ export const fetchCart = async () => {
 
 export const addToCart = async (productId, quantity, selectedSize = null, selectedColor = null, productVariantId = null) => {
     const body = productVariantId
-        ? { productVariantId: parseInt(productVariantId), quantity: parseInt(quantity) }
-        : { productId: parseInt(productId), quantity: parseInt(quantity), selectedSize: selectedSize || undefined, selectedColor: selectedColor || undefined };
+        ? { productVariantId: productVariantId, quantity: parseInt(quantity) }
+        : { productId: productId, quantity: parseInt(quantity), selectedSize: selectedSize || undefined, selectedColor: selectedColor || undefined };
     const response = await fetch(`${API_BASE_URL}/cart/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

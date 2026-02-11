@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { fetchOrderById } from "../api/orders";
+import { fetchOrderById, requestReturn } from "../api/orders";
 import { getProductFirstImage, getProductImageForColor } from "../api/products";
 import { useApp } from "../context/AppContext";
+
+const RETURN_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 const OrderDetails = () => {
     const { id } = useParams();
@@ -11,6 +13,10 @@ const OrderDetails = () => {
     const [order, setOrder] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [returnLoading, setReturnLoading] = useState(false);
+    const [returnError, setReturnError] = useState(null);
+    const [showReturnModal, setShowReturnModal] = useState(false);
+    const [returnReasonInput, setReturnReasonInput] = useState("");
 
     useEffect(() => {
         if (!user) {
@@ -37,6 +43,47 @@ const OrderDetails = () => {
 
         getOrderDetails();
     }, [id, user, navigate]);
+
+    // Use deliveredAt if set, else updatedAt for DELIVERED orders (e.g. old orders before deliveredAt existed)
+    const deliveredAtRaw = order?.deliveredAt ?? (order?.status === "DELIVERED" ? order?.updatedAt : null);
+    const deliveredAt = deliveredAtRaw ? new Date(deliveredAtRaw) : null;
+    const msSinceDelivery = deliveredAt ? Date.now() - deliveredAt.getTime() : 0;
+    // Can request return only within 24h of delivery; after 24h no longer allowed
+    const canRequestReturn = order?.status === "DELIVERED" && deliveredAt && msSinceDelivery <= RETURN_WINDOW_MS;
+    const returnPeriodEnded = order?.status === "DELIVERED" && deliveredAt && msSinceDelivery > RETURN_WINDOW_MS;
+    const showDeliveredAtBadge = order?.status === "DELIVERED" && deliveredAt && msSinceDelivery < RETURN_WINDOW_MS;
+    const hoursRemaining = order?.status === "DELIVERED" && deliveredAt && msSinceDelivery < RETURN_WINDOW_MS
+        ? Math.max(0, Math.ceil((RETURN_WINDOW_MS - msSinceDelivery) / (60 * 60 * 1000)))
+        : null;
+
+    const handleRequestReturn = async (reason = null) => {
+        if (!order || !canRequestReturn) return;
+        setReturnLoading(true);
+        setReturnError(null);
+        try {
+            const res = await requestReturn(order.id, reason || null);
+            if (res.success) {
+                setOrder(res.data);
+                setShowReturnModal(false);
+                setReturnReasonInput("");
+            } else {
+                setReturnError(res.message || "Failed to request return");
+            }
+        } catch (err) {
+            setReturnError(err.message || "Failed to request return");
+        } finally {
+            setReturnLoading(false);
+        }
+    };
+
+    const openReturnModal = () => setShowReturnModal(true);
+    const closeReturnModal = () => {
+        if (!returnLoading) {
+            setShowReturnModal(false);
+            setReturnReasonInput("");
+        }
+    };
+    const submitReturnFromModal = () => handleRequestReturn(returnReasonInput.trim() || null);
 
     if (isLoading) {
         return (
@@ -69,15 +116,19 @@ const OrderDetails = () => {
         minute: "2-digit",
     });
 
+    // نفس ألوان حالة الطلب في الداشبورد
     const getStatusColor = (status) => {
         switch (status) {
-            case "DELIVERED": return "bg-green-100 text-green-800";
-            case "PENDING": return "bg-amber-100 text-amber-800";
+            case "PENDING": return "bg-yellow-100 text-yellow-800";
             case "PAID": return "bg-green-100 text-green-800";
             case "CONFIRMED": return "bg-emerald-100 text-emerald-800";
+            case "PROCESSING": return "bg-indigo-100 text-indigo-800";
             case "SHIPPED": return "bg-purple-100 text-purple-800";
-            case "CANCELED": return "bg-red-100 text-red-800";
+            case "DELIVERED": return "bg-blue-100 text-blue-800";
             case "RETURNED": return "bg-orange-100 text-orange-800";
+            case "REFUNDED": return "bg-amber-100 text-amber-800";
+            case "COMPLETED": return "bg-teal-100 text-teal-800";
+            case "CANCELED": return "bg-red-100 text-red-800";
             default: return "bg-gray-100 text-gray-800";
         }
     };
@@ -95,7 +146,12 @@ const OrderDetails = () => {
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Order #{order.id}</h1>
+                    <div className="flex flex-wrap items-center gap-3 gap-y-1">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Order Details</h1>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
+                            {order.status}
+                        </span>
+                    </div>
                     <p className="text-gray-600 mt-1">Placed on {orderDate}</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -119,8 +175,95 @@ const OrderDetails = () => {
                         </svg>
                         View Invoice
                     </Link>
+                    {showDeliveredAtBadge && (
+                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 text-blue-800 font-medium border border-blue-200">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Delivered at {deliveredAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
+                        </span>
+                    )}
                 </div>
             </div>
+
+            {order.status === "DELIVERED" && deliveredAt && (
+                <div className={`mb-8 p-6 rounded-2xl border flex flex-col sm:flex-row sm:items-center gap-4 ${returnPeriodEnded ? 'bg-gray-50 border-gray-200' : 'bg-emerald-50 border-emerald-200'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${returnPeriodEnded ? 'bg-gray-200 text-gray-500' : 'bg-emerald-100 text-emerald-600'}`}>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className={`font-bold ${returnPeriodEnded ? 'text-gray-700' : 'text-emerald-800'}`}>Return policy</h3>
+                        {returnPeriodEnded ? (
+                            <p className="text-gray-600 mt-1">Return can only be requested within 24 hours of delivery. The return period has ended.</p>
+                        ) : (
+                            <p className="text-emerald-700 mt-1">
+                                You can request a return within 24 hours of delivery. {hoursRemaining != null && <strong>{hoursRemaining} hour(s) remaining.</strong>}
+                            </p>
+                        )}
+                    </div>
+                    {!returnPeriodEnded && (
+                        <button
+                            type="button"
+                            onClick={openReturnModal}
+                            disabled={returnLoading}
+                            className="self-start sm:self-center inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors disabled:opacity-50"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                            Request return
+                        </button>
+                    )}
+                </div>
+            )}
+
+            {/* Request return modal */}
+            {showReturnModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={closeReturnModal}>
+                    <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Request return</h3>
+                        <p className="text-gray-600 text-sm mb-4">Submit a return request for this order. You can optionally add a reason below.</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Reason (optional)</label>
+                        <textarea
+                            value={returnReasonInput}
+                            onChange={(e) => setReturnReasonInput(e.target.value)}
+                            placeholder="e.g. damaged item, wrong size"
+                            rows={3}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                            disabled={returnLoading}
+                        />
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                type="button"
+                                onClick={submitReturnFromModal}
+                                disabled={returnLoading}
+                                className="flex-1 py-3 rounded-xl bg-orange-500 text-white font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
+                            >
+                                {returnLoading ? (
+                                    <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                                ) : null}
+                                Submit request
+                            </button>
+                            <button
+                                type="button"
+                                onClick={closeReturnModal}
+                                disabled={returnLoading}
+                                className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {returnError && (
+                <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700">
+                    {returnError}
+                </div>
+            )}
 
             {order.status === "CANCELED" && order.cancelReason && (
                 <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-4">

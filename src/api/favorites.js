@@ -16,7 +16,7 @@ export const addToFavorites = async (productId) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ productId: parseInt(productId) })
+        body: JSON.stringify({ productId })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || 'Failed to add favorite');

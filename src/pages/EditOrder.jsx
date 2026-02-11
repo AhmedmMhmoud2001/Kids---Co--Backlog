@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { fetchOrderById, updateOrderDetails, updateOrderItems } from "../api/orders";
-import { getProductFirstImage } from "../api/products";
+import { fetchOrderById, updateOrderDetails, updateOrderItems, cancelOrder } from "../api/orders";
+import { getProductImageForColor } from "../api/products";
 import { useApp } from "../context/AppContext";
 
 const EditOrder = () => {
@@ -45,12 +45,14 @@ const EditOrder = () => {
                     setItems(data.items.map(item => ({
                         id: item.id,
                         productId: item.productId,
+                        productVariantId: item.productVariantId,
                         productName: item.productName || item.product?.title,
                         quantity: item.quantity,
                         priceAtPurchase: item.priceAtPurchase,
                         product: item.product,
                         color: item.color,
-                        size: item.size
+                        size: item.size,
+                        stock: item.productVariant?.stock ?? 999
                     })));
                 } else {
                     setError(response.message || "Failed to fetch order details");
@@ -68,17 +70,33 @@ const EditOrder = () => {
 
     const handleQuantityChange = (itemId, newQty) => {
         if (newQty < 1) return;
-        setItems(prev => prev.map(item =>
-            item.id === itemId ? { ...item, quantity: newQty } : item
-        ));
+        setItems(prev => prev.map(item => {
+            if (item.id !== itemId) return item;
+            const maxQty = item.stock ?? 999;
+            const qty = Math.min(Math.max(1, newQty), maxQty);
+            return { ...item, quantity: qty };
+        }));
     };
 
     const handleRemoveItem = (itemId) => {
-        if (items.length <= 1) {
-            alert("Order must have at least one item. To cancel the entire order, please contact support or use the cancel option if available.");
-            return;
-        }
         setItems(prev => prev.filter(item => item.id !== itemId));
+    };
+
+    const handleCancelOrder = async () => {
+        if (!window.confirm("Are you sure you want to cancel this order?")) return;
+        try {
+            setIsSaving(true);
+            const res = await cancelOrder(id);
+            if (res.success) {
+                navigate("/account?tab=orders");
+                return;
+            }
+            setError(res.message || "Failed to cancel order");
+        } catch (err) {
+            setError(err.message || "Failed to cancel order");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleSave = async (e) => {
@@ -87,6 +105,16 @@ const EditOrder = () => {
         setError(null);
 
         try {
+            // If user removed all items → backend will delete the order
+            if (items.length === 0) {
+                const itemsRes = await updateOrderItems(id, []);
+                if (itemsRes.success && itemsRes.deleted) {
+                    navigate("/account?tab=orders");
+                    return;
+                }
+                throw new Error(itemsRes.message || "Failed to update order");
+            }
+
             // 1. Update Details
             const detailsRes = await updateOrderDetails(id, {
                 phone,
@@ -109,6 +137,7 @@ const EditOrder = () => {
             // 2. Update Items
             const itemsRes = await updateOrderItems(id, items.map(item => ({
                 productId: item.productId,
+                productVariantId: item.productVariantId,
                 productName: item.productName,
                 quantity: item.quantity,
                 priceAtPurchase: item.priceAtPurchase,
@@ -120,7 +149,7 @@ const EditOrder = () => {
                 throw new Error(itemsRes.message || "Failed to update order items");
             }
 
-            navigate(`/account/orders/${id}`);
+            navigate("/account?tab=orders");
         } catch (err) {
             setError(err.message);
         } finally {
@@ -155,13 +184,13 @@ const EditOrder = () => {
                 <span className="mx-2">›</span>
                 <Link to="/account" className="hover:text-gray-900 transition-colors">My Account</Link>
                 <span className="mx-2">›</span>
-                <Link to={`/account/orders/${id}`} className="hover:text-gray-900 transition-colors">Order #{id}</Link>
+                <Link to={`/account/orders/${id}`} className="hover:text-gray-900 transition-colors">Order Details</Link>
                 <span className="mx-2">›</span>
                 <span className="text-gray-900">Edit Order</span>
             </nav>
 
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">Edit Order #{id}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-8">Edit Order</h1>
 
                 {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
@@ -245,18 +274,22 @@ const EditOrder = () => {
                                         <p className="text-blue-600 font-bold mt-2">{parseFloat(item.priceAtPurchase).toFixed(2)} EGP</p>
                                     </div>
                                     <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                                        <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                                                className="px-3 py-2 hover:bg-gray-100 text-gray-600 border-r border-gray-200"
-                                            >-</button>
-                                            <span className="px-4 py-2 font-semibold min-w-[40px] text-center">{item.quantity}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                                                className="px-3 py-2 hover:bg-gray-100 text-gray-600 border-l border-gray-200"
-                                            >+</button>
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
+                                            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                                    className="px-3 py-2 hover:bg-gray-100 text-gray-600 border-r border-gray-200"
+                                                >-</button>
+                                                <span className="px-4 py-2 font-semibold min-w-[40px] text-center">{item.quantity}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                                    disabled={(item.stock ?? 999) <= item.quantity}
+                                                    className="px-3 py-2 hover:bg-gray-100 text-gray-600 border-l border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >+</button>
+                                            </div>
+                                            <span className="text-sm text-gray-500">Max: {item.stock ?? "—"}</span>
                                         </div>
                                         <button
                                             type="button"
@@ -275,19 +308,29 @@ const EditOrder = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 flex-wrap">
                         <button
                             type="submit"
                             disabled={isSaving}
                             className="w-full sm:w-auto px-10 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 disabled:opacity-50"
                         >
-                            {isSaving ? "Saving Changes..." : "Save Modifications"}
+                            {isSaving ? "Saving..." : items.length === 0 ? "Delete Order (no items)" : "Save Modifications"}
                         </button>
+                        {order?.status === "PENDING" && (
+                            <button
+                                type="button"
+                                onClick={handleCancelOrder}
+                                disabled={isSaving}
+                                className="w-full sm:w-auto px-10 py-4 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-all border border-red-200 disabled:opacity-50"
+                            >
+                                Cancel Order
+                            </button>
+                        )}
                         <Link
                             to={`/account/orders/${id}`}
                             className="w-full sm:w-auto px-10 py-4 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-all text-center"
                         >
-                            Cancel
+                            Back (don't save)
                         </Link>
                     </div>
                 </form>

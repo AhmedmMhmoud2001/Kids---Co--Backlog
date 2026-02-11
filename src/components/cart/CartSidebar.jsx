@@ -1,10 +1,12 @@
 
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useApp } from '../../context/AppContext';
 import { getColorSwatchStyle } from '../../api/products';
 
 const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => {
   const navigate = useNavigate();
+  const { user } = useApp();
 
   // Disable body scroll when sidebar is open
   useEffect(() => {
@@ -150,7 +152,7 @@ const CartSidebar = ({ isOpen, onClose, items, onRemove, onQuantityChange }) => 
               <button
                 onClick={() => {
                   onClose();
-                  navigate('/checkout');
+                  navigate(user ? '/checkout' : '/signin?redirect=/checkout');
                 }}
                 className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 text-center transition-colors"
               >

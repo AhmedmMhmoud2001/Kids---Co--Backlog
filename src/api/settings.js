@@ -27,6 +27,21 @@ export const fetchHomeHeroVideo = async () => {
     }
 };
 
+/** Social links for footer (facebook, instagram, twitter, youtube). */
+export const getSocialLinks = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/settings/social`);
+        const result = await response.json();
+        if (result.success && result.data) {
+            return result.data;
+        }
+        return { facebook: '', instagram: '', twitter: '', youtube: '' };
+    } catch (error) {
+        console.error('Error fetching social links:', error);
+        return { facebook: '', instagram: '', twitter: '', youtube: '' };
+    }
+};
+
 /** Show out-of-stock variants on product detail (true) or hide them (false). Default true. */
 export const fetchShowOutOfStock = async () => {
     try {

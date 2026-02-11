@@ -65,6 +65,8 @@ export const CartProvider = ({ children }) => {
     }
   });
 
+  const lastCartTotalRef = useRef(0);
+
   // Save coupon to localStorage
   useEffect(() => {
     if (appliedCoupon) {
@@ -91,7 +93,7 @@ export const CartProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const res = await cartApi.fetchCart();
-      
+
       // Check if request was aborted
       if (signal?.aborted) return;
 
@@ -286,6 +288,14 @@ export const CartProvider = ({ children }) => {
 
   const getItemPrice = (p) => (typeof p === 'number' && !Number.isNaN(p)) ? p : (typeof p === 'string' ? parseFloat(p.replace(/[^0-9.]/g, '')) || 0 : Number(p) || 0);
   const cartTotal = cartItems.reduce((total, item) => total + getItemPrice(item.price) * item.quantity, 0);
+
+  // Invalidate coupon if cart total changes
+  useEffect(() => {
+    if (appliedCoupon && lastCartTotalRef.current !== 0 && cartTotal !== lastCartTotalRef.current) {
+      setAppliedCoupon(null);
+    }
+    lastCartTotalRef.current = cartTotal;
+  }, [cartTotal, appliedCoupon]);
 
   const value = {
     cartItems,

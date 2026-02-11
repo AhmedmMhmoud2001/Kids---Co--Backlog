@@ -104,7 +104,7 @@ const Account = () => {
       if (data.success) {
         // Update profile with new image
         const updateResponse = await updateProfile({ image: data.data.url });
-        
+
         if (updateResponse.success) {
           setUser(prev => ({ ...prev, image: data.data.url }));
           login(updateResponse.data);
@@ -122,10 +122,27 @@ const Account = () => {
     }
   };
 
+  // نفس ألوان حالة الطلب في الداشبورد
+  const getOrderStatusColor = (status) => {
+    switch (status) {
+      case "PENDING": return "bg-yellow-100 text-yellow-800";
+      case "PAID": return "bg-green-100 text-green-800";
+      case "CONFIRMED": return "bg-emerald-100 text-emerald-800";
+      case "PROCESSING": return "bg-indigo-100 text-indigo-800";
+      case "SHIPPED": return "bg-purple-100 text-purple-800";
+      case "DELIVERED": return "bg-blue-100 text-blue-800";
+      case "RETURNED": return "bg-orange-100 text-orange-800";
+      case "REFUNDED": return "bg-amber-100 text-amber-800";
+      case "COMPLETED": return "bg-teal-100 text-teal-800";
+      case "CANCELED": return "bg-red-100 text-red-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
   // Remove profile image
   const handleRemoveImage = async () => {
     if (!user.image) return;
-    
+
     setImageLoading(true);
     try {
       const response = await updateProfile({ image: '' });
@@ -194,9 +211,9 @@ const Account = () => {
               <div className="relative inline-block">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center mx-auto mb-3 border-4 border-white shadow-lg">
                   {user.image ? (
-                    <img 
-                      src={user.image} 
-                      alt="Profile" 
+                    <img
+                      src={user.image}
+                      alt="Profile"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -292,9 +309,9 @@ const Account = () => {
                   <div className="relative">
                     <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center border-4 border-white shadow-lg">
                       {user.image ? (
-                        <img 
-                          src={user.image} 
-                          alt="Profile" 
+                        <img
+                          src={user.image}
+                          alt="Profile"
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -537,56 +554,52 @@ const Account = () => {
                     const firstItem = order.items?.[0];
                     const orderImage = firstItem ? getProductFirstImage(firstItem.product) : null;
                     return (
-                    <div
-                      key={order.id}
-                      className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow flex gap-4 sm:gap-5"
-                    >
-                      {orderImage && (
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                          <img src={orderImage} alt="" className="w-full h-full object-cover" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                        <div>
-                          <h3 className="font-semibold text-base sm:text-lg">
-                            Order #{order.id}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {new Date(order.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-
-                        <span
-                          className={`px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium w-fit ${order.status === "DELIVERED"
-                            ? "bg-green-100 text-green-800"
-                            : order.status === "PENDING"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-blue-100 text-blue-800"
-                            }`}
-                        >
-                          {order.status}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div className="text-sm text-gray-600">
-                          {order.items?.length || 0} items
-                        </div>
-                        <div className="text-lg font-semibold text-blue-500">
-                          {parseFloat(order.totalAmount).toFixed(2)} EGP
-                        </div>
-                      </div>
-
-                      <Link
-                        to={`/account/orders/${order.id}`}
-                        className="mt-3 inline-block text-blue-500 hover:text-blue-600 font-medium text-sm"
+                      <div
+                        key={order.id}
+                        className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow flex gap-4 sm:gap-5"
                       >
-                        View Details →
-                      </Link>
+                        {orderImage && (
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                            <img src={orderImage} alt="" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                            <div>
+                              <h3 className="font-semibold text-base sm:text-lg">
+                                Order
+                              </h3>
+                              <p className="text-sm text-gray-600">
+                                {new Date(order.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+
+                            <span
+                              className={`px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium w-fit ${getOrderStatusColor(order.status)}`}
+                            >
+                              {order.status}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <div className="text-sm text-gray-600">
+                              {order.items?.length || 0} items
+                            </div>
+                            <div className="text-lg font-semibold text-blue-500">
+                              {parseFloat(order.totalAmount).toFixed(2)} EGP
+                            </div>
+                          </div>
+
+                          <Link
+                            to={`/account/orders/${order.id}`}
+                            className="mt-3 inline-block text-blue-500 hover:text-blue-600 font-medium text-sm"
+                          >
+                            View Details →
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-                  );})}
+                    );
+                  })}
                 </div>
               )}
             </div>

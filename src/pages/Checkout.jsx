@@ -12,7 +12,6 @@ const Checkout = () => {
 
   useEffect(() => {
     if (!user) {
-      alert('Please sign in to complete your order.');
       navigate('/signin?redirect=/checkout');
     }
   }, [user, navigate]);
@@ -113,7 +112,7 @@ const Checkout = () => {
       if (response.success) {
         clearCart();
         setAppliedCoupon(null);
-        
+
         // If CARD payment, redirect to payment page
         if (formData.paymentMethod === 'CARD') {
           const orderId = response.data?.id || response.data?.order?.id;
@@ -348,7 +347,7 @@ const Checkout = () => {
                   />
                   <div className="flex-1">
                     <div className="font-semibold">Cash on Delivery</div>
-                    <div className="text-sm text-gray-600">Pay when you receive your order</div>
+                    {/* <div className="text-sm text-gray-600">Pay when you receive your order</div> */}
                   </div>
                   <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -435,10 +434,10 @@ const Checkout = () => {
               disabled={loading}
               className={`block w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-blue-200 active:scale-95 text-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {loading 
-                ? 'Processing...' 
-                : formData.paymentMethod === 'CARD' 
-                  ? 'Continue to Payment' 
+              {loading
+                ? 'Processing...'
+                : formData.paymentMethod === 'CARD'
+                  ? 'Continue to Payment'
                   : 'Place Order'}
             </button>
 

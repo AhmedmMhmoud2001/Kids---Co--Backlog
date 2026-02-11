@@ -80,7 +80,8 @@ export const normalizeProduct = (product) => {
         sizes: sizes.length > 0 ? sizes : null,
         categorySlug: product.category?.slug || product.categorySlug || null,
         categoryName: product.category?.name || product.categoryDisplay || 'Category',
-        brand: product.brandRel?.name ?? product.brand ?? null
+        brand: product.brandRel?.name ?? product.brand ?? null,
+        brandSlug: product.brandRel?.slug || product.brandSlug || null
     };
 };
 

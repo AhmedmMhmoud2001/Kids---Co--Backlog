@@ -7,6 +7,14 @@ import { useProduct } from '../hooks/useProducts';
 import { getColorSwatchStyle } from '../api/products';
 import { fetchShowOutOfStock } from '../api/settings';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import ProductCard from '../components/product/ProductCard';
+import Section from '../components/common/Section';
+import { fetchProducts } from '../api/products';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const DEFAULT_LOW_STOCK = 5;
 
@@ -20,10 +28,43 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loadingRelated, setLoadingRelated] = useState(false);
 
   useEffect(() => {
     fetchShowOutOfStock().then(setShowOutOfStock);
   }, []);
+
+  useEffect(() => {
+    const fetchRelated = async () => {
+      if (!product?.brandSlug) {
+        setRelatedProducts([]);
+        return;
+      }
+      try {
+        setLoadingRelated(true);
+        const response = await fetchProducts({
+          brands: [product.brandSlug],
+          audience: product.audience,
+          limit: 12
+        });
+        if (response.success && Array.isArray(response.data)) {
+          // Filter out the current product
+          const filtered = response.data.filter(p => p.id !== product.id);
+          setRelatedProducts(filtered);
+        }
+      } catch (err) {
+        console.error('Failed to fetch related products:', err);
+      } finally {
+        setLoadingRelated(false);
+      }
+    };
+
+    if (product) {
+      fetchRelated();
+    }
+  }, [product?.id, product?.brandSlug, product?.audience]);
 
   const displayColors = useMemo(() => {
     if (!product?.colors?.length) return [];
@@ -137,6 +178,8 @@ const ProductDetail = () => {
     return stock <= threshold ? 'low_stock' : 'in_stock';
   }, [selectedVariant]);
 
+  const maxStock = selectedVariant != null ? (selectedVariant.stock ?? 0) : 999;
+
   if (isLoading) {
     return (
       <div className="py-20 flex justify-center">
@@ -166,6 +209,7 @@ const ProductDetail = () => {
   const displayPrice = selectedVariant?.price ?? product.price ?? product.basePrice;
   const displaySku = selectedVariant?.sku ?? product.sku;
   const isOutOfStock = stockStatus === 'out_of_stock';
+  const clampedQuantity = Math.min(Math.max(1, quantity), maxStock || 1);
 
   const handleAddToCart = () => {
     if (isOutOfStock) return;
@@ -173,15 +217,25 @@ const ProductDetail = () => {
     const color = displayColors?.[safeSelectedColor];
     const imageForColor = images.length > 0 ? images[0] : product.image;
     const productWithVariantPrice = { ...product, price: displayPrice, image: imageForColor };
-    addToCart(productWithVariantPrice, quantity, size, color, selectedVariant?.id);
+    addToCart(productWithVariantPrice, clampedQuantity, size, color, selectedVariant?.id);
     setIsCartOpen(true);
   };
 
-  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.id}` : '';
-  const shareTitle = product.name || 'Product';
+  const setQuantityClamped = (updater) => {
+    setQuantity((q) => {
+      const next = typeof updater === 'function' ? updater(q) : updater;
+      const max = maxStock || 1;
+      return Math.min(Math.max(1, next), max);
+    });
+  };
+
+  // رابط المنتج الكامل (نفس الصفحة الحالية ليشمل أي base path)
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareTitle = product?.name || 'Product';
   const shareText = `${shareTitle} - ${Number(displayPrice ?? 0).toFixed(2)} EGP`;
 
   const handleShare = (platform) => {
+    if (!shareUrl) return;
     const encodedUrl = encodeURIComponent(shareUrl);
     const encodedText = encodeURIComponent(shareText);
     const encodedTitle = encodeURIComponent(shareTitle);
@@ -191,11 +245,36 @@ const ProductDetail = () => {
     } else if (platform === 'twitter') {
       url = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
     } else if (platform === 'pinterest') {
-      const img = images[0] || product.image;
+      const img = images[0] || product?.image;
       url = `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}${img ? `&media=${encodeURIComponent(img)}` : ''}`;
     }
     if (url) window.open(url, '_blank', 'noopener,noreferrer,width=600,height=400');
   };
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      setLinkCopied(false);
+    }
+  };
+
+  const handleNativeShare = async () => {
+    if (typeof navigator.share !== 'function' || !shareUrl) return;
+    try {
+      await navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: shareUrl
+      });
+    } catch (e) {
+      if (e?.name !== 'AbortError') console.warn('Share failed:', e);
+    }
+  };
+  const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 
   return (
     <div className="py-3 sm:py-4 md:py-6 lg:py-8 container mx-auto px-4 sm:px-6 md:px-10 lg:px-16">
@@ -342,25 +421,29 @@ const ProductDetail = () => {
           {/* Quantity and Add to Cart */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 md:gap-4 w-full">
             {/* Quantity Selector */}
-            <div className="flex items-center border border-gray-300 rounded w-full sm:w-auto shrink-0">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="px-3 sm:px-4 py-2.5 hover:bg-gray-100 active:bg-gray-200 transition-colors text-lg font-medium"
-              >
-                −
-              </button>
-              <input
-                type="text"
-                value={quantity}
-                readOnly
-                className="w-12 sm:w-14 text-center border-x border-gray-300 py-2.5 text-sm sm:text-base font-medium"
-              />
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="px-3 sm:px-4 py-2.5 hover:bg-gray-100 active:bg-gray-200 transition-colors text-lg font-medium"
-              >
-                +
-              </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center border border-gray-300 rounded w-full sm:w-auto shrink-0">
+                <button
+                  onClick={() => setQuantityClamped((q) => q - 1)}
+                  className="px-3 sm:px-4 py-2.5 hover:bg-gray-100 active:bg-gray-200 transition-colors text-lg font-medium"
+                >
+                  −
+                </button>
+                <input
+                  type="text"
+                  value={clampedQuantity}
+                  readOnly
+                  className="w-12 sm:w-14 text-center border-x border-gray-300 py-2.5 text-sm sm:text-base font-medium"
+                />
+                <button
+                  onClick={() => setQuantityClamped((q) => q + 1)}
+                  disabled={clampedQuantity >= maxStock}
+                  className="px-3 sm:px-4 py-2.5 hover:bg-gray-100 active:bg-gray-200 transition-colors text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  +
+                </button>
+              </div>
+
             </div>
 
             {/* Add to Cart Button */}
@@ -399,41 +482,78 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Social Share */}
+          {/* Social Share — لينك المنتج + نسخ الرابط + مشاركة */}
           <div className="pt-3 sm:pt-4 border-t">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <span className="font-semibold text-xs sm:text-sm">Share:</span>
-              <div className="flex gap-1.5 sm:gap-2">
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                <span className="font-semibold text-xs sm:text-sm">Share:</span>
+                <div className="flex gap-1.5 sm:gap-2 items-center">
+                  <button
+                    type="button"
+                    onClick={() => handleShare('facebook')}
+                    className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
+                    aria-label="Share on Facebook"
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#1877f2]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleShare('twitter')}
+                    className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
+                    aria-label="Share on X (Twitter)"
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#0f1419]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleShare('pinterest')}
+                    className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
+                    aria-label="Share on Pinterest"
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#bd081c]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" />
+                    </svg>
+                  </button>
+                  {canNativeShare && (
+                    <button
+                      type="button"
+                      onClick={handleNativeShare}
+                      className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors text-gray-600"
+                      aria-label="Share (native)"
+                    >
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => handleShare('facebook')}
-                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
-                  aria-label="Share on Facebook"
+                  onClick={handleCopyLink}
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${linkCopied ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                 >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#1877f2]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
+                  {linkCopied ? (
+                    <>Copied!</>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.172-1.172a4 4 0 00-.828-6.828l-1.172 1.172a2 2 0 11-2.828-2.828l4-4a2 2 0 012.828 2.828l-1.172 1.172a4 4 0 106.828.828l1.172-1.172a2 2 0 00-.828-1.656z" />
+                      </svg>
+                      Copy product link
+                    </>
+                  )}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => handleShare('twitter')}
-                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
-                  aria-label="Share on X (Twitter)"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#1da1f2]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleShare('pinterest')}
-                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
-                  aria-label="Share on Pinterest"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#bd081c]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" />
-                  </svg>
-                </button>
+                {shareUrl && (
+                  <span className="text-xs text-gray-500 truncate max-w-[200px] sm:max-w-xs" title={shareUrl}>
+                    {shareUrl}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -455,6 +575,43 @@ const ProductDetail = () => {
         </div>
       </div>
 
+      {/* Related Products by Brand */}
+      {relatedProducts.length > 0 && (
+        <Section padding="py-8 sm:py-12 md:py-16">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold">More from {product.brand || 'this brand'}</h2>
+            <div className="w-20 h-1 bg-blue-500 mt-2"></div>
+          </div>
+
+          <div className="relative">
+            <Swiper
+              modules={[Pagination, Autoplay]}
+              spaceBetween={20}
+              slidesPerView={1}
+
+              pagination={{ clickable: true, dynamicBullets: true }}
+              autoplay={{
+                delay: 4000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              breakpoints={{
+                480: { slidesPerView: 2, spaceBetween: 15 },
+                768: { slidesPerView: 3, spaceBetween: 20 },
+                1024: { slidesPerView: 4, spaceBetween: 24 },
+                1280: { slidesPerView: 5, spaceBetween: 24 },
+              }}
+              className="!pb-12"
+            >
+              {relatedProducts.map((p) => (
+                <SwiperSlide key={p.id}>
+                  <ProductCard product={p} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        </Section>
+      )}
     </div>
   );
 };

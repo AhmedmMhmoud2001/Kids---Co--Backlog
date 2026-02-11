@@ -56,7 +56,7 @@ const Payment = () => {
 
       switch (selectedMethod) {
         case 'stripe':
-          result = await createStripePaymentIntent(parseInt(orderId));
+          result = await createStripePaymentIntent(orderId);
           if (result.success) {
             // Stripe Elements integration would go here
             alert('Stripe payment initiated. Client Secret: ' + result.data.clientSecret?.substring(0, 20) + '...');
@@ -64,7 +64,7 @@ const Payment = () => {
           break;
 
         case 'paymob_card':
-          result = await initPaymobCardPayment(parseInt(orderId), {});
+          result = await initPaymobCardPayment(orderId, {});
           if (result.success && result.data.iframeUrl) {
             window.location.href = result.data.iframeUrl;
             return;
@@ -77,7 +77,7 @@ const Payment = () => {
             setProcessing(false);
             return;
           }
-          result = await initPaymobWalletPayment(parseInt(orderId), walletPhone);
+          result = await initPaymobWalletPayment(orderId, walletPhone);
           if (result.success && result.data.redirectUrl) {
             window.location.href = result.data.redirectUrl;
             return;
@@ -129,24 +129,22 @@ const Payment = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Choose Payment Method</h1>
-          <p className="text-gray-600">اختر طريقة الدفع المناسبة لك</p>
+          <p className="text-gray-600">Select the payment method that suits you</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Payment Methods */}
           <div className="lg:col-span-2 space-y-4">
-            
+
             {/* Stripe - International Cards */}
-            <div 
+            <div
               onClick={() => setSelectedMethod('stripe')}
-              className={`bg-white rounded-xl shadow-sm border-2 p-6 cursor-pointer transition-all hover:shadow-md ${
-                selectedMethod === 'stripe' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-              }`}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 cursor-pointer transition-all hover:shadow-md ${selectedMethod === 'stripe' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                }`}
             >
               <div className="flex items-start gap-4">
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-1 ${
-                  selectedMethod === 'stripe' ? 'border-blue-500' : 'border-gray-300'
-                }`}>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-1 ${selectedMethod === 'stripe' ? 'border-blue-500' : 'border-gray-300'
+                  }`}>
                   {selectedMethod === 'stripe' && (
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                   )}
@@ -159,72 +157,68 @@ const Payment = () => {
                       <div className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">MC</div>
                     </div>
                   </div>
-                  <p className="text-gray-500 text-sm mb-1">بطاقة ائتمان / خصم دولية</p>
+                  <p className="text-gray-500 text-sm mb-1">International credit / debit card</p>
                   <p className="text-gray-400 text-xs">Powered by Stripe - Secure international payments</p>
                 </div>
               </div>
             </div>
 
             {/* Paymob Card - Local Cards */}
-            <div 
+            <div
               onClick={() => setSelectedMethod('paymob_card')}
-              className={`bg-white rounded-xl shadow-sm border-2 p-6 cursor-pointer transition-all hover:shadow-md ${
-                selectedMethod === 'paymob_card' ? 'border-green-500 bg-green-50' : 'border-gray-200'
-              }`}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 cursor-pointer transition-all hover:shadow-md ${selectedMethod === 'paymob_card' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                }`}
             >
               <div className="flex items-start gap-4">
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-1 ${
-                  selectedMethod === 'paymob_card' ? 'border-green-500' : 'border-gray-300'
-                }`}>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-1 ${selectedMethod === 'paymob_card' ? 'border-green-500' : 'border-gray-300'
+                  }`}>
                   {selectedMethod === 'paymob_card' && (
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                   )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-gray-800">بطاقة بنكية محلية</h3>
+                    <h3 className="text-lg font-semibold text-gray-800">Local bank card</h3>
                     <div className="flex gap-2">
                       <div className="bg-yellow-500 text-white text-xs px-2 py-1 rounded font-bold">Meeza</div>
                       <div className="bg-gray-700 text-white text-xs px-2 py-1 rounded font-bold">Local</div>
                     </div>
                   </div>
                   <p className="text-gray-500 text-sm mb-1">Local Bank Card (Egypt)</p>
-                  <p className="text-gray-400 text-xs">Powered by Paymob - كروت البنوك المصرية</p>
+                  <p className="text-gray-400 text-xs">Powered by Paymob - Egyptian bank cards</p>
                 </div>
               </div>
             </div>
 
             {/* Paymob Wallet - Mobile Wallets */}
-            <div 
+            <div
               onClick={() => setSelectedMethod('paymob_wallet')}
-              className={`bg-white rounded-xl shadow-sm border-2 p-6 cursor-pointer transition-all hover:shadow-md ${
-                selectedMethod === 'paymob_wallet' ? 'border-red-500 bg-red-50' : 'border-gray-200'
-              }`}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 cursor-pointer transition-all hover:shadow-md ${selectedMethod === 'paymob_wallet' ? 'border-red-500 bg-red-50' : 'border-gray-200'
+                }`}
             >
               <div className="flex items-start gap-4">
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-1 ${
-                  selectedMethod === 'paymob_wallet' ? 'border-red-500' : 'border-gray-300'
-                }`}>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-1 ${selectedMethod === 'paymob_wallet' ? 'border-red-500' : 'border-gray-300'
+                  }`}>
                   {selectedMethod === 'paymob_wallet' && (
                     <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                   )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-gray-800">محفظة إلكترونية</h3>
+                    <h3 className="text-lg font-semibold text-gray-800">Mobile wallet</h3>
                     <div className="flex gap-2">
                       <div className="bg-red-600 text-white text-xs px-2 py-1 rounded font-bold">Vodafone</div>
                       <div className="bg-orange-500 text-white text-xs px-2 py-1 rounded font-bold">Orange</div>
                     </div>
                   </div>
                   <p className="text-gray-500 text-sm mb-1">Mobile Wallet (Vodafone Cash, Orange, Etisalat)</p>
-                  <p className="text-gray-400 text-xs">ادفع من محفظتك الإلكترونية</p>
-                  
+                  <p className="text-gray-400 text-xs">Pay from your mobile wallet</p>
+
                   {/* Phone input for wallet */}
                   {selectedMethod === 'paymob_wallet' && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        رقم المحفظة / Wallet Number
+                        Wallet number
                       </label>
                       <input
                         type="tel"
@@ -248,11 +242,11 @@ const Payment = () => {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-gray-800">فوري</h3>
-                    <span className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded">قريباً</span>
+                    <h3 className="text-lg font-semibold text-gray-800">Fawry</h3>
+                    <span className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded">Coming soon</span>
                   </div>
                   <p className="text-gray-500 text-sm mb-1">Fawry Reference Code</p>
-                  <p className="text-gray-400 text-xs">ادفع من أي منفذ فوري</p>
+                  <p className="text-gray-400 text-xs">Pay at any Fawry outlet</p>
                 </div>
               </div>
             </div>
@@ -268,26 +262,22 @@ const Payment = () => {
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm p-6 sticky top-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">ملخص الطلب</h2>
-              
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Order summary</h2>
+
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">رقم الطلب</span>
-                  <span className="font-medium">#{orderId}</span>
-                </div>
+
                 {orderData && (
                   <>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">الحالة</span>
-                      <span className={`font-medium ${
-                        orderData.orderStatus === 'PAID' ? 'text-green-600' : 'text-yellow-600'
-                      }`}>
-                        {orderData.orderStatus === 'PENDING' ? 'في انتظار الدفع' : orderData.orderStatus}
+                      <span className="text-gray-600">Status</span>
+                      <span className={`font-medium ${orderData.orderStatus === 'PAID' ? 'text-green-600' : 'text-yellow-600'
+                        }`}>
+                        {orderData.orderStatus === 'PENDING' ? 'Awaiting payment' : orderData.orderStatus}
                       </span>
                     </div>
                     <hr />
                     <div className="flex justify-between text-xl font-bold">
-                      <span>الإجمالي</span>
+                      <span>Total</span>
                       <span className="text-blue-600">
                         {Number(orderData.amount).toFixed(2)} EGP
                       </span>
@@ -300,19 +290,18 @@ const Payment = () => {
               <button
                 onClick={handlePayment}
                 disabled={!selectedMethod || processing}
-                className={`w-full py-4 rounded-xl font-bold text-white text-lg transition-all ${
-                  !selectedMethod || processing
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl'
-                }`}
+                className={`w-full py-4 rounded-xl font-bold text-white text-lg transition-all ${!selectedMethod || processing
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl'
+                  }`}
               >
                 {processing ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
-                    جاري المعالجة...
+                    Processing...
                   </span>
                 ) : (
-                  <>ادفع الآن</>
+                  <>Pay now</>
                 )}
               </button>
 
@@ -332,11 +321,11 @@ const Payment = () => {
               </div>
 
               {/* Back link */}
-              <Link 
-                to="/checkout" 
+              <Link
+                to="/checkout"
                 className="block text-center text-gray-500 hover:text-gray-700 text-sm mt-4"
               >
-                ← العودة للـ Checkout
+                ← Back to checkout
               </Link>
             </div>
           </div>
