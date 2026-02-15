@@ -579,7 +579,7 @@ const ProductDetail = () => {
       {relatedProducts.length > 0 && (
         <Section padding="py-8 sm:py-12 md:py-16">
           <div className="mb-6 sm:mb-8">
-            <h2 className="text-xl sm:text-2xl font-bold">More from {product.brand || 'this brand'}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold ">More from {product.brand || 'this brand'}</h2>
             <div className="w-20 h-1 bg-blue-500 mt-2"></div>
           </div>
 
