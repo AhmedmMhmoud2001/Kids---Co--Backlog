@@ -11,7 +11,8 @@ const Cart = () => {
     cartTotal,
     appliedCoupon,
     setAppliedCoupon,
-    removeCoupon
+    removeCoupon,
+    user
   } = useApp();
 
   const [couponCode, setCouponCode] = useState("");
@@ -117,13 +118,15 @@ const Cart = () => {
               <div className="divide-y text-sm">
                 {cartItems.map((item) => {
                   let price = 0;
-                  if (typeof item.price === 'number') {
+                  if (typeof item.price === 'number' && !Number.isNaN(item.price)) {
                     price = item.price;
                   } else if (typeof item.price === 'string') {
                     price = parseFloat(item.price.replace(/[^0-9.]/g, "") || 0);
+                  } else {
+                    price = Number(item.price) || 0;
                   }
                   const itemSubtotal = price * item.quantity;
-                  const itemId = item.cartItemId || item.id;
+                  const itemId = item.cartItemId ?? `${item.id}_${item.selectedSize ?? ''}_${item.selectedColor ?? ''}`;
 
                   return (
                     <div
@@ -175,7 +178,7 @@ const Cart = () => {
                             Price
                           </p>
                           <span className="text-gray-700 font-medium">
-                            {item.price?.replace(' EGP', ' EGP')}
+                            {price.toFixed(2)} EGP
                           </span>
                         </div>
 
@@ -290,7 +293,7 @@ const Cart = () => {
 
               {/* Checkout Button */}
               <Link
-                to="/checkout"
+                to={user ? "/checkout" : "/signin?redirect=/checkout"}
                 className="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl text-center transition-all shadow-lg hover:shadow-blue-200 active:scale-95 text-lg"
               >
                 Go to Checkout

@@ -17,16 +17,12 @@ const PaymentSuccess = () => {
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">
           Payment Successful!
         </h1>
-        
+
         <p className="text-gray-600 mb-2">
           Thank you for your purchase. Your payment has been processed successfully.
         </p>
-        
-        {orderId && (
-          <p className="text-gray-600 mb-6">
-            Order ID: <span className="font-semibold">#{orderId}</span>
-          </p>
-        )}
+
+
 
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
           <p className="text-green-700 text-sm">

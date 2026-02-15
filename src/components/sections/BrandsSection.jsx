@@ -42,8 +42,8 @@ const BrandsSection = () => {
           pauseOnMouseEnter: true,
         }}
         breakpoints={{
-          0: { slidesPerView: 1, spaceBetween: 16 },      // موبايل صغير
-          480: { slidesPerView: 2, spaceBetween: 18 },   // موبايل كبير
+          0: { slidesPerView: 1, spaceBetween: 16 },      // small mobile
+          480: { slidesPerView: 2, spaceBetween: 18 },   // large mobile
           640: { slidesPerView: 2, spaceBetween: 20 },   // sm
           768: { slidesPerView: 3, spaceBetween: 22 },   // md
           1024: { slidesPerView: 4, spaceBetween: 24 },  // lg
@@ -56,7 +56,7 @@ const BrandsSection = () => {
             key={item.id}
             className="!h-auto flex items-center justify-center"
           >
-            {/* حاوية ثابتة عشان كل الصور تبقى قصاد بعض */}
+            {/* Fixed container so images align */}
             <div className="h-16 w-full flex items-center justify-center cursor-pointer group px-4">
               <img
                 src={item.image || null}

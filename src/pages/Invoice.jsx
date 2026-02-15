@@ -44,7 +44,7 @@ const Invoice = () => {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Invoice #${order?.id || id}</title>
+          <title>Invoice</title>
           <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family: Arial, sans-serif; padding: 24px; color: #111; direction: ltr; }
@@ -117,11 +117,11 @@ const Invoice = () => {
         <span className="mx-2">›</span>
         <Link to="/account?tab=orders" className="hover:text-gray-900">My Orders</Link>
         <span className="mx-2">›</span>
-        <span className="text-gray-900">Invoice #{order.id}</span>
+        <span className="text-gray-900">Invoice</span>
       </nav>
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Invoice #{order.id}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Invoice</h1>
         <div className="flex items-center gap-3">
           <Link
             to={`/account/orders/${order.id}`}
@@ -149,7 +149,7 @@ const Invoice = () => {
             <p className="text-sm text-gray-500">Sales Invoice</p>
           </div>
           <div className="text-left sm:text-right">
-            <h2 className="text-xl font-bold text-gray-900">Invoice #{order.id}</h2>
+            <h2 className="text-xl font-bold text-gray-900">Invoice</h2>
             <p className="text-sm text-gray-500 mt-1">Date: {orderDate}</p>
             <p className="text-sm text-gray-500">Status: {order.status}</p>
           </div>

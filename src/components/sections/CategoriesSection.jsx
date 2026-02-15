@@ -39,7 +39,7 @@ const CategoriesSection = ({
       return `${baseClasses} hover:bg-pink-50 hover:border-pink-200`;
     }
 
-    // لبيقة التصنيفات: تدريج ناعم عند الـ Hover
+    // Categories: smooth gradient on hover
     return `${baseClasses} hover:bg-gradient-to-br hover:from-pink-100/20 hover:to-blue-100/20 hover:border-blue-200`;
   };
 

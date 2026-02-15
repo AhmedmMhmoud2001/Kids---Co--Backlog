@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-
+import logo from "../../assets/logo.webp";
 const AuthLayout = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -7,14 +7,7 @@ const AuthLayout = () => {
       <div className="bg-white shadow-sm py-4">
         <div className="container mx-auto px-4">
           <Link to="/" className="inline-block">
-            <h1 className="text-2xl md:text-3xl font-bold">
-              <span className="text-black">k</span>
-              <span className="text-blue-500">id</span>
-              <span className="text-black">s</span>
-              <span className="text-blue-500">&</span>
-              <span className="text-pink-500">Co</span>
-              <span className="text-black">.</span>
-            </h1>
+            <img src={logo} alt="logo" className="h-8 lg:h-auto" />
           </Link>
         </div>
       </div>

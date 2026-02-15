@@ -44,7 +44,7 @@ const CategoriesSectionHome2 = ({
                 {/* Circle Background */}
                 <div className="absolute w-full aspect-square rounded-full bg-[#f3f4f6] group-hover:bg-[#e5e7eb] transition-colors duration-300 bottom-0 z-0" />
 
-                {/* ✅ Product Image (خارجة) + ✅ hover عليها فقط */}
+                {/* Product image with hover */}
                 <img
                   src={category.image || null}
                   alt={category.name}

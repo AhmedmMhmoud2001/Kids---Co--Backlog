@@ -4,7 +4,11 @@ import { CartProvider, useCart } from './CartContext';
 import { FavoritesProvider, useFavorites } from './FavoritesContext';
 
 // App-specific context for audience and other app-wide settings
-const AppContext = createContext();
+const defaultAppContext = {
+  audience: 'KIDS',
+  setAudience: () => {},
+};
+const AppContext = createContext(defaultAppContext);
 
 const useAppContext = () => {
   const context = useContext(AppContext);

@@ -45,3 +45,24 @@ export const updateOrderItems = async (id, items) => {
     });
     return response.json();
 };
+
+/** Cancel order (customer only, PENDING orders). */
+export const cancelOrder = async (id) => {
+    const response = await fetch(`${API_BASE_URL}/orders/${id}/cancel`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+    return response.json();
+};
+
+/** Request return (customer only, DELIVERED orders, at least 24h after delivery). */
+export const requestReturn = async (id, returnReason = null) => {
+    const response = await fetch(`${API_BASE_URL}/orders/${id}/request-return`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ returnReason: returnReason || null })
+    });
+    return response.json();
+};

@@ -29,7 +29,7 @@ const Shop = () => {
     }
   }, [queryAudience, contextAudience, setAudience]);
 
-  // ✅ استخدام React Query للـ caching - تلقائي مع auto-refetch
+  // React Query for caching – auto refetch
   const { 
     data: products = [], 
     isLoading, 
@@ -125,13 +125,13 @@ const Shop = () => {
       <Container className="py-5 sm:py-8 px-3 sm:px-6">
         <div className="text-center py-12">
           <p className="text-red-500 mb-4">
-            حدث خطأ في تحميل المنتجات: {error?.message}
+            Error loading products: {error?.message}
           </p>
           <button
             onClick={() => refetch()}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
-            حاول مرة أخرى
+            Try again
           </button>
         </div>
       </Container>
