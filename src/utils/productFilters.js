@@ -55,25 +55,18 @@ export const filterByColors = (products, selectedColors) => {
   if (selectedColors.length === 0) return products;
 
   return products.filter(product => {
-    let productColors = product.colors;
+    const productColors = Array.isArray(product.colors) ? product.colors : [];
+    const colorFamilies = Array.isArray(product.colorFamilies) ? product.colorFamilies : [];
 
-    // Handle JSON string from backend
-    if (typeof productColors === 'string') {
-      try {
-        productColors = JSON.parse(productColors);
-      } catch (e) {
-        productColors = [];
-      }
-    }
+    // Check if any selected color matches either the color name or the color family
+    return selectedColors.some(selected => {
+      const lowerSelected = selected.toLowerCase();
 
-    if (Array.isArray(productColors) && productColors.length > 0) {
-      // Check if any selected color is in the product's color list
-      // Using case-insensitive comparison for safety
-      return productColors.some(color =>
-        selectedColors.some(selected => selected.toLowerCase() === color.toLowerCase())
-      );
-    }
-    return false; // If no colors, it doesn't match a color filter
+      const matchName = productColors.some(color => color.toLowerCase() === lowerSelected);
+      const matchFamily = colorFamilies.some(family => family.toLowerCase() === lowerSelected);
+
+      return matchName || matchFamily;
+    });
   });
 };
 

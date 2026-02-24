@@ -30,12 +30,12 @@ const Shop = () => {
   }, [queryAudience, contextAudience, setAudience]);
 
   // React Query for caching – auto refetch
-  const { 
-    data: products = [], 
-    isLoading, 
+  const {
+    data: products = [],
+    isLoading,
     isError,
     error,
-    refetch 
+    refetch
   } = useProducts(
     { audience, search },
     {
@@ -64,17 +64,6 @@ const Shop = () => {
     window.scrollTo(0, 0);
   }, [audience, search]);
 
-  // Lock body scroll when filters are open on mobile
-  useEffect(() => {
-    if (showFilters) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [showFilters]);
 
   // Apply filters to products
   const filteredProducts = useMemo(() => {

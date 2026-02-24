@@ -29,13 +29,23 @@ export const normalizeProduct = (product) => {
         else if (Array.isArray(product.thumbnails)) thumbnails = product.thumbnails;
     } catch (e) { /* ignore */ }
 
-    // Colors: use names so ProductDetail can match colorImages by color.name
+    // Colors: use names and families for filtering
     let colors = [];
+    let colorFamilies = [];
     if (product.variants && product.variants.length > 0) {
-        const seen = new Set();
+        const seenColors = new Set();
+        const seenFamilies = new Set();
         product.variants.forEach((v) => {
             const name = v.color?.name;
-            if (name && !seen.has(name)) { seen.add(name); colors.push(name); }
+            const family = v.color?.family;
+            if (name && !seenColors.has(name)) {
+                seenColors.add(name);
+                colors.push(name);
+            }
+            if (family && !seenFamilies.has(family)) {
+                seenFamilies.add(family);
+                colorFamilies.push(family);
+            }
         });
     }
     if (colors.length === 0 && typeof product.colors === 'string') {
@@ -77,6 +87,7 @@ export const normalizeProduct = (product) => {
         images: allImages,
         price,
         colors: colors.length > 0 ? colors : null,
+        colorFamilies: colorFamilies.length > 0 ? colorFamilies : [],
         sizes: sizes.length > 0 ? sizes : null,
         categorySlug: product.category?.slug || product.categorySlug || null,
         categoryName: product.category?.name || product.categoryDisplay || 'Category',
