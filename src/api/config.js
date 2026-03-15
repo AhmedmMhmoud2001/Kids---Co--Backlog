@@ -1,14 +1,14 @@
 /**
  * API Configuration
  * Uses environment variable for API URL
- * In development, falls back to localhost
+ * Production: https://tovo-b.developteam.site/kids/api
  */
 
 // Vite environment variables must be prefixed with VITE_
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://tovo-b.developteam.site/kids/api';
 
-// Export individual parts if needed
-export const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:5000';
+// Export individual parts if needed (host without /api)
+export const API_HOST = import.meta.env.VITE_API_HOST || 'https://tovo-b.developteam.site/kids';
 
 // Token refresh interval (in milliseconds)
 // Access token expires in 15 minutes, refresh before that
