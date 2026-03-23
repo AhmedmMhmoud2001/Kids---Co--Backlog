@@ -8,7 +8,13 @@ export default defineConfig({
     host: 'localhost',
     port: 5173,
     strictPort: false,
-    // HMR uses same host/port as dev server (no fixed port = no WebSocket mismatch when port changes)
-    hmr: true
+    hmr: true,
+    proxy: {
+      '/api': {
+        target: 'https://tovo-b.developteam.site/kids',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   }
 })
