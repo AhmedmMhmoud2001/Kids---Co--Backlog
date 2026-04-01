@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { fetchCategories } from '../../api/categories';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Navigation = () => {
   const location = useLocation();
   const { audience: contextAudience, setAudience } = useApp();
+  const { t } = useLanguage();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,8 +35,8 @@ const Navigation = () => {
           // Map backend categories to include color and path for the UI logic
           const mappedCategories = res.data.map((cat, index) => ({
             ...cat,
-            color: cat.name.toLowerCase().includes('girl') ? 'pink' :
-              cat.name.toLowerCase().includes('boy') ? 'blue' :
+            color: String(cat.slug || '').toLowerCase().includes('girl') ? 'pink' :
+              String(cat.slug || '').toLowerCase().includes('boy') ? 'blue' :
                 index % 2 === 0 ? 'blue' : 'pink',
             path: `/category/${cat.slug}`
           }));
@@ -101,7 +103,7 @@ const Navigation = () => {
                     `font-medium transition-all duration-200 pb-1 whitespace-nowrap ${getColorClasses(category, isActive)}`
                   }
                 >
-                  {category.name}
+                  {t(category.name)}
                 </NavLink>
               </li>
             );

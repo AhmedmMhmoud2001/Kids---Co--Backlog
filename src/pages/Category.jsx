@@ -11,13 +11,17 @@ import EmptyState from '../components/common/EmptyState';
 import { applyFilters } from '../utils/productFilters';
 import { fetchProducts } from '../api/products';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const Category = () => {
   const { category } = useParams();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const queryAudience = searchParams.get('audience');
+  const offerBrandSlug = searchParams.get('brandSlug');
+  const offerProductIdsRaw = searchParams.get('productIds');
   const { audience: contextAudience, setAudience } = useApp();
+  const { t } = useLanguage();
 
   // URL param takes priority over context
   const audience = queryAudience || contextAudience;
@@ -64,7 +68,11 @@ const Category = () => {
 
       try {
         setIsLoading(true);
-        const res = await fetchProducts({ category, audience });
+        const res = await fetchProducts({
+          category,
+          audience,
+          ...(offerBrandSlug ? { brands: [offerBrandSlug] } : {})
+        });
         setProducts(res.data || []);
       } catch (err) {
         console.error("Error fetching category products:", err);
@@ -73,19 +81,32 @@ const Category = () => {
       }
     };
     loadProducts();
-  }, [category, queryAudience, contextAudience]); // Depend on both URL and context audience
+  }, [category, queryAudience, contextAudience, offerBrandSlug]); // Depend on both URL and context audience
 
-  // Format category name for display
-  const categoryName =
+  // Prefer backend localized category name if available
+  const fallbackCategoryName =
     category
       ?.split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ') || 'Category';
+  const categoryName = t(products?.[0]?.categoryName || fallbackCategoryName);
 
   // Filter products by category and apply filters
+  const offerProductIds = useMemo(
+    () => new Set(
+      String(offerProductIdsRaw || '')
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean)
+    ),
+    [offerProductIdsRaw]
+  );
+
   const filteredProducts = useMemo(() => {
-    return applyFilters(products, filters, category);
-  }, [products, category, filters]);
+    const byFilters = applyFilters(products, filters, category);
+    if (!offerProductIds.size) return byFilters;
+    return byFilters.filter((p) => offerProductIds.has(String(p.id)));
+  }, [products, category, filters, offerProductIds]);
 
   // Paginate products
   const paginatedProducts = useMemo(() => {

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
 import { AppProvider } from './context/AppContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Layout from './components/layout/Layout';
 import AuthLayout from './components/layout/AuthLayout';
 import ScrollToTop from './components/common/ScrollToTop';
@@ -38,10 +39,11 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <Router>
-          <AppProvider>
-            <ScrollToTop />
-            <Routes>
+        <LanguageProvider>
+          <Router>
+            <AppProvider>
+              <ScrollToTop />
+              <Routes>
           {/* Main Layout - with Header, Navigation, Footer */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
@@ -76,9 +78,10 @@ function App() {
             <Route path="reset-password" element={<ResetPassword />} />
             <Route path="oauth-callback" element={<OAuthCallback />} />
           </Route>
-            </Routes>
-          </AppProvider>
-        </Router>
+              </Routes>
+            </AppProvider>
+          </Router>
+        </LanguageProvider>
       {/* React Query DevTools removed to avoid WebSocket errors. Add <ReactQueryDevtools /> from @tanstack/react-query-devtools if needed. */}
     </QueryClientProvider>
     </ErrorBoundary>

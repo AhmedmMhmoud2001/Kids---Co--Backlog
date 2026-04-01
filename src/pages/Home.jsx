@@ -11,6 +11,7 @@ import ProductQuickView from '../components/product/ProductQuickView';
 import { fetchCategories } from '../api/categories';
 import { fetchBestSellers } from '../api/products';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -24,6 +25,7 @@ const Home = () => {
   const [bestSellers, setBestSellers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { setAudience } = useApp();
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Set global audience for navigation
@@ -51,7 +53,7 @@ const Home = () => {
 
   // Hero slides
   const heroSlides = [
-    { id: 1, leftImage: heroImage1, rightImage: heroImage2, title: 'Shop Smart', link: '/shop' },
+    { id: 1, leftImage: heroImage1, rightImage: heroImage2, title: t('homeHero.shopSmart'), link: '/shop' },
   ];
 
   return (
@@ -74,7 +76,7 @@ const Home = () => {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
                       <span className="block text-gray-900 mb-2">{slide.title}</span>
                       <span className="block">
-                        <span className="text-gray-900">Shop </span>
+                        <span className="text-gray-900">{t('homeHero.shop')} </span>
                         <span className="text-black">Kids</span>
                         <span className="text-blue-500">&</span>
                         <span className="text-pink-500">Co</span>
@@ -85,7 +87,7 @@ const Home = () => {
                       to={slide.link}
                       className="inline-block text-black font-bold text-base border-b-3 border-black uppercase tracking-wider"
                     >
-                      SHOP NOW
+                      {t('homeHero.shopNow')}
                     </Link>
                   </div>
                 </div>
@@ -121,7 +123,7 @@ const Home = () => {
                     <h2 className="text-1xl sm:text-1xl md:text-2xl lg:text-3xl xl:text-4xl font-bold mb-2 leading-tight">
                       <span className="block text-gray-800">{slide.title}</span>
                       <span className="block">
-                        <span className="text-gray-800">Shop </span>
+                        <span className="text-gray-800">{t('homeHero.shop')} </span>
                         <span className="text-black">Kids</span>
                         <span className="text-blue-500">&</span>
                         <span className="text-pink-500">Co</span>
@@ -133,7 +135,7 @@ const Home = () => {
                         to={slide.link}
                         className="inline-block bg-transparent text-black font-bold text-sm sm:text-base lg:text-lg py-2 px-0 border-b-2 sm:border-b-4 border-black hover:border-blue-500 transition-all uppercase tracking-wider"
                       >
-                        SHOP NOW
+                        {t('homeHero.shopNow')}
                       </Link>
                     </div>
                   </div>

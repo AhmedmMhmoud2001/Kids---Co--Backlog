@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Section from '../common/Section';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 /**
  * Categories section component matching the design with circle background and popping images
@@ -12,18 +13,7 @@ const CategoriesSectionHome2 = ({
   className = ''
 }) => {
   const { audience } = useApp();
-
-  // Map category names to URL paths
-  const getCategoryPath = (categoryName) => {
-    const categoryPathMap = {
-      'Boy': 'boy',
-      'Girl': 'girl',
-      'Baby Boy': 'baby-boy',
-      'Baby Girl': 'baby-girl',
-      'Footwear': 'footwear',
-    };
-    return categoryPathMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, '-');
-  };
+  const { t } = useLanguage();
 
   const categoriesToShow = limit ? categories.slice(0, limit) : categories;
 
@@ -31,7 +21,7 @@ const CategoriesSectionHome2 = ({
     <Section padding="py-8 lg:py-12" className={className}>
       <div className={`grid ${gridCols} gap-6 md:gap-8`}>
         {categoriesToShow.map((category, idx) => {
-          const categoryPath = getCategoryPath(category.name);
+          const categoryPath = category.slug || '';
 
           return (
             <Link
@@ -47,7 +37,7 @@ const CategoriesSectionHome2 = ({
                 {/* Product image with hover */}
                 <img
                   src={category.image || null}
-                  alt={category.name}
+                  alt={t(category.name)}
                   className="
                     absolute left-1/2 top-10 -translate-x-1/2
                     w-auto h-[115%]
@@ -64,7 +54,7 @@ const CategoriesSectionHome2 = ({
 
               {/* Category Name */}
               <h3 className="font-bold text-gray-800 text-lg sm:text-xl group-hover:text-blue-600 transition-colors">
-                {category.name}
+                {t(category.name)}
               </h3>
             </Link>
           );

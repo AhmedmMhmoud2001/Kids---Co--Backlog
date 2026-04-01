@@ -56,3 +56,38 @@ export const fetchShowOutOfStock = async () => {
         return true;
     }
 };
+
+/** Currency settings for displaying prices: { code, symbol, locale } */
+export const fetchCurrencySettings = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/settings/currency`);
+        const result = await response.json();
+        if (result.success && result.data) {
+            return {
+                code: result.data.code || 'EGP',
+                symbol: result.data.symbol || 'EGP',
+                locale: result.data.locale || 'en-EG'
+            };
+        }
+        return { code: 'EGP', symbol: 'EGP', locale: 'en-EG' };
+    } catch (error) {
+        console.error('Error fetching currency settings:', error);
+        return { code: 'EGP', symbol: 'EGP', locale: 'en-EG' };
+    }
+};
+
+/** Top header offers list. */
+export const fetchTopHeaderOffers = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/settings/top_header_offers`);
+        const result = await response.json();
+        const raw = result?.success ? result?.data?.value : null;
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item && typeof item === 'object');
+    } catch (error) {
+        console.error('Error fetching top header offers:', error);
+        return [];
+    }
+};

@@ -17,6 +17,9 @@ const Shop = () => {
   const [searchParams] = useSearchParams();
   const queryAudience = searchParams.get('audience');
   const search = searchParams.get('search');
+  const offerCategorySlug = searchParams.get('categorySlug');
+  const offerBrandSlug = searchParams.get('brandSlug');
+  const offerProductIdsRaw = searchParams.get('productIds');
   const { audience: contextAudience, setAudience } = useApp();
 
   // URL param takes priority over context
@@ -37,11 +40,26 @@ const Shop = () => {
     error,
     refetch
   } = useProducts(
-    { audience, search },
+    {
+      audience,
+      search,
+      ...(offerCategorySlug ? { category: offerCategorySlug } : {}),
+      ...(offerBrandSlug ? { brands: [offerBrandSlug] } : {})
+    },
     {
       // Keep previous data while fetching new
       placeholderData: (previousData) => previousData,
     }
+  );
+
+  const offerProductIds = useMemo(
+    () => new Set(
+      String(offerProductIdsRaw || '')
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean)
+    ),
+    [offerProductIdsRaw]
   );
 
   const [showFilters, setShowFilters] = useState(false);
@@ -67,8 +85,10 @@ const Shop = () => {
 
   // Apply filters to products
   const filteredProducts = useMemo(() => {
-    return applyFilters(products, filters);
-  }, [products, filters]);
+    const byFilters = applyFilters(products, filters);
+    if (!offerProductIds.size) return byFilters;
+    return byFilters.filter((p) => offerProductIds.has(String(p.id)));
+  }, [products, filters, offerProductIds]);
 
   // Paginate products
   const paginatedProducts = useMemo(() => {

@@ -21,6 +21,8 @@ const COLOR_NAME_TO_HEX = {
 // Helper to normalize product data from backend (supports Prisma: variants, colorImages, category, brandRel)
 export const normalizeProduct = (product) => {
     if (!product) return null;
+    const parsedRate = Number(product.category?.exchangeRateToEgp ?? product.categoryExchangeRateToEgp ?? 1);
+    const exchangeRateToEgp = Number.isFinite(parsedRate) && parsedRate > 0 ? parsedRate : 1;
 
     // Thumbnails (legacy)
     let thumbnails = [];
@@ -77,11 +79,19 @@ export const normalizeProduct = (product) => {
     if (mainImage && !allImages.includes(mainImage)) allImages = [mainImage, ...allImages];
     if (allImages.length === 0 && mainImage) allImages = [mainImage];
 
-    // Price: basePrice or first variant
-    const price = product.basePrice ?? product.variants?.[0]?.price ?? product.price;
+    // Price shown to customer is always EGP
+    const rawPrice = product.basePrice ?? product.variants?.[0]?.price ?? product.price;
+    const price = rawPrice != null ? Number(rawPrice) * exchangeRateToEgp : rawPrice;
+    const variants = Array.isArray(product.variants)
+        ? product.variants.map((v) => ({
+            ...v,
+            price: Number(v.price ?? 0) * exchangeRateToEgp
+        }))
+        : product.variants;
 
     return {
         ...product,
+        variants,
         name: product.name || product.title || 'Untitled Product',
         image: mainImage,
         images: allImages,
@@ -91,6 +101,8 @@ export const normalizeProduct = (product) => {
         sizes: sizes.length > 0 ? sizes : null,
         categorySlug: product.category?.slug || product.categorySlug || null,
         categoryName: product.category?.name || product.categoryDisplay || 'Category',
+        categoryCurrencyCode: product.category?.currencyCode || product.categoryCurrencyCode || 'EGP',
+        categoryExchangeRateToEgp: exchangeRateToEgp,
         brand: product.brandRel?.name ?? product.brand ?? null,
         brandSlug: product.brandRel?.slug || product.brandSlug || null
     };

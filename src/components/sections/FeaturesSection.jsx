@@ -3,30 +3,32 @@ import icon1 from '../../assets/truck-delivery.webp';
 import icon2 from '../../assets/card-tick.svg';
 import icon3 from '../../assets/delivery-return-01.svg';
 import icon4 from '../../assets/customer-support.svg';
+import { useLanguage } from '../../context/LanguageContext';
 /**
  * Features section component
  */
 const FeaturesSection = ({ features = [], className = '' }) => {
+  const { t } = useLanguage();
   const defaultFeatures = [
     {
       icon: icon1,
-      title: 'Fast Shipping',
-      description: 'Lightning-fast delivery, always on time',
+      title: t('features.fastShippingTitle'),
+      description: t('features.fastShippingDescription'),
     },
     {
       icon: icon2,
-      title: 'Instant Payment',
-      description: 'Secure, seamless, and instant transactions',
+      title: t('features.instantPaymentTitle'),
+      description: t('features.instantPaymentDescription'),
     },
     {
       icon: icon3,
-      title: 'Exchange & Return',
-      description: 'Hassle-free returns, easy exchanges',
+      title: t('features.exchangeReturnTitle'),
+      description: t('features.exchangeReturnDescription'),
     },
     {
       icon: icon4,
-      title: 'Customer Service',
-      description: "We're always here to help with anything",
+      title: t('features.customerServiceTitle'),
+      description: t('features.customerServiceDescription'),
     },
   ];
 

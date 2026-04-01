@@ -1,9 +1,11 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const MobileMenu = ({ isOpen, onClose, categories = [] }) => {
   const location = useLocation();
   const { audience: contextAudience } = useApp();
+  const { t } = useLanguage();
 
   // Read audience from URL query params or use context
   const searchParams = new URLSearchParams(location.search);
@@ -66,7 +68,7 @@ const MobileMenu = ({ isOpen, onClose, categories = [] }) => {
                       }`
                     }
                   >
-                    {category.name}
+                    {t(category.name)}
                   </NavLink>
                 );
               })}
@@ -81,21 +83,21 @@ const MobileMenu = ({ isOpen, onClose, categories = [] }) => {
                 onClick={onClose}
                 className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-500 rounded-lg font-medium transition-colors"
               >
-                All Products
+                {t('mobileMenu.allProducts')}
               </Link>
               <Link
                 to="/favorites"
                 onClick={onClose}
                 className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-500 rounded-lg font-medium transition-colors"
               >
-                Favorites
+                {t('mobileMenu.favorites')}
               </Link>
               <Link
                 to="/account"
                 onClick={onClose}
                 className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-500 rounded-lg font-medium transition-colors"
               >
-                My Account
+                {t('mobileMenu.myAccount')}
               </Link>
             </div>
           </nav>

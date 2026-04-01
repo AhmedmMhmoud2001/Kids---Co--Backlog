@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 import Breadcrumb from '../components/common/Breadcrumb';
 import Loading from '../components/common/Loading';
 import { useProduct } from '../hooks/useProducts';
@@ -12,6 +13,8 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import ProductCard from '../components/product/ProductCard';
 import Section from '../components/common/Section';
 import { fetchProducts } from '../api/products';
+import { DEFAULT_CURRENCY, formatPrice } from '../utils/currency';
+import { useProductOfferDiscount } from '../hooks/useOffers';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -22,6 +25,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const { data: product, isLoading, isError, error, refetch } = useProduct(id);
   const { addToCart, setIsCartOpen } = useApp();
+  const { t } = useLanguage();
   const [showOutOfStock, setShowOutOfStock] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [visibleThumbStart, setVisibleThumbStart] = useState(0);
@@ -179,6 +183,7 @@ const ProductDetail = () => {
   }, [selectedVariant]);
 
   const maxStock = selectedVariant != null ? (selectedVariant.stock ?? 0) : 999;
+  const discountPercent = useProductOfferDiscount(product);
 
   if (isLoading) {
     return (
@@ -190,13 +195,13 @@ const ProductDetail = () => {
   if (isError || !product) {
     return (
       <div className="py-20 text-center px-4">
-        <p className="text-red-500 mb-4">{error?.message || 'Product not available'}</p>
+        <p className="text-red-500 mb-4">{error?.message || t('productDetail.productNotAvailable')}</p>
         <div className="flex gap-3 justify-center flex-wrap">
           <button onClick={() => refetch()} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-            Try again
+            {t('productDetail.tryAgain')}
           </button>
           <Link to="/shop" className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-            Back to shop
+            {t('productDetail.backToShop')}
           </Link>
         </div>
       </div>
@@ -205,8 +210,11 @@ const ProductDetail = () => {
 
   const safeSelectedImage = Math.min(selectedImage, Math.max(0, images.length - 1));
   const getCategoryPath = () => product.categorySlug || 'shop';
-  const getCategoryDisplayName = () => product.categoryName || 'Shop';
+  const getCategoryDisplayName = () => t(product.categoryName || t('productDetail.shop'));
   const displayPrice = selectedVariant?.price ?? product.price ?? product.basePrice;
+  const finalDisplayPrice = discountPercent > 0
+    ? Number(displayPrice || 0) * (1 - discountPercent / 100)
+    : Number(displayPrice || 0);
   const displaySku = selectedVariant?.sku ?? product.sku;
   const isOutOfStock = stockStatus === 'out_of_stock';
   const clampedQuantity = Math.min(Math.max(1, quantity), maxStock || 1);
@@ -216,7 +224,7 @@ const ProductDetail = () => {
     const size = displaySizes?.[safeSelectedSize];
     const color = displayColors?.[safeSelectedColor];
     const imageForColor = images.length > 0 ? images[0] : product.image;
-    const productWithVariantPrice = { ...product, price: displayPrice, image: imageForColor };
+    const productWithVariantPrice = { ...product, price: finalDisplayPrice, image: imageForColor };
     addToCart(productWithVariantPrice, clampedQuantity, size, color, selectedVariant?.id);
     setIsCartOpen(true);
   };
@@ -232,7 +240,7 @@ const ProductDetail = () => {
   // رابط المنتج الكامل (نفس الصفحة الحالية ليشمل أي base path)
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareTitle = product?.name || 'Product';
-  const shareText = `${shareTitle} - ${Number(displayPrice ?? 0).toFixed(2)} EGP`;
+  const shareText = `${shareTitle} - ${formatPrice(Number(finalDisplayPrice ?? 0), DEFAULT_CURRENCY)}`;
 
   const handleShare = (platform) => {
     if (!shareUrl) return;
@@ -281,9 +289,9 @@ const ProductDetail = () => {
       {/* Breadcrumb */}
       <div className="mb-3 sm:mb-4">
         <Breadcrumb items={[
-          { label: product.audience === 'NEXT' ? 'Home 2' : 'Home', to: product.audience === 'NEXT' ? '/home2' : '/' },
+          { label: product.audience === 'NEXT' ? t('productDetail.home2') : t('productDetail.home'), to: product.audience === 'NEXT' ? '/home2' : '/' },
           { label: getCategoryDisplayName(), to: `/category/${getCategoryPath()}?audience=${product.audience}` },
-          { label: product.name },
+          { label: t(product.name) },
         ]} />
       </div>
 
@@ -351,18 +359,32 @@ const ProductDetail = () => {
         {/* Product Details */}
         <div className="space-y-3 sm:space-y-4 md:space-y-5 w-full max-w-full">
           <div>
-            <h1 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1.5 sm:mb-2 md:mb-3 leading-tight break-words">{product.name}</h1>
-            <p className="text-xl sm:text-2xl md:text-3xl text-blue-500 font-semibold">
-              {Number(displayPrice ?? product.price ?? product.basePrice ?? 0).toFixed(2)} EGP
-            </p>
+            <h1 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1.5 sm:mb-2 md:mb-3 leading-tight break-words">{t(product.name)}</h1>
+            {discountPercent > 0 ? (
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-base sm:text-lg text-gray-400 line-through">
+                  {formatPrice(Number(displayPrice ?? product.price ?? product.basePrice ?? 0), DEFAULT_CURRENCY)}
+                </p>
+                <p className="text-xl sm:text-2xl md:text-3xl text-blue-500 font-semibold">
+                  {formatPrice(Number(finalDisplayPrice ?? 0), DEFAULT_CURRENCY)}
+                </p>
+                <span className="text-xs sm:text-sm px-2 py-1 rounded bg-red-100 text-red-700 font-semibold">
+                  -{discountPercent}%
+                </span>
+              </div>
+            ) : (
+              <p className="text-xl sm:text-2xl md:text-3xl text-blue-500 font-semibold">
+                {formatPrice(Number(displayPrice ?? product.price ?? product.basePrice ?? 0), DEFAULT_CURRENCY)}
+              </p>
+            )}
             {product.variants?.length > 0 && (
               <div className="mt-1.5 space-y-0.5">
                 <p className={`text-sm font-semibold ${stockStatus === 'out_of_stock' ? 'text-red-600' : stockStatus === 'low_stock' ? 'text-amber-600' : 'text-green-600'}`}>
-                  {stockStatus === 'out_of_stock' ? 'Out of stock' : stockStatus === 'low_stock' ? 'Low stock' : 'In stock'}
+                  {stockStatus === 'out_of_stock' ? t('productDetail.outOfStock') : stockStatus === 'low_stock' ? t('productDetail.lowStock') : t('productDetail.inStock')}
                 </p>
                 {stockStatus === 'low_stock' && selectedVariant && (
                   <p className="text-sm text-amber-700 font-medium" role="alert">
-                    Only {selectedVariant.stock ?? 0} left
+                    {t('productDetail.onlyLeft').replace('{{count}}', String(selectedVariant.stock ?? 0))}
                   </p>
                 )}
               </div>
@@ -372,7 +394,7 @@ const ProductDetail = () => {
           {/* Color Selection */}
           {displayColors && displayColors.length > 0 && (
             <div className="w-full max-w-full">
-              <h3 className="font-semibold text-sm sm:text-base mb-2">Color:</h3>
+              <h3 className="font-semibold text-sm sm:text-base mb-2">{t('productDetail.color')}:</h3>
               <div className="flex gap-2 flex-wrap">
                 {displayColors.map((color, idx) => {
                   const swatchStyle = getColorSwatchStyle(color);
@@ -400,7 +422,7 @@ const ProductDetail = () => {
           {/* Size Selection */}
           {displaySizes && displaySizes.length > 0 && (
             <div className="w-full max-w-full">
-              <h3 className="font-semibold text-sm sm:text-base mb-2">Size:</h3>
+              <h3 className="font-semibold text-sm sm:text-base mb-2">{t('productDetail.size')}:</h3>
               <div className="flex gap-1.5 sm:gap-2 flex-wrap">
                 {displaySizes.map((size, idx) => (
                   <button
@@ -419,10 +441,10 @@ const ProductDetail = () => {
           )}
 
           {/* Quantity and Add to Cart */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 md:gap-4 w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3 md:gap-4 w-full">
             {/* Quantity Selector */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center border border-gray-300 rounded w-full sm:w-auto shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center border border-gray-300 rounded w-auto shrink-0">
                 <button
                   onClick={() => setQuantityClamped((q) => q - 1)}
                   className="px-3 sm:px-4 py-2.5 hover:bg-gray-100 active:bg-gray-200 transition-colors text-lg font-medium"
@@ -455,13 +477,13 @@ const ProductDetail = () => {
                 : 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white'
                 }`}
             >
-              {isOutOfStock ? 'Out of stock' : 'Add to cart'}
+              {isOutOfStock ? t('productDetail.outOfStock') : t('productDetail.addToCart')}
             </button>
           </div>
 
           {/* Description */}
           <div className="w-full max-w-full">
-            <h3 className="font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Description:</h3>
+            <h3 className="font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">{t('productDetail.description')}:</h3>
             <p className="text-gray-600 text-xs sm:text-sm leading-relaxed break-words">
               {product.description}
             </p>
@@ -469,16 +491,16 @@ const ProductDetail = () => {
           {/* Product Meta */}
           <div className="pt-4 sm:pt-6 border-t space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
             <div className="flex gap-2">
-              <span className="font-semibold">SKU:</span>
+              <span className="font-semibold">{t('productDetail.sku')}:</span>
               <span className="text-gray-600">{displaySku || product.sku || '-'}</span>
             </div>
             <div className="flex gap-2">
-              <span className="font-semibold">Category:</span>
-              <span className="text-gray-600">{product.categoryName}</span>
+              <span className="font-semibold">{t('productDetail.category')}:</span>
+              <span className="text-gray-600">{t(product.categoryName)}</span>
             </div>
             <div className="flex gap-2">
-              <span className="font-semibold">Brand:</span>
-              <span className="text-gray-600">{product.brand || 'No Brand'}</span>
+              <span className="font-semibold">{t('productDetail.brand')}:</span>
+              <span className="text-gray-600">{t(product.brand || t('productDetail.noBrand'))}</span>
             </div>
           </div>
 
@@ -486,13 +508,13 @@ const ProductDetail = () => {
           <div className="pt-3 sm:pt-4 border-t">
             <div className="flex flex-col gap-3 sm:gap-4">
               <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-                <span className="font-semibold text-xs sm:text-sm">Share:</span>
+                <span className="font-semibold text-xs sm:text-sm">{t('productDetail.share')}:</span>
                 <div className="flex gap-1.5 sm:gap-2 items-center">
                   <button
                     type="button"
                     onClick={() => handleShare('facebook')}
                     className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
-                    aria-label="Share on Facebook"
+                    aria-label={t('productDetail.shareOnFacebook')}
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#1877f2]" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -502,7 +524,7 @@ const ProductDetail = () => {
                     type="button"
                     onClick={() => handleShare('twitter')}
                     className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
-                    aria-label="Share on X (Twitter)"
+                    aria-label={t('productDetail.shareOnTwitter')}
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#0f1419]" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -512,7 +534,7 @@ const ProductDetail = () => {
                     type="button"
                     onClick={() => handleShare('pinterest')}
                     className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors"
-                    aria-label="Share on Pinterest"
+                    aria-label={t('productDetail.shareOnPinterest')}
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#bd081c]" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" />
@@ -523,7 +545,7 @@ const ProductDetail = () => {
                       type="button"
                       onClick={handleNativeShare}
                       className="p-1.5 sm:p-2 hover:bg-gray-100 rounded transition-colors text-gray-600"
-                      aria-label="Share (native)"
+                      aria-label={t('productDetail.shareNative')}
                     >
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -539,13 +561,13 @@ const ProductDetail = () => {
                   className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${linkCopied ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                 >
                   {linkCopied ? (
-                    <>Copied!</>
+                    <>{t('productDetail.copied')}</>
                   ) : (
                     <>
                       <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.172-1.172a4 4 0 00-.828-6.828l-1.172 1.172a2 2 0 11-2.828-2.828l4-4a2 2 0 012.828 2.828l-1.172 1.172a4 4 0 106.828.828l1.172-1.172a2 2 0 00-.828-1.656z" />
                       </svg>
-                      Copy product link
+                      {t('productDetail.copyProductLink')}
                     </>
                   )}
                 </button>
@@ -562,7 +584,7 @@ const ProductDetail = () => {
           {product.additionalInfo && (
             <details className="border-t pt-3 sm:pt-4">
               <summary className="font-semibold text-sm sm:text-base cursor-pointer flex items-center justify-between">
-                Additional Information
+                {t('productDetail.additionalInformation')}
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -579,7 +601,7 @@ const ProductDetail = () => {
       {relatedProducts.length > 0 && (
         <Section padding="py-8 sm:py-12 md:py-16">
           <div className="mb-6 sm:mb-8">
-            <h2 className="text-xl sm:text-2xl font-bold ">More from {product.brand || 'this brand'}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold ">{t('productDetail.moreFrom')} {t(product.brand || t('productDetail.thisBrand'))}</h2>
             <div className="w-20 h-1 bg-blue-500 mt-2"></div>
           </div>
 

@@ -9,6 +9,7 @@ import { fetchCategories } from '../api/categories';
 import { fetchBestSellers } from '../api/products';
 import { fetchHomeHeroVideo } from '../api/settings';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const Home2 = () => {
   const [categories, setCategories] = useState([]);
@@ -16,6 +17,7 @@ const Home2 = () => {
   const [heroVideo, setHeroVideo] = useState("https://www.pexels.com/download/video/3917742/");
   const [isLoading, setIsLoading] = useState(true);
   const { setAudience } = useApp();
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Set global audience for navigation
@@ -71,7 +73,7 @@ const Home2 = () => {
               to="/shop"
               className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg transition-colors"
             >
-              SHOP NOW
+              {t('homeHero.shopNow')}
             </Link>
           </div>
         </div>

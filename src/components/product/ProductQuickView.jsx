@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getColorSwatchStyle } from '../../api/products';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useProductOfferDiscount } from '../../hooks/useOffers';
+import { useLanguage } from '../../context/LanguageContext';
 
 const THUMB_VISIBLE = 6;
 
 const ProductQuickView = ({ product, onClose }) => {
   const { addToCart, setIsCartOpen } = useApp();
+  const { t } = useLanguage();
   const [selectedImage, setSelectedImage] = useState(0);
   const [visibleThumbStart, setVisibleThumbStart] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
@@ -58,11 +61,15 @@ const ProductQuickView = ({ product, onClose }) => {
   const safePrice = typeof displayPrice === 'number' && !Number.isNaN(displayPrice)
     ? displayPrice
     : (parseFloat(displayPrice) || 0);
+  const discountPercent = useProductOfferDiscount(product);
+  const finalPrice = discountPercent > 0
+    ? safePrice * (1 - discountPercent / 100)
+    : safePrice;
 
   const handleAddToCart = () => {
     const color = product.colors?.[selectedColor];
     const size = product.sizes?.[selectedSize];
-    const productWithVariantPrice = { ...product, price: safePrice };
+    const productWithVariantPrice = { ...product, price: finalPrice };
     addToCart(productWithVariantPrice, quantity, size, color, selectedVariant?.id);
     setIsCartOpen(true);
     onClose();
@@ -141,7 +148,7 @@ const ProductQuickView = ({ product, onClose }) => {
                 onClick={onClose}
                 className="text-xl font-bold text-gray-900 leading-tight hover:text-blue-600 transition-colors block"
               >
-                {product.name}
+                {t(product.name)}
               </Link>
               <div className="mt-1">
                 <Link
@@ -155,9 +162,23 @@ const ProductQuickView = ({ product, onClose }) => {
             </div>
 
             {/* Price */}
-            <div className="text-2xl font-black text-blue-600">
-              {safePrice.toFixed(2)} EGP
-            </div>
+            {discountPercent > 0 ? (
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="text-sm text-gray-400 line-through">
+                  {safePrice.toFixed(2)} EGP
+                </div>
+                <div className="text-2xl font-black text-blue-600">
+                  {finalPrice.toFixed(2)} EGP
+                </div>
+                <span className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 font-semibold">
+                  -{discountPercent}%
+                </span>
+              </div>
+            ) : (
+              <div className="text-2xl font-black text-blue-600">
+                {safePrice.toFixed(2)} EGP
+              </div>
+            )}
 
             {/* Color Selection */}
             {product.colors && product.colors.length > 0 && (
@@ -260,7 +281,7 @@ const ProductQuickView = ({ product, onClose }) => {
               {/* Category */}
               <div className="flex flex-col text-[12px]">
                 <span className="font-bold text-gray-400 uppercase tracking-tighter">Category</span>
-                <span className="text-gray-700 font-medium truncate">{product.categoryName}</span>
+                <span className="text-gray-700 font-medium truncate">{t(product.categoryName)}</span>
               </div>
             </div>
           </div>

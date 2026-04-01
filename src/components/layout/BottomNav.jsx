@@ -1,13 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const BottomNav = () => {
   const location = useLocation();
   const { cartCount, favoritesCount } = useApp();
+  const { t } = useLanguage();
 
   const navItems = [
     {
-      name: 'Home',
+      name: t('bottomNav.home'),
       path: '/',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,7 +18,7 @@ const BottomNav = () => {
       ),
     },
     {
-      name: 'Shop',
+      name: t('bottomNav.shop'),
       path: '/shop',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +27,7 @@ const BottomNav = () => {
       ),
     },
     {
-      name: 'Favorites',
+      name: t('bottomNav.favorites'),
       path: '/favorites',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +37,7 @@ const BottomNav = () => {
       badge: favoritesCount,
     },
     {
-      name: 'Cart',
+      name: t('bottomNav.cart'),
       path: '/cart',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,7 +47,7 @@ const BottomNav = () => {
       badge: cartCount,
     },
     {
-      name: 'Account',
+      name: t('bottomNav.account'),
       path: '/account',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

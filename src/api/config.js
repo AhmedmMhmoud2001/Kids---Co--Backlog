@@ -6,8 +6,8 @@
 
 const PRODUCTION_API = 'https://tovo-b.developteam.site/kids/api';
 const PRODUCTION_HOST = 'https://tovo-b.developteam.site/kids';
-const LOCAL_API = 'https://tovo-b.developteam.site/kids/api';
-const LOCAL_HOST = 'https://tovo-b.developteam.site/kids';
+const LOCAL_API = 'http://localhost:5000/api';
+const LOCAL_HOST = 'http://localhost:5000';
 
 function isLocalOrigin() {
   if (typeof window === 'undefined') return false;

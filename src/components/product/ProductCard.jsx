@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
+import { DEFAULT_CURRENCY, formatPrice } from "../../utils/currency";
+import { useProductOfferDiscount } from "../../hooks/useOffers";
+import { useLanguage } from "../../context/LanguageContext";
 
 const ProductCard = ({ product, onQuickView }) => {
   const { toggleFavorite, isFavorite } = useApp();
+  const { t } = useLanguage();
   const productIsFavorite = isFavorite(product.id);
 
   const handleToggleFavorite = (e) => {
@@ -34,12 +38,22 @@ const ProductCard = ({ product, onQuickView }) => {
   };
 
   const productImage = getProductImage();
+  const displayPrice = typeof product.price === 'number' ? product.price : Number(product.price || 0);
+  const discountPercent = useProductOfferDiscount(product);
+  const discountedPrice = discountPercent > 0
+    ? displayPrice * (1 - discountPercent / 100)
+    : displayPrice;
 
   return (
     <div className="group relative">
       <Link to={`/product/${product.id}`} className="block">
         {/* Product Image */}
         <div className="relative aspect-square bg-blue-50/50  overflow-hidden mb-3 border border-gray-100 flex items-center justify-center">
+          {discountPercent > 0 && (
+            <div className="absolute top-3 -left-8 z-20 rotate-[-35deg] bg-red-600 text-white text-[11px] sm:text-xs font-bold px-8 py-1 shadow-md">
+              -{Number(discountPercent).toFixed(0)}%
+            </div>
+          )}
           {productImage ? (
             <img
               src={productImage}
@@ -117,14 +131,25 @@ const ProductCard = ({ product, onQuickView }) => {
         {/* Product Info */}
         <div className="space-y-1">
           <h3 className="text-sm font-normal text-gray-900 line-clamp-2 leading-tight">
-            {product.name}
+            {t(product.name)}
           </h3>
           <p className="text-xs text-gray-500">
-            {product.categoryDisplay || product.category?.name || product.category}
+            {t(product.categoryDisplay || product.category?.name || product.category)}
           </p>
-          <p className="text-blue-500 font-semibold text-sm">
-            {typeof product.price === 'number' ? `${product.price.toFixed(2)} EGP` : product.price + ` EGP`}
-          </p>
+          {discountPercent > 0 ? (
+            <div className="flex items-center gap-2">
+              <p className="text-gray-400 line-through text-xs">
+                {formatPrice(displayPrice, DEFAULT_CURRENCY)}
+              </p>
+              <p className="text-blue-500 font-semibold text-sm">
+                {formatPrice(discountedPrice, DEFAULT_CURRENCY)}
+              </p>
+            </div>
+          ) : (
+            <p className="text-blue-500 font-semibold text-sm">
+              {formatPrice(displayPrice, DEFAULT_CURRENCY)}
+            </p>
+          )}
         </div>
       </Link>
     </div>

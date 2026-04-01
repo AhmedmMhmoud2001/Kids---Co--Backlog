@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Section from '../common/Section';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 /**
  * Categories section component
@@ -12,30 +13,21 @@ const CategoriesSection = ({
   className = ''
 }) => {
   const { audience } = useApp();
-
-  // Map category names to URL paths
-  const getCategoryPath = (categoryName) => {
-    const categoryPathMap = {
-      'Boy': 'boy',
-      'Girl': 'girl',
-      'Baby Boy': 'baby-boy',
-      'Baby Girl': 'baby-girl',
-      'Accessories': 'accessories',
-      'Footwear': 'footwear',
-    };
-    return categoryPathMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, '-');
-  };
+  const { t } = useLanguage();
   const getCategoryClasses = (category) => {
-    const name = category.name.toLowerCase();
+    const slug = String(category.slug || '').toLowerCase();
+    const name = String(t(category.name) || '').toLowerCase();
     const isBoy = name.includes('boy');
     const isGirl = name.includes('girl');
+    const isBoyBySlug = slug.includes('boy');
+    const isGirlBySlug = slug.includes('girl');
 
     const baseClasses = "text-gray-700 bg-gray-50 border-2 border-gray-100/50 transition-all duration-700 shadow-sm group-hover:shadow-md";
 
-    if (isBoy) {
+    if (isBoy || isBoyBySlug) {
       return `${baseClasses} hover:bg-blue-50 hover:border-blue-200`;
     }
-    if (isGirl) {
+    if (isGirl || isGirlBySlug) {
       return `${baseClasses} hover:bg-pink-50 hover:border-pink-200`;
     }
 
@@ -50,7 +42,7 @@ const CategoriesSection = ({
     <Section padding="py-4 lg:py-5" className={className}>
       <div className={`grid ${gridCols} gap-4 lg:gap-6`}>
         {categoriesToShow.map((category, idx) => {
-          const categoryPath = getCategoryPath(category.name);
+          const categoryPath = category.slug || '';
 
           return (
             <Link
@@ -61,7 +53,7 @@ const CategoriesSection = ({
               <div className={`aspect-square  rounded-full overflow-hidden mb-3  shadow-md ${getCategoryClasses(category)}`}>
                 <img
                   src={category.image || null}
-                  alt={category.name}
+                  alt={t(category.name)}
                   className="relative w-full h-full object-cover object-center z-10"
                   loading="lazy"
                   onError={(e) => {
@@ -71,7 +63,7 @@ const CategoriesSection = ({
                 />
               </div>
               <h3 className={`font-medium text-xs sm:text-sm md:text-base transition-colors  `}>
-                {category.name}
+                {t(category.name)}
               </h3>
             </Link>
           );
